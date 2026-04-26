@@ -3,32 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="C++ — мощный компилируемый язык программирования для системного программирования, игровых движков и высокопроизводительных приложений.">
     <title>C++ — Codepedia</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Georgia', 'Times New Roman', serif; background: #f6f6f6; line-height: 1.5; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif; background: #f6f6f6; line-height: 1.6; }
         .page { max-width: 1000px; margin: 0 auto; background: white; padding: 30px 40px; box-shadow: 0 0 8px rgba(0,0,0,0.1); }
-        h1 { font-size: 32px; font-weight: normal; border-bottom: 1px solid #a2a9b1; margin-bottom: 20px; padding-bottom: 8px; }
-        h2 { font-size: 24px; font-weight: normal; border-bottom: 1px solid #a2a9b1; margin: 30px 0 15px 0; padding-bottom: 5px; }
-        p { margin: 15px 0; line-height: 1.6; }
+        h1 { font-size: 32px; font-weight: 500; border-bottom: 1px solid #a2a9b1; margin-bottom: 20px; padding-bottom: 8px; }
+        h2 { font-size: 24px; font-weight: 500; border-bottom: 1px solid #a2a9b1; margin: 30px 0 15px 0; padding-bottom: 5px; }
+        p { margin: 15px 0; }
         a { color: #0645ad; text-decoration: none; }
-        a:hover { text-decoration: underline; }
-        .info { background: #f8f9fa; border-left: 4px solid #0645ad; padding: 12px 20px; margin: 20px 0; font-size: 14px; }
+        a:hover { text-decoration: underline; color: #ff6b00; }
+        .info { background: #f8f9fa; border-left: 4px solid #ff6b00; padding: 12px 20px; margin: 20px 0; }
         .warning { background: #fff3e0; border-left-color: #ff9800; }
         .toc { background: #f8f9fa; border: 1px solid #a2a9b1; padding: 12px 20px; margin: 20px 0; display: inline-block; width: 280px; }
-        .toc h3 { margin: 0 0 8px 0; font-size: 16px; }
+        .toc h3 { margin: 0 0 8px 0; }
         .toc ul { margin-left: 20px; }
         code { background: #f4f4f4; padding: 2px 6px; border-radius: 3px; font-family: 'Consolas', monospace; font-size: 14px; }
         pre { background: #2d2d2d; color: #f8f8f2; padding: 15px; overflow-x: auto; border-radius: 5px; margin: 20px 0; }
-        pre code { background: none; padding: 0; }
+        pre code { background: none; padding: 0; color: inherit; }
         table { width: 100%; border-collapse: collapse; margin: 20px 0; }
         th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
         th { background: #f4f4f4; }
         .nav { margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid #ddd; }
         .nav a { margin-right: 20px; }
         .footer { margin-top: 40px; padding-top: 15px; border-top: 1px solid #ddd; font-size: 12px; color: #666; }
+        .ad-container { margin: 30px 0; padding: 15px; background: #f8f9fa; border: 1px solid #eaecf0; border-radius: 8px; text-align: center; min-height: 130px; }
+        .ad-label { font-size: 11px; color: #72777d; margin-bottom: 10px; text-transform: uppercase; }
         @media (max-width: 768px) { .page { padding: 20px; } .toc { width: 100%; } }
     </style>
+    <script src="https://yandex.ru/ads/system/context.js" async></script>
 </head>
 <body>
     <div class="page">
@@ -36,6 +40,9 @@
             <a href="../index.html">🏠 Codepedia</a>
             <a href="python.html">Python</a>
             <a href="java.html">Java</a>
+            <a href="javascript.html">JavaScript</a>
+            <a href="go.html">Go</a>
+            <a href="rust.html">Rust</a>
             <a href="sorting.html">Сортировка</a>
         </div>
 
@@ -53,7 +60,6 @@
                 <li><a href="#versions">Стандарты C++</a></li>
                 <li><a href="#applications">Где используется</a></li>
                 <li><a href="#proscons">Плюсы и минусы</a></li>
-                <li><a href="#memory">Управление памятью</a></li>
             </ul>
         </div>
 
@@ -66,7 +72,6 @@
             <li><strong>Прямой доступ к памяти</strong> — указатели, ручное управление</li>
             <li><strong>Zero-cost абстракции</strong> — абстракции не замедляют код</li>
             <li><strong>RAII</strong> — автоматическое управление ресурсами через конструкторы/деструкторы</li>
-            <li><strong>Мультипарадигмальность</strong> — ООП, обобщённое, функциональное программирование</li>
         </ul>
 
         <h2 id="example">💻 Пример кода (современный C++17)</h2>
@@ -74,7 +79,6 @@
 #include &lt;vector&gt;
 #include &lt;memory&gt;
 #include &lt;optional&gt;
-#include &lt;algorithm&gt;
 
 // Функция с std::optional
 std::optional&lt;int&gt; safe_divide(int a, int b) {
@@ -83,60 +87,48 @@ std::optional&lt;int&gt; safe_divide(int a, int b) {
 }
 
 // Класс с RAII
-template&lt;typename T&gt;
-class SafeArray {
+class Developer {
 private:
-    std::unique_ptr&lt;T[]&gt; data;
-    size_t size_;
+    std::string name;
+    std::string language;
     
 public:
-    explicit SafeArray(size_t size) 
-        : data(std::make_unique&lt;T[]&gt;(size)), size_(size) {
-        std::cout &lt;&lt; "Создан массив из " &lt;&lt; size &lt;&lt; " элементов\n";
-    }
+    Developer(std::string n, std::string lang) : name(n), language(lang) {}
     
-    T&amp; operator[](size_t index) {
-        if (index >= size_) throw std::out_of_range("Индекс за пределами");
-        return data[index];
+    void code() const {
+        std::cout &lt;&lt; name &lt;&lt; " пишет на " &lt;&lt; language &lt;&lt; std::endl;
     }
-    
-    size_t size() const { return size_; }
 };
 
-// Lambda-выражение
-auto square = [](int x) { return x * x; };
-
 int main() {
-    std::cout &lt;&lt; "🚀 Современный C++\n";
+    std::cout &lt;&lt; "Hello, Codepedia!" &lt;&lt; std::endl;
     
-    // Умные указатели (вместо new/delete)
+    // Умные указатели
     auto ptr = std::make_unique&lt;int&gt;(42);
-    std::cout &lt;&lt; "*ptr = " &lt;&lt; *ptr &lt;&lt; '\n';
     
-    // STL контейнеры и алгоритмы
+    // STL контейнеры
     std::vector&lt;int&gt; numbers = {1, 2, 3, 4, 5};
-    std::vector&lt;int&gt; squares;
-    std::transform(numbers.begin(), numbers.end(), 
-                   std::back_inserter(squares), square);
-    
-    for (int n : squares) {
-        std::cout &lt;&lt; n &lt;&lt; " ";
+    for (int n : numbers) {
+        std::cout &lt;&lt; n &lt;&lt; "^2 = " &lt;&lt; n*n &lt;&lt; std::endl;
     }
-    std::cout &lt;&lt; '\n';
     
-    // SafeArray с RAII
-    SafeArray&lt;int&gt; arr(5);
-    for (int i = 0; i &lt; arr.size(); ++i) {
-        arr[i] = i * i;
-    }
+    // Использование класса
+    Developer dev("Максим", "C++");
+    dev.code();
     
     // Безопасное деление
     if (auto result = safe_divide(10, 2)) {
-        std::cout &lt;&lt; "10 / 2 = " &lt;&lt; *result &lt;&lt; '\n';
+        std::cout &lt;&lt; "10 / 2 = " &lt;&lt; *result &lt;&lt; std::endl;
     }
     
     return 0;
 }</code></pre>
+
+        <!-- Реклама -->
+        <div class="ad-container">
+            <div class="ad-label">Реклама</div>
+            <div id="yandex_rtb_cpp"></div>
+        </div>
 
         <h2 id="versions">📅 Стандарты C++</h2>
         <table>
@@ -146,19 +138,17 @@ int main() {
                 <tr><td>C++11</td><td>2011</td><td>auto, умные указатели, лямбды, move-семантика</td></tr>
                 <tr><td>C++14</td><td>2014</td><td>Обобщённые лямбды, make_unique</td></tr>
                 <tr><td>C++17</td><td>2017</td><td>structured bindings, optional, filesystem</td></tr>
-                <tr><td>C++20</td><td>2020</td><td>Концепты, ranges, корутины, модули</td></tr>
-                <tr><td>C++23</td><td>2023</td><td>std::expected, std::mdspan, deducing this</td></tr>
+                <tr><td>C++20</td><td>2020</td><td>Концепты, ranges, корутины</td></tr>
             </tbody>
         </table>
 
         <h2 id="applications">🎮 Где используется C++</h2>
         <ul>
-            <li><strong>🎮 Игровые движки</strong> — Unreal Engine, Unity (C++ core), CryEngine</li>
+            <li><strong>🎮 Игровые движки</strong> — Unreal Engine, Unity (C++ core)</li>
             <li><strong>⚡ Финансовые системы</strong> — HFT-трейдинг (High-Frequency Trading)</li>
-            <li><strong>🖥️ Операционные системы</strong> — Windows (ядро), Linux (драйверы), macOS</li>
-            <li><strong>🔧 Встраиваемые системы</strong> — автопилоты, робототехника, IoT</li>
+            <li><strong>🖥️ Операционные системы</strong> — Windows ядро, драйверы</li>
+            <li><strong>🔧 Встраиваемые системы</strong> — автопилоты, робототехника</li>
             <li><strong>🌐 Браузеры</strong> — Chrome (Blink), Firefox (Gecko)</li>
-            <li><strong>🗄️ Базы данных</strong> — MySQL, PostgreSQL, MongoDB (ядро)</li>
         </ul>
 
         <h2 id="proscons">📊 Плюсы и минусы</h2>
@@ -168,38 +158,27 @@ int main() {
                 <tr><td>Максимальная производительность</td><td>Очень сложный синтаксис</td></tr>
                 <tr><td>Полный контроль над памятью</td><td>Долгая компиляция</td></tr>
                 <tr><td>Огромное количество legacy кода</td><td>Легко получить утечки памяти</td></tr>
-                <tr><td>Работает везде (от MCU до суперкомпьютеров)</td><td>Громоздкая система сборки (CMake, Make)</td></tr>
-                <tr><td>Нет зависимостей от рантайма</td><td>Сложная отладка</td></tr>
+                <tr><td>Работает везде (от MCU до суперкомпьютеров)</td><td>Громоздкая система сборки</td></tr>
             </tbody>
         </table>
-
-        <h2 id="memory">🗃️ Управление памятью в C++</h2>
-        <pre><code>// ❌ ПЛОХО: ручное управление (старый стиль)
-int* raw_ptr = new int(10);
-delete raw_ptr;  // Если забудете — утечка!
-
-// ✅ ХОРОШО: умные указатели (современный стиль)
-auto smart = std::make_unique&lt;int&gt;(10);
-// удалится автоматически при выходе из области видимости
-
-// 🔄 Идиома RAII для любых ресурсов
-class FileHandle {
-    FILE* f;
-public:
-    FileHandle(const char* name) : f(fopen(name, "r")) {}
-    ~FileHandle() { if (f) fclose(f); }  // Автоматическое закрытие
-    // Запрещаем копирование
-    FileHandle(const FileHandle&) = delete;
-    FileHandle& operator=(const FileHandle&) = delete;
-};</code></pre>
 
         <div class="info">
             <strong>💡 Совет:</strong> Для новых проектов используйте как минимум C++17. Если важна безопасность памяти — рассмотрите Rust.
         </div>
 
         <div class="footer">
-            <a href="#">✏️ Редактировать</a> | <a href="#">История</a> | <a href="#">Обсуждение</a> | Последнее обновление: 26 апреля 2026
+            <a href="#">✏️ Редактировать</a> | <a href="#">📜 История</a> | <a href="#">💬 Обсуждение</a> | Последнее обновление: 26 апреля 2026
         </div>
     </div>
+
+    <script>
+        window.yaContextCb = window.yaContextCb || [];
+        window.yaContextCb.push(() => {
+            Ya.Context.AdvManager.render({
+                blockId: 'R-A-19168047-6',
+                renderTo: 'yandex_rtb_cpp'
+            });
+        });
+    </script>
 </body>
 </html>
