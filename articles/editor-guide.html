@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Руководство редактора — Codepedia</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Georgia', 'Times New Roman', serif; background: #f6f6f6; line-height: 1.5; }
+        .page { max-width: 1000px; margin: 0 auto; background: white; padding: 30px 40px; box-shadow: 0 0 8px rgba(0,0,0,0.1); }
+        h1 { font-size: 32px; font-weight: normal; border-bottom: 1px solid #a2a9b1; margin-bottom: 20px; padding-bottom: 8px; }
+        h2 { font-size: 24px; font-weight: normal; border-bottom: 1px solid #a2a9b1; margin: 30px 0 15px 0; padding-bottom: 5px; }
+        h3 { font-size: 20px; font-weight: normal; margin: 20px 0 10px 0; }
+        p { margin: 15px 0; line-height: 1.6; }
+        a { color: #0645ad; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        .info { background: #f8f9fa; border-left: 4px solid #0645ad; padding: 12px 20px; margin: 20px 0; }
+        .warning { background: #fff3e0; border-left-color: #ff9800; }
+        .success { background: #e8f5e9; border-left-color: #4caf50; }
+        .toc { background: #f8f9fa; border: 1px solid #a2a9b1; padding: 12px 20px; margin: 20px 0; display: inline-block; width: 280px; }
+        code { background: #f4f4f4; padding: 2px 6px; border-radius: 3px; font-family: 'Consolas', monospace; }
+        pre { background: #2d2d2d; color: #f8f8f2; padding: 15px; overflow-x: auto; border-radius: 5px; margin: 20px 0; }
+        pre code { background: none; padding: 0; }
+        .nav { margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid #ddd; }
+        .nav a { margin-right: 20px; }
+        .footer { margin-top: 40px; padding-top: 15px; border-top: 1px solid #ddd; font-size: 12px; color: #666; }
+        .step { margin: 25px 0; padding: 15px; background: #f8f9fa; border-left: 3px solid #0645ad; }
+        .step h3 { margin: 0 0 10px 0; }
+        @media (max-width: 768px) { .page { padding: 20px; } .toc { width: 100%; } }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <div class="nav">
+            <a href="../index.html">🏠 Codepedia</a>
+            <a href="python.html">Python</a>
+            <a href="cpp.html">C++</a>
+            <a href="sorting.html">Сортировка</a>
+        </div>
+
+        <h1>Руководство редактора Codepedia</h1>
+
+        <div class="info">
+            <strong>📖 Добро пожаловать!</strong> Это руководство поможет вам добавлять и редактировать статьи в энциклопедии.
+        </div>
+
+        <div class="toc">
+            <h3>Содержание</h3>
+            <ul>
+                <li><a href="#how-to-edit">Как редактировать</a></li>
+                <li><a href="#how-to-add">Как добавить статью</a></li>
+                <li><a href="#discuss">Обсуждение статей</a></li>
+                <li><a href="#rules">Правила оформления</a></li>
+                <li><a href="#template">Шаблон статьи</a></li>
+            </ul>
+        </div>
+
+        <h2 id="how-to-edit">✏️ Как редактировать существующую статью</h2>
+
+        <div class="step">
+            <h3>Способ 1: Через сайт (быстро)</h3>
+            <p>1. Откройте любую статью на Codepedia</p>
+            <p>2. Прокрутите вниз до подвала страницы</p>
+            <p>3. Нажмите ссылку <strong>"✏️ Редактировать"</strong></p>
+            <p>4. Вас перенаправит на GitHub</p>
+            <p>5. Нажмите значок карандаша и внесите правки</p>
+            <p>6. Напишите краткое описание изменения</p>
+            <p>7. Нажмите <strong>"Commit changes"</strong></p>
+        </div>
+
+        <div class="step">
+            <h3>Способ 2: Через GitHub</h3>
+            <p>1. Перейдите в <a href="https://github.com/bobrturbopetr-cyber/codepedia">репозиторий</a></p>
+            <p>2. Откройте папку <code>articles/</code></p>
+            <p>3. Найдите нужный файл (например, <code>python.html</code>)</p>
+            <p>4. Нажмите на него, затем на значок ✏️</p>
+            <p>5. Внесите изменения и сохраните</p>
+        </div>
+
+        <div class="info success">
+            <strong>✅ Совет:</strong> Все изменения сразу применяются к сайту. Если хотите сначала обсудить — создайте Issue.
+        </div>
+
+        <h2 id="how-to-add">➕ Как добавить новую статью</h2>
+
+        <div class="step">
+            <h3>Быстрый способ (через GitHub)</h3>
+            <p>1. Перейдите в папку <code>articles/</code> репозитория</p>
+            <p>2. Нажмите <strong>"Add file"</strong> → <strong>"Create new file"</strong></p>
+            <p>3. Назовите: <code>название.html</code> (латиница, например <code>golang.html</code>)</p>
+            <p>4. Скопируйте <a href="#template">шаблон статьи</a> ниже</p>
+            <p>5. Заполните содержимое</p>
+            <p>6. Добавьте ссылку на статью в <code>index.html</code></p>
+            <p>7. Нажмите <strong>"Commit new file"</strong></p>
+        </div>
+
+        <div class="step">
+            <h3>Полный способ (с локальной проверкой)</h3>
+            <pre><code># Клонируйте репозиторий
+git clone https://github.com/bobrturbopetr-cyber/codepedia.git
+cd codepedia
+
+# Создайте ветку для вашей статьи
+git checkout -b my-new-article
+
+# Скопируйте шаблон
+cp articles/python.html articles/my-article.html
+
+# Отредактируйте файл
+# ... внесите изменения ...
+
+# Добавьте в Git
+git add articles/my-article.html
+git commit -m "Добавлена статья: моя статья"
+
+# Отправьте изменения
+git push origin my-new-article
+
+# Создайте Pull Request на GitHub</code></pre>
+        </div>
+
+        <h2 id="discuss">💬 Система обсуждения статей</h2>
+
+        <p>Каждая статья может быть обсуждена через <strong>GitHub Issues</strong>.</p>
+
+        <h3>Как обсудить статью:</h3>
+        <ul>
+            <li>Перейдите на <a href="https://github.com/bobrturbopetr-cyber/codepedia/issues">вкладку Issues</a></li>
+            <li>Нажмите <strong>"New issue"</strong></li>
+            <li>Выберите тип:
+                <ul>
+                    <li><strong>📝 Предложение статьи</strong> — для новых тем</li>
+                    <li><strong>✏️ Правка статьи</strong> — для исправлений</li>
+                    <li><strong>💬 Обсуждение</strong> — для вопросов</li>
+                </ul>
+            </li>
+            <li>Напишите название и описание</li>
+            <li>Нажмите <strong>"Submit new issue"</strong></li>
+        </ul>
+
+        <div class="info">
+            <strong>💡 Подсказка:</strong> Используйте метки (@mentions), чтобы позвать других редакторов.
+        </div>
+
+        <h3>Где найти обсуждение конкретной статьи?</h3>
+        <p>В подвале каждой статьи есть ссылка <strong>"💬 Обсуждение"</strong>. Она ведёт на Issue, связанный с этой статьёй.</p>
+
+        <h2 id="rules">📏 Правила оформления статей</h2>
+
+        <h3>Заголовки</h3>
+        <ul>
+            <li><code>h1</code> — только один на странице, название статьи</li>
+            <li><code>h2</code> — основные разделы (добавляются в оглавление)</li>
+            <li><code>h3</code> — подразделы внутри <code>h2</code></li>
+        </ul>
+
+        <h3>Код</h3>
+        <ul>
+            <li>Короткий код внутри строки: <code>&lt;code&gt;код&lt;/code&gt;</code></li>
+            <li>Блоки кода: <code>&lt;pre&gt;&lt;code&gt;...&lt;/code&gt;&lt;/pre&gt;</code></li>
+            <li>Всегда указывайте язык (через комментарий, если нужно)</li>
+        </ul>
+
+        <h3>Оглавление (TOC)</h3>
+        <ul>
+            <li>Добавляйте сразу после краткого описания</li>
+            <li>Ссылки должны вести на <code>id</code> разделов</li>
+            <li>Пример: <code>&lt;a href="#features"&gt;Особенности&lt;/a&gt;</code> и <code>&lt;h2 id="features"&gt;✨ Особенности&lt;/h2&gt;</code></li>
+        </ul>
+
+        <h3>Инфоблоки</h3>
+        <ul>
+            <li>Обычный: <code>&lt;div class="info"&gt;...&lt;/div&gt;</code></li>
+            <li>Предупреждение: <code>&lt;div class="warning"&gt;...&lt;/div&gt;</code></li>
+            <li>Успех/совет: <code>&lt;div class="success"&gt;...&lt;/div&gt;</code></li>
+        </ul>
+
+        <h3>Ссылки</h3>
+        <ul>
+            <li>На другие статьи Codepedia: <code>&lt;a href="python.html"&gt;Python&lt;/a&gt;</code></li>
+            <li>На главную: <code>&lt;a href="../index.html"&gt;🏠 Главная&lt;/a&gt;</code></li>
+            <li>Внешние ссылки: <code>&lt;a href="https://..." target="_blank"&gt;...&lt;/a&gt;</code></li>
+        </ul>
+
+        <h2 id="template">📄 Шаблон статьи</h2>
+
+        <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="ru"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;title&gt;Название — Codepedia&lt;/title&gt;
+    &lt;style&gt;
+        /* скопируйте стили из существующей статьи */
+    &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;div class="page"&gt;
+        &lt;div class="nav"&gt;
+            &lt;a href="../index.html"&gt;🏠 Codepedia&lt;/a&gt;
+            &lt;a href="python.html"&gt;Python&lt;/a&gt;
+            &lt;a href="cpp.html"&gt;C++&lt;/a&gt;
+        &lt;/div&gt;
+
+        &lt;h1&gt;Название статьи&lt;/h1&gt;
+
+        &lt;div class="info"&gt;
+            &lt;strong&gt;📌 Кратко:&lt;/strong&gt; Одно-два предложения о чём статья.
+        &lt;/div&gt;
+
+        &lt;div class="toc"&gt;
+            &lt;h3&gt;Содержание&lt;/h3&gt;
+            &lt;ul&gt;
+                &lt;li&gt;&lt;a href="#section1"&gt;Раздел 1&lt;/a&gt;&lt;/li&gt;
+                &lt;li&gt;&lt;a href="#section2"&gt;Раздел 2&lt;/a&gt;&lt;/li&gt;
+                &lt;li&gt;&lt;a href="#example"&gt;Пример кода&lt;/a&gt;&lt;/li&gt;
+            &lt;/ul&gt;
+        &lt;/div&gt;
+
+        &lt;h2 id="section1"&gt;✨ Раздел 1&lt;/h2&gt;
+        &lt;p&gt;Текст раздела...&lt;/p&gt;
+
+        &lt;h2 id="section2"&gt;📖 Раздел 2&lt;/h2&gt;
+        &lt;ul&gt;
+            &lt;li&gt;Пункт 1&lt;/li&gt;
+            &lt;li&gt;Пункт 2&lt;/li&gt;
+        &lt;/ul&gt;
+
+        &lt;h2 id="example"&gt;💻 Пример кода&lt;/h2&gt;
+        &lt;pre&gt;&lt;code&gt;
+// ваш код здесь
+        &lt;/code&gt;&lt;/pre&gt;
+
+        &lt;div class="footer"&gt;
+            &lt;a href="#"&gt;✏️ Редактировать&lt;/a&gt; | 
+            &lt;a href="#"&gt;📜 История&lt;/a&gt; | 
+            &lt;a href="#"&gt;💬 Обсуждение&lt;/a&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+        <h2 id="tips">💡 Полезные советы</h2>
+
+        <ul>
+            <li><strong>Проверяйте код</strong> — примеры должны работать</li>
+            <li><strong>Пишите понятно</strong> — представьте, что читает новичок</li>
+            <li><strong>Обновляйте дату</strong> — в подвале статьи укажите день редактирования</li>
+            <li><strong>Используйте эмодзи</strong> — они делают заголовки нагляднее: ✨ 📖 💻 🎯 ⚠️ ✅ ❌</li>
+            <li><strong>Добавляйте ссылки</strong> — связывайте статьи друг с другом</li>
+        </ul>
+
+        <div class="warning">
+            <strong>⚠️ Важно:</strong> Не добавляйте рекламу, спам или оскорбительный контент. Мы — свободная энциклопедия, но с правилами.
+        </div>
+
+        <div class="footer">
+            <a href="#">✏️ Редактировать эту инструкцию</a> | 
+            <a href="#">💬 Обсудить руководство</a> | 
+            Последнее обновление: 26 апреля 2026
+        </div>
+    </div>
+</body>
+</html>
