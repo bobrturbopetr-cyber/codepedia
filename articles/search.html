@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Алгоритмы поиска: линейный поиск, бинарный поиск, хеш-таблицы. Реализация на Python и C++.">
+    <title>Алгоритмы поиска — Codepedia</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif; background: #f6f6f6; line-height: 1.6; }
+        .page { max-width: 1000px; margin: 0 auto; background: white; padding: 30px 40px; box-shadow: 0 0 8px rgba(0,0,0,0.1); }
+        h1 { font-size: 32px; font-weight: 500; border-bottom: 1px solid #a2a9b1; margin-bottom: 20px; padding-bottom: 8px; }
+        h2 { font-size: 24px; font-weight: 500; border-bottom: 1px solid #a2a9b1; margin: 30px 0 15px 0; padding-bottom: 5px; }
+        p { margin: 15px 0; }
+        a { color: #0645ad; text-decoration: none; }
+        a:hover { text-decoration: underline; color: #ff6b00; }
+        .info { background: #f8f9fa; border-left: 4px solid #ff6b00; padding: 12px 20px; margin: 20px 0; }
+        .toc { background: #f8f9fa; border: 1px solid #a2a9b1; padding: 12px 20px; margin: 20px 0; display: inline-block; width: 280px; }
+        .toc h3 { margin: 0 0 8px 0; }
+        .toc ul { margin-left: 20px; }
+        code { background: #f4f4f4; padding: 2px 6px; border-radius: 3px; font-family: 'Consolas', monospace; font-size: 14px; }
+        pre { background: #2d2d2d; color: #f8f8f2; padding: 15px; overflow-x: auto; border-radius: 5px; margin: 20px 0; }
+        pre code { background: none; padding: 0; color: inherit; }
+        .nav { margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid #ddd; }
+        .nav a { margin-right: 20px; }
+        .footer { margin-top: 40px; padding-top: 15px; border-top: 1px solid #ddd; font-size: 12px; color: #666; }
+        .ad-container { margin: 30px 0; padding: 15px; background: #f8f9fa; border: 1px solid #eaecf0; border-radius: 8px; text-align: center; min-height: 130px; }
+        .ad-label { font-size: 11px; color: #72777d; margin-bottom: 10px; text-transform: uppercase; }
+        @media (max-width: 768px) { .page { padding: 20px; } .toc { width: 100%; } }
+    </style>
+    <script src="https://yandex.ru/ads/system/context.js" async></script>
+</head>
+<body>
+    <div class="page">
+        <div class="nav">
+            <a href="../index.html">🏠 Codepedia</a>
+            <a href="sorting.html">Сортировка</a>
+            <a href="graphs.html">Графы</a>
+            <a href="python.html">Python</a>
+            <a href="cpp.html">C++</a>
+        </div>
+
+        <h1>Алгоритмы поиска</h1>
+
+        <div class="info">
+            <strong>📚 Определение:</strong> Поиск — нахождение элемента в структуре данных. Одна из базовых задач программирования.
+        </div>
+
+        <div class="toc">
+            <h3>Содержание</h3>
+            <ul>
+                <li><a href="#linear">Линейный поиск</a></li>
+                <li><a href="#binary">Бинарный поиск</a></li>
+                <li><a href="#hash">Хеш-таблицы</a></li>
+                <li><a href="#comparison">Сравнение сложности</a></li>
+            </ul>
+        </div>
+
+        <h2 id="linear">🔍 Линейный поиск (Linear Search)</h2>
+        <p>Самый простой алгоритм. Последовательно перебирает все элементы. Работает на любом массиве.</p>
+        <pre><code>def linear_search(arr, target):
+    """Возвращает индекс элемента или -1"""
+    for i, val in enumerate(arr):
+        if val == target:
+            return i
+    return -1
+
+# Пример
+arr = [5, 2, 8, 1, 9]
+print(linear_search(arr, 8))  # Вывод: 2</code></pre>
+        <pre><code>// C++ версия
+int linear_search(const std::vector<int>& arr, int target) {
+    for (size_t i = 0; i < arr.size(); i++) {
+        if (arr[i] == target) return i;
+    }
+    return -1;
+}</code></pre>
+
+        <h2 id="binary">🎯 Бинарный поиск (Binary Search)</h2>
+        <p>Работает только на <strong>отсортированном</strong> массиве. Делит массив пополам на каждом шаге. Сложность O(log n).</p>
+        <pre><code>def binary_search(arr, target):
+    """Бинарный поиск на отсортированном массиве"""
+    left, right = 0, len(arr) - 1
+    
+    while left <= right:
+        mid = (left + right) // 2
+        
+        if arr[mid] == target:
+            return mid
+        elif arr[mid] < target:
+            left = mid + 1
+        else:
+            right = mid - 1
+    
+    return -1
+
+# Пример
+arr = [1, 2, 5, 8, 9, 12, 15]
+print(binary_search(arr, 8))  # Вывод: 3</code></pre>
+
+        <!-- Реклама -->
+        <div class="ad-container">
+            <div class="ad-label">Реклама</div>
+            <div id="yandex_rtb_search"></div>
+        </div>
+
+        <h2 id="hash">🗂️ Хеш-таблицы (Hash Tables)</h2>
+        <p>Поиск за O(1) в среднем. Использует хеш-функцию для прямого доступа к элементу.</p>
+        <pre><code># Python словарь (хеш-таблица)
+lookup = {
+    "apple": 1,
+    "banana": 2,
+    "cherry": 3
+}
+
+# Поиск за O(1)
+print(lookup.get("banana"))  # Вывод: 2
+
+# Проверка наличия
+if "apple" in lookup:
+    print("Яблоко найдено!")</code></pre>
+
+        <h2 id="comparison">📊 Сравнение сложности</h2>
+        <table>
+            <thead>
+                <tr><th>Алгоритм</th><th>Время (лучшее)</th><th>Время (среднее)</th><th>Время (худшее)</th><th>Требования</th></tr>
+            </thead>
+            <tbody>
+                <tr><td
