@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Java — объектно-ориентированный язык, работающий на JVM. Кроссплатформенность и огромная экосистема.">
+    <title>Java — Codepedia</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif; background: #f6f6f6; line-height: 1.6; }
+        .page { max-width: 1000px; margin: 0 auto; background: white; padding: 30px 40px; box-shadow: 0 0 8px rgba(0,0,0,0.1); }
+        h1 { font-size: 32px; font-weight: 500; border-bottom: 1px solid #a2a9b1; margin-bottom: 20px; padding-bottom: 8px; }
+        h2 { font-size: 24px; font-weight: 500; border-bottom: 1px solid #a2a9b1; margin: 30px 0 15px 0; padding-bottom: 5px; }
+        p { margin: 15px 0; }
+        a { color: #0645ad; text-decoration: none; }
+        a:hover { text-decoration: underline; color: #ff6b00; }
+        .info { background: #f8f9fa; border-left: 4px solid #ff6b00; padding: 12px 20px; margin: 20px 0; }
+        .toc { background: #f8f9fa; border: 1px solid #a2a9b1; padding: 12px 20px; margin: 20px 0; display: inline-block; width: 280px; }
+        .toc h3 { margin: 0 0 8px 0; }
+        .toc ul { margin-left: 20px; }
+        code { background: #f4f4f4; padding: 2px 6px; border-radius: 3px; font-family: 'Consolas', monospace; font-size: 14px; }
+        pre { background: #2d2d2d; color: #f8f8f2; padding: 15px; overflow-x: auto; border-radius: 5px; margin: 20px 0; }
+        pre code { background: none; padding: 0; color: inherit; }
+        .nav { margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid #ddd; }
+        .nav a { margin-right: 20px; }
+        .footer { margin-top: 40px; padding-top: 15px; border-top: 1px solid #ddd; font-size: 12px; color: #666; }
+        .ad-container { margin: 30px 0; padding: 15px; background: #f8f9fa; border: 1px solid #eaecf0; border-radius: 8px; text-align: center; min-height: 130px; }
+        .ad-label { font-size: 11px; color: #72777d; margin-bottom: 10px; text-transform: uppercase; }
+        @media (max-width: 768px) { .page { padding: 20px; } .toc { width: 100%; } }
+    </style>
+    <script src="https://yandex.ru/ads/system/context.js" async></script>
+</head>
+<body>
+    <div class="page">
+        <div class="nav">
+            <a href="../index.html">🏠 Codepedia</a>
+            <a href="python.html">Python</a>
+            <a href="cpp.html">C++</a>
+            <a href="javascript.html">JavaScript</a>
+            <a href="go.html">Go</a>
+            <a href="rust.html">Rust</a>
+        </div>
+
+        <h1>Java</h1>
+
+        <div class="info">
+            <strong>📌 Кратко:</strong> Объектно-ориентированный язык, работающий на JVM. Девиз: "Write once, run anywhere". Создан в Sun Microsystems в 1995 году.
+        </div>
+
+        <div class="toc">
+            <h3>Содержание</h3>
+            <ul>
+                <li><a href="#features">Особенности</a></li>
+                <li><a href="#example">Пример кода</a></li>
+                <li><a href="#versions">Версии Java</a></li>
+                <li><a href="#applications">Где используется</a></li>
+            </ul>
+        </div>
+
+        <p><strong>Java</strong> — строго типизированный объектно-ориентированный язык. Программы компилируются в байт-код, который выполняется на Java Virtual Machine (JVM), что обеспечивает кроссплатформенность.</p>
+
+        <h2 id="features">✨ Особенности</h2>
+        <ul>
+            <li><strong>JVM</strong> — код работает на любой платформе с JVM</li>
+            <li><strong>Сборщик мусора</strong> — автоматическое управление памятью</li>
+            <li><strong>Многопоточность</strong> — встроенная поддержка потоков</li>
+            <li><strong>Безопасность</strong> — строгая типизация, защита от утечек</li>
+            <li><strong>Огромная экосистема</strong> — Spring, Hibernate, Maven, Gradle</li>
+        </ul>
+
+        <h2 id="example">💻 Пример кода</h2>
+        <pre><code>// Hello World
+public class Main {
+    public static void main(String[] args) {
+        System.out.println("Hello, Codepedia!");
+    }
+}
+
+// Класс с ООП
+public class Developer {
+    private String name;
+    private String language;
+    
+    public Developer(String name, String language) {
+        this.name = name;
+        this.language = language;
+    }
+    
+    public void code() {
+        System.out.println(name + " пишет на " + language);
+    }
+    
+    public static void main(String[] args) {
+        Developer dev = new Developer("Максим", "Java");
+        dev.code();
+        
+        // Stream API (Java 8+)
+        var languages = java.util.List.of("Java", "Python", "C++");
+        languages.stream()
+                 .filter(lang -> lang.startsWith("J"))
+                 .forEach(System.out::println);
+    }
+}</code></pre>
+
+        <!-- Реклама -->
+        <div class="ad-container">
+            <div class="ad-label">Реклама</div>
+            <div id="yandex_rtb_java"></div>
+        </div>
+
+        <h2 id="versions">📅 Версии Java (LTS)</h2>
+        <table>
+            <thead><tr><th>Версия</th><th>Год</th><th>Нововведения</th></tr></thead>
+            <tbody>
+                <tr><td>Java 8</td><td>2014</td><td>Лямбды, Stream API, Optional</td></tr>
+                <tr><td>Java 11</td><td>2018</td><td>HTTP Client, Local-Variable Syntax</td></tr>
+                <tr><td>Java 17</td><td>2021</td><td>Sealed classes, Pattern matching</td></tr>
+                <tr><td>Java 21</td><td>2023</td><td>Virtual threads, Record patterns</td></tr>
+            </tbody>
+        </table>
+
+        <h2 id="applications">🎯 Где используется Java</h2>
+        <ul>
+            <li><strong>Корпоративные приложения</strong> — банки, CRM, ERP (Spring Boot)</li>
+            <li><strong>Android-разработка</strong> — официальный язык для Android</li>
+            <li><strong>Big Data</strong> — Hadoop, Spark, Elasticsearch</li>
+            <li><strong>Веб-приложения</strong> — серверная часть на Spring</li>
+            <li><strong>Финансовые системы</strong> — высоконагруженные транзакционные системы</li>
+        </ul>
+
+        <div class="footer">
+            <a href="#">✏️ Редактировать</a> | <a href="#">📜 История</a> | <a href="#">💬 Обсуждение</a> | Последнее обновление: 26 апреля 2026
+        </div>
+    </div>
+
+    <script>
+        window.yaContextCb = window.yaContextCb || [];
+        window.yaContextCb.push(() => {
+            Ya.Context.AdvManager.render({
+                blockId: 'R-A-19168047-6',
+                renderTo: 'yandex_rtb_java'
+            });
+        });
+    </script>
+</body>
+</html>
