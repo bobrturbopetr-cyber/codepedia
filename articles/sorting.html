@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Алгоритмы сортировки — Codepedia</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Georgia', 'Times New Roman', serif; background: #f6f6f6; line-height: 1.5; }
+        .page { max-width: 1000px; margin: 0 auto; background: white; padding: 30px 40px; box-shadow: 0 0 8px rgba(0,0,0,0.1); }
+        h1 { font-size: 32px; font-weight: normal; border-bottom: 1px solid #a2a9b1; margin-bottom: 20px; padding-bottom: 8px; }
+        h2 { font-size: 24px; font-weight: normal; border-bottom: 1px solid #a2a9b1; margin: 30px 0 15px 0; padding-bottom: 5px; }
+        p { margin: 15px 0; }
+        .info { background: #f8f9fa; border-left: 4px solid #0645ad; padding: 12px 20px; margin: 20px 0; }
+        .toc { background: #f8f9fa; border: 1px solid #a2a9b1; padding: 12px 20px; margin: 20px 0; display: inline-block; width: 280px; }
+        code { background: #f4f4f4; padding: 2px 6px; border-radius: 3px; font-family: monospace; }
+        pre { background: #2d2d2d; color: #f8f8f2; padding: 15px; overflow-x: auto; border-radius: 5px; margin: 20px 0; }
+        pre code { background: none; padding: 0; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        th { background: #f4f4f4; }
+        .nav { margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid #ddd; }
+        .nav a { margin-right: 20px; }
+        .footer { margin-top: 40px; padding-top: 15px; border-top: 1px solid #ddd; font-size: 12px; }
+        @media (max-width: 768px) { .page { padding: 20px; } .toc { width: 100%; } }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <div class="nav">
+            <a href="../index.html">🏠 Codepedia</a>
+            <a href="python.html">Python</a>
+            <a href="cpp.html">C++</a>
+            <a href="javascript.html">JavaScript</a>
+        </div>
+
+        <h1>Алгоритмы сортировки</h1>
+
+        <div class="info">
+            <strong>📚 Определение:</strong> Сортировка — упорядочивание элементов коллекции по заданному правилу.
+        </div>
+
+        <div class="toc">
+            <h3>Содержание</h3>
+            <ul>
+                <li><a href="#complexity">Сравнение сложности</a></li>
+                <li><a href="#quick">Быстрая сортировка</a></li>
+                <li><a href="#merge">Сортировка слиянием</a></li>
+                <li><a href="#bubble">Пузырьковая сортировка</a></li>
+                <li><a href="#choice">Что выбрать</a></li>
+            </ul>
+        </div>
+
+        <h2 id="complexity">📊 Сравнение сложности</h2>
+        <table>
+            <thead><tr><th>Алгоритм</th><th>Лучший</th><th>Средний</th><th>Худший</th><th>Память</th></tr></thead>
+            <tbody>
+                <tr><td>Quicksort</td><td>O(n log n)</td><td>O(n log n)</td><td>O(n²)</td><td>O(log n)</td></tr>
+                <tr><td>Mergesort</td><td>O(n log n)</td><td>O(n log n)</td><td>O(n log n)</td><td>O(n)</td></tr>
+                <tr><td>Heapsort</td><td>O(n log n)</td><td>O(n log n)</td><td>O(n log n)</td><td>O(1)</td></tr>
+                <tr><td>Bubblesort</td><td>O(n)</td><td>O(n²)</td><td>O(n²)</td><td>O(1)</td></tr>
+                <tr><td>Insertion sort</td><td>O(n)</td><td>O(n²)</td><td>O(n²)</td><td>O(1)</td></tr>
+            </tbody>
+        </table>
+
+        <h2 id="quick">🚀 Быстрая сортировка (Quicksort)</h2>
+        <pre><code>def quicksort(arr):
+    if len(arr) <= 1:
+        return arr
+    pivot = arr[len(arr) // 2]
+    left = [x for x in arr if x < pivot]
+    middle = [x for x in arr if x == pivot]
+    right = [x for x in arr if x > pivot]
+    return quicksort(left) + middle + quicksort(right)</code></pre>
+
+        <h2 id="merge">🔗 Сортировка слиянием (Mergesort)</h2>
+        <pre><code>def merge_sort(arr):
+    if len(arr) <= 1:
+        return arr
+    mid = len(arr) // 2
+    left = merge_sort(arr[:mid])
+    right = merge_sort(arr[mid:])
+    return merge(left, right)
+
+def merge(left, right):
+    result = []
+    i = j = 0
+    while i < len(left) and j < len(right):
+        if left[i] <= right[j]:
+            result.append(left[i])
+            i += 1
+        else:
+            result.append(right[j])
+            j += 1
+    result.extend(left[i:])
+    result.extend(right[j:])
+    return result</code></pre>
+
+        <h2 id="bubble">🐌 Пузырьковая сортировка (Bubblesort)</h2>
+        <pre><code>def bubble_sort(arr):
+    n = len(arr)
+    for i in range(n):
+        swapped = False
+        for j in range(0, n - i - 1):
+            if arr[j] > arr[j + 1]:
+                arr[j], arr[j + 1] = arr[j + 1], arr[j]
+                swapped = True
+        if not swapped:
+            break
+    return arr</code></pre>
+
+        <h2 id="choice">🎯 Что выбрать?</h2>
+        <div class="info">
+            <strong>💡 Совет:</strong> Всегда используйте встроенную сортировку языка:<br>
+            Python: <code>list.sort()</code> (Timsort) | C++: <code>std::sort</code> | JS: <code>array.sort()</code>
+        </div>
+
+        <div class="footer">
+            <a href="#">✏️ Редактировать</a> | <a href="#">История</a> | Последнее обновление: 26 апреля 2026
+        </div>
+    </div>
+</body>
+</html>
