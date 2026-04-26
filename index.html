@@ -7,11 +7,12 @@
     <meta name="keywords" content="программирование, энциклопедия, python, c++, java, javascript, go, rust, алгоритмы, обучение программированию">
     <meta name="author" content="Codepedia Community">
     <meta name="robots" content="index, follow">
+    <meta name="yandex-verification" content="ваш_код_верификации">
     
     <title>Codepedia — свободная энциклопедия программирования</title>
     <link rel="stylesheet" href="style.css">
     
-    <!-- Яндекс Реклама -->
+    <!-- Яндекс РСЯ реклама -->
     <script src="https://yandex.ru/ads/system/context.js" async></script>
 </head>
 <body>
@@ -121,10 +122,10 @@
                     <a href="articles/oop.html">Объектно-ориентированное программирование (ООП)</a> — парадигма, в которой программа строится как набор взаимосвязанных объектов.
                 </div>
 
-                <!-- Блок рекламы -->
+                <!-- Блок рекламы 1 (верхний) -->
                 <div class="ad-container">
                     <div class="ad-label">Реклама</div>
-                    <div id="yandex_rtb_main"></div>
+                    <div id="yandex_rtb_1"></div>
                 </div>
 
                 <!-- Языки программирования -->
@@ -160,6 +161,12 @@
                         <p>Безопасный системный язык без сборщика мусора. Проверка заимствований на этапе компиляции.</p>
                         <div class="category">#безопасный #системный</div>
                     </div>
+                </div>
+
+                <!-- Блок рекламы 2 (средний) -->
+                <div class="ad-container">
+                    <div class="ad-label">Реклама</div>
+                    <div id="yandex_rtb_2"></div>
                 </div>
 
                 <!-- Алгоритмы -->
@@ -202,6 +209,12 @@
                     </div>
                 </div>
 
+                <!-- Блок рекламы 3 (перед инструментами) -->
+                <div class="ad-container">
+                    <div class="ad-label">Реклама</div>
+                    <div id="yandex_rtb_3"></div>
+                </div>
+
                 <!-- Инструменты -->
                 <h2 class="section-title">🛠️ Инструменты разработчика</h2>
                 <div class="article-grid">
@@ -227,10 +240,10 @@
                     Codepedia создаётся сообществом. Вы можете редактировать существующие статьи, создавать новые и обсуждать изменения.
                 </div>
 
-                <!-- Ещё один блок рекламы -->
+                <!-- Блок рекламы 4 (нижний) -->
                 <div class="ad-container">
                     <div class="ad-label">Реклама</div>
-                    <div id="yandex_rtb_footer"></div>
+                    <div id="yandex_rtb_4"></div>
                 </div>
             </main>
         </div>
@@ -247,6 +260,7 @@
     </div>
 
     <script>
+        // Поиск по статьям
         const searchInput = document.getElementById('searchInput');
         const cards = document.querySelectorAll('.article-card');
         
@@ -270,25 +284,47 @@
             });
         }
 
-        // Яндекс реклама
+        // Яндекс РСЯ реклама - ID сайта 19168047
         window.yaContextCb = window.yaContextCb || [];
+        
         window.yaContextCb.push(() => {
-            if (document.getElementById('yandex_rtb_main')) {
-                Ya.Context.AdvManager.render({
-                    blockId: 'R-A-19168047-1',
-                    renderTo: 'yandex_rtb_main'
-                });
-            }
+            // Реклама в сайдбаре
             if (document.getElementById('yandex_rtb_sidebar')) {
                 Ya.Context.AdvManager.render({
-                    blockId: 'R-A-19168047-2',
+                    blockId: 'R-A-19168047-1',
                     renderTo: 'yandex_rtb_sidebar'
                 });
             }
-            if (document.getElementById('yandex_rtb_footer')) {
+            
+            // Реклама блок 1 (верхний)
+            if (document.getElementById('yandex_rtb_1')) {
+                Ya.Context.AdvManager.render({
+                    blockId: 'R-A-19168047-2',
+                    renderTo: 'yandex_rtb_1'
+                });
+            }
+            
+            // Реклама блок 2 (средний)
+            if (document.getElementById('yandex_rtb_2')) {
                 Ya.Context.AdvManager.render({
                     blockId: 'R-A-19168047-3',
-                    renderTo: 'yandex_rtb_footer'
+                    renderTo: 'yandex_rtb_2'
+                });
+            }
+            
+            // Реклама блок 3
+            if (document.getElementById('yandex_rtb_3')) {
+                Ya.Context.AdvManager.render({
+                    blockId: 'R-A-19168047-4',
+                    renderTo: 'yandex_rtb_3'
+                });
+            }
+            
+            // Реклама блок 4 (нижний)
+            if (document.getElementById('yandex_rtb_4')) {
+                Ya.Context.AdvManager.render({
+                    blockId: 'R-A-19168047-5',
+                    renderTo: 'yandex_rtb_4'
                 });
             }
         });
