@@ -152,12 +152,6 @@ body {
     padding-bottom: 6px;
 }
 
-.content h3 {
-    font-size: 20px;
-    font-weight: 500;
-    margin: 22px 0 12px 0;
-}
-
 .content p {
     margin: 16px 0;
     line-height: 1.65;
@@ -323,17 +317,6 @@ body {
 .footer a:hover {
     text-decoration: underline;
     color: #ff6b00;
-}
-
-/* Рекламные блоки внутри статей */
-.article-ad {
-    margin: 25px 0;
-    padding: 15px;
-    background: #f8f9fa;
-    border: 1px solid #eaecf0;
-    border-radius: 8px;
-    text-align: center;
-    clear: both;
 }
 
 @media (max-width: 900px) {
