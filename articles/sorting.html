@@ -2,27 +2,36 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Алгоритмы сортировки: сравнение сложности, реализация Quicksort, Mergesort, Bubblesort на Python и C++.">
     <title>Алгоритмы сортировки — Codepedia</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Georgia', 'Times New Roman', serif; background: #f6f6f6; line-height: 1.5; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif; background: #f6f6f6; line-height: 1.6; }
         .page { max-width: 1000px; margin: 0 auto; background: white; padding: 30px 40px; box-shadow: 0 0 8px rgba(0,0,0,0.1); }
-        h1 { font-size: 32px; font-weight: normal; border-bottom: 1px solid #a2a9b1; margin-bottom: 20px; padding-bottom: 8px; }
-        h2 { font-size: 24px; font-weight: normal; border-bottom: 1px solid #a2a9b1; margin: 30px 0 15px 0; padding-bottom: 5px; }
+        h1 { font-size: 32px; font-weight: 500; border-bottom: 1px solid #a2a9b1; margin-bottom: 20px; padding-bottom: 8px; }
+        h2 { font-size: 24px; font-weight: 500; border-bottom: 1px solid #a2a9b1; margin: 30px 0 15px 0; padding-bottom: 5px; }
         p { margin: 15px 0; }
-        .info { background: #f8f9fa; border-left: 4px solid #0645ad; padding: 12px 20px; margin: 20px 0; }
+        a { color: #0645ad; text-decoration: none; }
+        a:hover { text-decoration: underline; color: #ff6b00; }
+        .info { background: #f8f9fa; border-left: 4px solid #ff6b00; padding: 12px 20px; margin: 20px 0; }
         .toc { background: #f8f9fa; border: 1px solid #a2a9b1; padding: 12px 20px; margin: 20px 0; display: inline-block; width: 280px; }
-        code { background: #f4f4f4; padding: 2px 6px; border-radius: 3px; font-family: monospace; }
+        .toc h3 { margin: 0 0 8px 0; }
+        .toc ul { margin-left: 20px; }
+        code { background: #f4f4f4; padding: 2px 6px; border-radius: 3px; font-family: 'Consolas', monospace; font-size: 14px; }
         pre { background: #2d2d2d; color: #f8f8f2; padding: 15px; overflow-x: auto; border-radius: 5px; margin: 20px 0; }
-        pre code { background: none; padding: 0; }
+        pre code { background: none; padding: 0; color: inherit; }
         table { width: 100%; border-collapse: collapse; margin: 20px 0; }
         th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
         th { background: #f4f4f4; }
         .nav { margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid #ddd; }
         .nav a { margin-right: 20px; }
-        .footer { margin-top: 40px; padding-top: 15px; border-top: 1px solid #ddd; font-size: 12px; }
+        .footer { margin-top: 40px; padding-top: 15px; border-top: 1px solid #ddd; font-size: 12px; color: #666; }
+        .ad-container { margin: 30px 0; padding: 15px; background: #f8f9fa; border: 1px solid #eaecf0; border-radius: 8px; text-align: center; min-height: 130px; }
+        .ad-label { font-size: 11px; color: #72777d; margin-bottom: 10px; text-transform: uppercase; }
         @media (max-width: 768px) { .page { padding: 20px; } .toc { width: 100%; } }
     </style>
+    <script src="https://yandex.ru/ads/system/context.js" async></script>
 </head>
 <body>
     <div class="page">
@@ -30,60 +39,104 @@
             <a href="../index.html">🏠 Codepedia</a>
             <a href="python.html">Python</a>
             <a href="cpp.html">C++</a>
-            <a href="javascript.html">JavaScript</a>
+            <a href="java.html">Java</a>
+            <a href="search.html">Поиск</a>
+            <a href="graphs.html">Графы</a>
         </div>
 
         <h1>Алгоритмы сортировки</h1>
 
         <div class="info">
-            <strong>📚 Определение:</strong> Сортировка — упорядочивание элементов коллекции по заданному правилу.
+            <strong>📚 Определение:</strong> Сортировка — упорядочивание элементов коллекции по заданному правилу (по возрастанию, убыванию, лексикографически).
         </div>
 
         <div class="toc">
             <h3>Содержание</h3>
             <ul>
                 <li><a href="#complexity">Сравнение сложности</a></li>
-                <li><a href="#quick">Быстрая сортировка</a></li>
-                <li><a href="#merge">Сортировка слиянием</a></li>
-                <li><a href="#bubble">Пузырьковая сортировка</a></li>
+                <li><a href="#quick">Быстрая сортировка (Quicksort)</a></li>
+                <li><a href="#merge">Сортировка слиянием (Mergesort)</a></li>
+                <li><a href="#bubble">Пузырьковая сортировка (Bubblesort)</a></li>
                 <li><a href="#choice">Что выбрать</a></li>
             </ul>
         </div>
 
+        <p>Сортировка — одна из самых изученных задач в Computer Science. От выбора алгоритма зависит производительность вашей программы на больших данных.</p>
+
         <h2 id="complexity">📊 Сравнение сложности</h2>
         <table>
-            <thead><tr><th>Алгоритм</th><th>Лучший</th><th>Средний</th><th>Худший</th><th>Память</th></tr></thead>
+            <thead>
+                <tr><th>Алгоритм</th><th>Лучший</th><th>Средний</th><th>Худший</th><th>Память</th><th>Стабильный</th></tr>
+            </thead>
             <tbody>
-                <tr><td>Quicksort</td><td>O(n log n)</td><td>O(n log n)</td><td>O(n²)</td><td>O(log n)</td></tr>
-                <tr><td>Mergesort</td><td>O(n log n)</td><td>O(n log n)</td><td>O(n log n)</td><td>O(n)</td></tr>
-                <tr><td>Heapsort</td><td>O(n log n)</td><td>O(n log n)</td><td>O(n log n)</td><td>O(1)</td></tr>
-                <tr><td>Bubblesort</td><td>O(n)</td><td>O(n²)</td><td>O(n²)</td><td>O(1)</td></tr>
-                <tr><td>Insertion sort</td><td>O(n)</td><td>O(n²)</td><td>O(n²)</td><td>O(1)</td></tr>
+                <tr><td>Quick Sort</td><td>O(n log n)</td><td>O(n log n)</td><td>O(n²)</td><td>O(log n)</td><td>❌</td></tr>
+                <tr><td>Merge Sort</td><td>O(n log n)</td><td>O(n log n)</td><td>O(n log n)</td><td>O(n)</td><td>✅</td></tr>
+                <tr><td>Heap Sort</td><td>O(n log n)</td><td>O(n log n)</td><td>O(n log n)</td><td>O(1)</td><td>❌</td></tr>
+                <tr><td>Bubble Sort</td><td>O(n)</td><td>O(n²)</td><td>O(n²)</td><td>O(1)</td><td>✅</td></tr>
+                <tr><td>Insertion Sort</td><td>O(n)</td><td>O(n²)</td><td>O(n²)</td><td>O(1)</td><td>✅</td></tr>
             </tbody>
         </table>
 
         <h2 id="quick">🚀 Быстрая сортировка (Quicksort)</h2>
+        <p>Самый популярный алгоритм на практике. Использует стратегию "разделяй и властвуй".</p>
         <pre><code>def quicksort(arr):
     if len(arr) <= 1:
         return arr
+    
     pivot = arr[len(arr) // 2]
     left = [x for x in arr if x < pivot]
     middle = [x for x in arr if x == pivot]
     right = [x for x in arr if x > pivot]
-    return quicksort(left) + middle + quicksort(right)</code></pre>
+    
+    return quicksort(left) + middle + quicksort(right)
+
+# Пример
+print(quicksort([3, 6, 8, 10, 1, 2, 1]))  # [1, 1, 2, 3, 6, 8, 10]</code></pre>
+
+        <pre><code>// C++ версия
+template&lt;typename T&gt;
+void quicksort(std::vector&lt;T&gt;& arr, int left, int right) {
+    if (left >= right) return;
+    
+    T pivot = arr[(left + right) / 2];
+    int i = left, j = right;
+    
+    while (i <= j) {
+        while (arr[i] < pivot) i++;
+        while (arr[j] > pivot) j--;
+        if (i <= j) {
+            std::swap(arr[i], arr[j]);
+            i++;
+            j--;
+        }
+    }
+    
+    quicksort(arr, left, j);
+    quicksort(arr, i, right);
+}</code></pre>
+
+        <!-- Реклама -->
+        <div class="ad-container">
+            <div class="ad-label">Реклама</div>
+            <div id="yandex_rtb_sorting"></div>
+        </div>
 
         <h2 id="merge">🔗 Сортировка слиянием (Mergesort)</h2>
+        <p>Гарантирует O(n log n) даже в худшем случае. Стабильная и предсказуемая.</p>
         <pre><code>def merge_sort(arr):
     if len(arr) <= 1:
         return arr
+    
     mid = len(arr) // 2
     left = merge_sort(arr[:mid])
     right = merge_sort(arr[mid:])
+    
     return merge(left, right)
 
 def merge(left, right):
     result = []
     i = j = 0
+    
     while i < len(left) and j < len(right):
         if left[i] <= right[j]:
             result.append(left[i])
@@ -91,11 +144,13 @@ def merge(left, right):
         else:
             result.append(right[j])
             j += 1
+    
     result.extend(left[i:])
     result.extend(right[j:])
     return result</code></pre>
 
         <h2 id="bubble">🐌 Пузырьковая сортировка (Bubblesort)</h2>
+        <p>Простая, но медленная. Используется только для обучения.</p>
         <pre><code>def bubble_sort(arr):
     n = len(arr)
     for i in range(n):
@@ -108,15 +163,32 @@ def merge(left, right):
             break
     return arr</code></pre>
 
-        <h2 id="choice">🎯 Что выбрать?</h2>
+        <h2 id="choice">🎯 Что выбрать в реальном проекте?</h2>
         <div class="info">
-            <strong>💡 Совет:</strong> Всегда используйте встроенную сортировку языка:<br>
-            Python: <code>list.sort()</code> (Timsort) | C++: <code>std::sort</code> | JS: <code>array.sort()</code>
+            <strong>✅ Готовые реализации (всегда предпочтительнее):</strong><br><br>
+            • Python: <code>list.sort()</code> (Timsort)<br>
+            • Java: <code>Arrays.sort()</code> (Dual-Pivot Quicksort)<br>
+            • C++: <code>std::sort</code> (Introsort)<br>
+            • JavaScript: <code>array.sort()</code> (Timsort)<br><br>
+            <strong>🎯 Особые случаи:</strong><br>
+            • Почти отсортированные данные → Insertion Sort<br>
+            • Огромные данные (не влезают в RAM) → External Merge Sort<br>
+            • Маленький диапазон значений → Counting Sort
         </div>
 
         <div class="footer">
-            <a href="#">✏️ Редактировать</a> | <a href="#">История</a> | Последнее обновление: 26 апреля 2026
+            <a href="#">✏️ Редактировать</a> | <a href="#">📜 История</a> | <a href="#">💬 Обсуждение</a> | Последнее обновление: 26 апреля 2026
         </div>
     </div>
+
+    <script>
+        window.yaContextCb = window.yaContextCb || [];
+        window.yaContextCb.push(() => {
+            Ya.Context.AdvManager.render({
+                blockId: 'R-A-19168047-6',
+                renderTo: 'yandex_rtb_sorting'
+            });
+        });
+    </script>
 </body>
 </html>
