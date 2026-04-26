@@ -19,7 +19,6 @@ body {
     min-height: 100vh;
 }
 
-/* Шапка */
 .header {
     background: white;
     padding: 20px 30px 10px 30px;
@@ -32,7 +31,6 @@ body {
     letter-spacing: -0.3px;
 }
 
-/* Оранжевый цвет для "Code" */
 .logo h1 .code-orange {
     font-weight: 700;
     color: #ff6b00;
@@ -49,7 +47,6 @@ body {
     margin-top: 5px;
 }
 
-/* Поиск */
 .search-bar {
     margin: 18px 0 10px 0;
 }
@@ -70,13 +67,11 @@ body {
     box-shadow: 0 0 0 2px rgba(255, 107, 0, 0.2);
 }
 
-/* Основная сетка */
 .main-grid {
     display: flex;
     gap: 0;
 }
 
-/* Боковая панель */
 .sidebar {
     width: 270px;
     background: #f8f9fa;
@@ -95,7 +90,6 @@ body {
     border-bottom: 1px solid #a2a9b1;
     padding-bottom: 6px;
     margin-bottom: 12px;
-    color: #000;
 }
 
 .sidebar ul {
@@ -122,7 +116,6 @@ body {
     margin-left: 18px;
 }
 
-/* Реклама в сайдбаре */
 .sidebar-ad {
     margin-top: 20px;
     padding-top: 15px;
@@ -137,7 +130,6 @@ body {
     text-transform: uppercase;
 }
 
-/* Основной контент */
 .content {
     flex: 1;
     padding: 25px 35px;
@@ -182,7 +174,6 @@ body {
     color: #ff6b00;
 }
 
-/* Статистика */
 .stats {
     display: flex;
     gap: 30px;
@@ -210,7 +201,14 @@ body {
     margin-top: 4px;
 }
 
-/* Карточки статей */
+.section-title {
+    font-size: 26px;
+    font-weight: 500;
+    margin: 40px 0 18px 0;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #a2a9b1;
+}
+
 .article-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
@@ -262,7 +260,6 @@ body {
     border-radius: 4px;
 }
 
-/* Блок для рекламы */
 .ad-container {
     margin: 30px 0;
     padding: 15px;
@@ -281,7 +278,6 @@ body {
     letter-spacing: 0.5px;
 }
 
-/* Инфобокс */
 .info-box {
     background: #f8f9fa;
     border: 1px solid #a2a9b1;
@@ -291,11 +287,6 @@ body {
     border-radius: 6px;
 }
 
-.info-box a {
-    color: #ff6b00;
-}
-
-/* Случайная статья */
 .random-box {
     background: #eaecf0;
     padding: 18px 20px;
@@ -314,23 +305,6 @@ body {
     font-weight: 500;
 }
 
-/* Кнопки */
-.btn-github {
-    display: inline-block;
-    background: #24292e;
-    color: white !important;
-    padding: 8px 18px;
-    border-radius: 6px;
-    font-size: 13px;
-    margin-top: 10px;
-}
-
-.btn-github:hover {
-    background: #ff6b00;
-    text-decoration: none !important;
-}
-
-/* Подвал */
 .footer {
     background: #f8f9fa;
     border-top: 1px solid #a2a9b1;
@@ -351,7 +325,6 @@ body {
     color: #ff6b00;
 }
 
-/* Адаптивность */
 @media (max-width: 900px) {
     .main-grid {
         flex-direction: column;
