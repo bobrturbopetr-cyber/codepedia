@@ -3,22 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Python — высокоуровневый язык программирования с динамической типизацией. Изучайте Python на Codepedia.">
     <title>Python — Codepedia</title>
-    <link rel="stylesheet" href="../style.css">
     <style>
-        .page { max-width: 1000px; margin: 0 auto; background: white; padding: 30px 40px; }
-        .nav { margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid #ddd; }
-        .nav a { margin-right: 20px; color: #0645ad; text-decoration: none; }
-        .toc { background: #f8f9fa; border: 1px solid #a2a9b1; padding: 12px 20px; margin: 20px 0; display: inline-block; width: 280px; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif; background: #f6f6f6; line-height: 1.6; }
+        .page { max-width: 1000px; margin: 0 auto; background: white; padding: 30px 40px; box-shadow: 0 0 8px rgba(0,0,0,0.1); }
+        h1 { font-size: 32px; font-weight: 500; border-bottom: 1px solid #a2a9b1; margin-bottom: 20px; padding-bottom: 8px; }
+        h2 { font-size: 24px; font-weight: 500; border-bottom: 1px solid #a2a9b1; margin: 30px 0 15px 0; padding-bottom: 5px; }
+        p { margin: 15px 0; }
+        a { color: #0645ad; text-decoration: none; }
+        a:hover { text-decoration: underline; color: #ff6b00; }
         .info { background: #f8f9fa; border-left: 4px solid #ff6b00; padding: 12px 20px; margin: 20px 0; }
-        pre { background: #2d2d2d; color: #f8f8f2; padding: 15px; overflow-x: auto; border-radius: 5px; }
-        code { background: #f4f4f4; padding: 2px 6px; border-radius: 3px; font-family: monospace; }
+        .toc { background: #f8f9fa; border: 1px solid #a2a9b1; padding: 12px 20px; margin: 20px 0; display: inline-block; width: 280px; }
+        .toc h3 { margin: 0 0 8px 0; }
+        .toc ul { margin-left: 20px; }
+        code { background: #f4f4f4; padding: 2px 6px; border-radius: 3px; font-family: 'Consolas', monospace; font-size: 14px; }
+        pre { background: #2d2d2d; color: #f8f8f2; padding: 15px; overflow-x: auto; border-radius: 5px; margin: 20px 0; }
+        pre code { background: none; padding: 0; color: inherit; }
         table { width: 100%; border-collapse: collapse; margin: 20px 0; }
-        th, td { border: 1px solid #ddd; padding: 10px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
         th { background: #f4f4f4; }
-        .footer { margin-top: 40px; padding-top: 15px; border-top: 1px solid #ddd; font-size: 12px; }
+        .nav { margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid #ddd; }
+        .nav a { margin-right: 20px; }
+        .footer { margin-top: 40px; padding-top: 15px; border-top: 1px solid #ddd; font-size: 12px; color: #666; }
+        .ad-container { margin: 30px 0; padding: 15px; background: #f8f9fa; border: 1px solid #eaecf0; border-radius: 8px; text-align: center; min-height: 130px; }
+        .ad-label { font-size: 11px; color: #72777d; margin-bottom: 10px; text-transform: uppercase; }
         @media (max-width: 768px) { .page { padding: 20px; } .toc { width: 100%; } }
     </style>
+    <script src="https://yandex.ru/ads/system/context.js" async></script>
 </head>
 <body>
     <div class="page">
@@ -29,12 +42,13 @@
             <a href="javascript.html">JavaScript</a>
             <a href="go.html">Go</a>
             <a href="rust.html">Rust</a>
+            <a href="sorting.html">Сортировка</a>
         </div>
 
         <h1>Python</h1>
 
         <div class="info">
-            <strong>📌 Кратко:</strong> Высокоуровневый язык программирования с динамической типизацией. Создан в 1991 году Гвидо ван Россумом.
+            <strong>📌 Кратко:</strong> Высокоуровневый язык программирования с динамической типизацией. Создан в 1991 году Гвидо ван Россумом. Назван в честь Monty Python.
         </div>
 
         <div class="toc">
@@ -48,7 +62,7 @@
             </ul>
         </div>
 
-        <p><strong>Python</strong> — интерпретируемый язык, который славится своей читаемостью и простотой. Назван в честь комик-группы <em>Monty Python</em>. Сегодня это один из самых популярных языков в мире.</p>
+        <p><strong>Python</strong> — интерпретируемый язык, который славится своей читаемостью и простотой. Сегодня это один из самых популярных языков в мире, особенно в области data science и машинного обучения.</p>
 
         <h2 id="features">✨ Особенности</h2>
         <ul>
@@ -56,13 +70,14 @@
             <li><strong>Автоматическая сборка мусора</strong> — не нужен ручной контроль памяти</li>
             <li><strong>"Батарейки в комплекте"</strong> — огромная стандартная библиотека</li>
             <li><strong>Кроссплатформенность</strong> — работает на Windows, Linux, macOS</li>
+            <li><strong>Простой синтаксис</strong> — код читается как английский текст</li>
         </ul>
 
         <h2 id="example">💻 Пример кода</h2>
         <pre><code># Hello World
 print("Hello, Codepedia!")
 
-# Функция
+# Функция с аннотациями типов
 def greet(name: str) -> str:
     return f"Hello, {name}!"
 
@@ -75,25 +90,37 @@ class Developer:
     def code(self):
         print(f"{self.name} пишет на {self.language}")
 
+# List comprehension
+squares = [x**2 for x in range(10)]
+
 # Использование
 dev = Developer("Анна", "Python")
-dev.code()</code></pre>
+dev.code()
+print(f"Квадраты: {squares}")</code></pre>
 
         <h2 id="applications">🎯 Где используется</h2>
         <ul>
-            <li><strong>Веб-разработка</strong> — Django, Flask, FastAPI</li>
-            <li><strong>Data Science</strong> — Pandas, NumPy, Jupyter</li>
-            <li><strong>Машинное обучение</strong> — TensorFlow, PyTorch</li>
-            <li><strong>Автоматизация</strong> — скрипты, парсинг</li>
+            <li><strong>🌐 Веб-разработка</strong> — Django, Flask, FastAPI</li>
+            <li><strong>📊 Data Science</strong> — Pandas, NumPy, Jupyter Notebook</li>
+            <li><strong>🤖 Машинное обучение</strong> — TensorFlow, PyTorch, scikit-learn</li>
+            <li><strong>🔧 Автоматизация</strong> — скрипты, парсинг (BeautifulSoup)</li>
+            <li><strong>🎮 Игры</strong> — Ren'Py, Godot (скриптинг)</li>
         </ul>
+
+        <!-- Реклама -->
+        <div class="ad-container">
+            <div class="ad-label">Реклама</div>
+            <div id="yandex_rtb_python"></div>
+        </div>
 
         <h2 id="proscons">📊 Плюсы и минусы</h2>
         <table>
             <thead><tr><th>✅ Плюсы</th><th>❌ Минусы</th></tr></thead>
             <tbody>
-                <tr><td>Простой порог входа</td><td>Медленнее C++</td></tr>
-                <tr><td>Огромное сообщество</td><td>GIL ограничивает потоки</td></tr>
-                <tr><td>Миллионы библиотек</td><td>Высокое потребление памяти</td></tr>
+                <tr><td>Очень простой порог входа</td><td>Медленнее C++ (в 10-100 раз)</td></tr>
+                <tr><td>Огромное сообщество</td><td>GIL ограничивает многопоточность</td></tr>
+                <tr><td>Миллионы библиотек на PyPI</td><td>Высокое потребление памяти</td></tr>
+                <tr><td>Отличная документация</td><td>Ошибки типов только в рантайме</td></tr>
             </tbody>
         </table>
 
@@ -101,16 +128,31 @@ dev.code()</code></pre>
         <table>
             <thead><tr><th>Версия</th><th>Год</th><th>Нововведения</th></tr></thead>
             <tbody>
-                <tr><td>Python 2.0</td><td>2000</td><td>list comprehensions</td></tr>
+                <tr><td>Python 1.0</td><td>1994</td><td>lambda, map, filter</td></tr>
+                <tr><td>Python 2.0</td><td>2000</td><td>list comprehensions, GC</td></tr>
                 <tr><td>Python 3.0</td><td>2008</td><td>print() функция, Unicode</td></tr>
-                <tr><td>Python 3.6</td><td>2016</td><td>f-strings</td></tr>
+                <tr><td>Python 3.6</td><td>2016</td><td>f-strings, аннотации типов</td></tr>
                 <tr><td>Python 3.12</td><td>2023</td><td>Улучшенная обработка ошибок</td></tr>
             </tbody>
         </table>
 
+        <div class="info">
+            <strong>⚠️ Важно:</strong> Python 2 официально не поддерживается с 1 января 2020 года. Используйте Python 3.
+        </div>
+
         <div class="footer">
-            <a href="#">✏️ Редактировать</a> | <a href="#">📜 История</a> | <a href="#">💬 Обсуждение</a>
+            <a href="#">✏️ Редактировать</a> | <a href="#">📜 История</a> | <a href="#">💬 Обсуждение</a> | Последнее обновление: 26 апреля 2026
         </div>
     </div>
+
+    <script>
+        window.yaContextCb = window.yaContextCb || [];
+        window.yaContextCb.push(() => {
+            Ya.Context.AdvManager.render({
+                blockId: 'R-A-19168047-6',
+                renderTo: 'yandex_rtb_python'
+            });
+        });
+    </script>
 </body>
 </html>
