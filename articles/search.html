@@ -21,6 +21,9 @@
         code { background: #f4f4f4; padding: 2px 6px; border-radius: 3px; font-family: 'Consolas', monospace; font-size: 14px; }
         pre { background: #2d2d2d; color: #f8f8f2; padding: 15px; overflow-x: auto; border-radius: 5px; margin: 20px 0; }
         pre code { background: none; padding: 0; color: inherit; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        th { background: #f4f4f4; }
         .nav { margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid #ddd; }
         .nav a { margin-right: 20px; }
         .footer { margin-top: 40px; padding-top: 15px; border-top: 1px solid #ddd; font-size: 12px; color: #666; }
@@ -57,7 +60,7 @@
         </div>
 
         <h2 id="linear">🔍 Линейный поиск (Linear Search)</h2>
-        <p>Самый простой алгоритм. Последовательно перебирает все элементы. Работает на любом массиве.</p>
+        <p>Самый простой алгоритм. Последовательно перебирает все элементы. Работает на любом массиве. Сложность O(n).</p>
         <pre><code>def linear_search(arr, target):
     """Возвращает индекс элемента или -1"""
     for i, val in enumerate(arr):
@@ -68,6 +71,7 @@
 # Пример
 arr = [5, 2, 8, 1, 9]
 print(linear_search(arr, 8))  # Вывод: 2</code></pre>
+
         <pre><code>// C++ версия
 int linear_search(const std::vector<int>& arr, int target) {
     for (size_t i = 0; i < arr.size(); i++) {
@@ -79,7 +83,6 @@ int linear_search(const std::vector<int>& arr, int target) {
         <h2 id="binary">🎯 Бинарный поиск (Binary Search)</h2>
         <p>Работает только на <strong>отсортированном</strong> массиве. Делит массив пополам на каждом шаге. Сложность O(log n).</p>
         <pre><code>def binary_search(arr, target):
-    """Бинарный поиск на отсортированном массиве"""
     left, right = 0, len(arr) - 1
     
     while left <= right:
@@ -98,6 +101,17 @@ int linear_search(const std::vector<int>& arr, int target) {
 arr = [1, 2, 5, 8, 9, 12, 15]
 print(binary_search(arr, 8))  # Вывод: 3</code></pre>
 
+        <pre><code>// C++ рекурсивная версия
+int binary_search(const std::vector<int>& arr, int target, int left, int right) {
+    if (left > right) return -1;
+    
+    int mid = left + (right - left) / 2;
+    
+    if (arr[mid] == target) return mid;
+    if (arr[mid] < target) return binary_search(arr, target, mid + 1, right);
+    return binary_search(arr, target, left, mid - 1);
+}</code></pre>
+
         <!-- Реклама -->
         <div class="ad-container">
             <div class="ad-label">Реклама</div>
@@ -114,16 +128,59 @@ lookup = {
 }
 
 # Поиск за O(1)
-print(lookup.get("banana"))  # Вывод: 2
+value = lookup.get("banana")  # 2
 
 # Проверка наличия
 if "apple" in lookup:
-    print("Яблоко найдено!")</code></pre>
+    print("Яблоко найдено!")
+
+# Хеш-таблица для быстрого поиска дубликатов
+def find_duplicates(arr):
+    seen = {}
+    duplicates = []
+    for item in arr:
+        if item in seen:
+            duplicates.append(item)
+        else:
+            seen[item] = True
+    return duplicates</code></pre>
 
         <h2 id="comparison">📊 Сравнение сложности</h2>
         <table>
             <thead>
-                <tr><th>Алгоритм</th><th>Время (лучшее)</th><th>Время (среднее)</th><th>Время (худшее)</th><th>Требования</th></tr>
+                <tr><th>Алгоритм</th><th>Лучшее</th><th>Среднее</th><th>Худшее</th><th>Требования</th></tr>
             </thead>
             <tbody>
-                <tr><td
+                <tr><td>Линейный поиск</td><td>O(1)</td><td>O(n)</td><td>O(n)</td><td>Нет</td></tr>
+                <tr><td>Бинарный поиск</td><td>O(1)</td><td>O(log n)</td><td>O(log n)</td><td>Отсортированный массив</td></tr>
+                <tr><td>Хеш-таблица</td><td>O(1)</td><td>O(1)</td><td>O(n)</td><td>Хеш-функция</td></tr>
+                <tr><td>Двоичное дерево поиска</td><td>O(log n)</td><td>O(log n)</td><td>O(n)</td><td>Сбалансированность</td></tr>
+            </tbody>
+        </table>
+
+        <div class="info">
+            <strong>💡 Совет:</strong> Выбирайте алгоритм поиска в зависимости от ваших данных:<br>
+            • Маленький массив → линейный поиск<br>
+            • Большой отсортированный массив → бинарный поиск<br>
+            • Много операций поиска → хеш-таблица<br>
+            • Поиск с вставками/удалениями → дерево поиска
+        </div>
+
+        <div class="footer">
+            <a href="#">✏️ Редактировать</a> | <a href="#">📜 История</a> | <a href="#">💬 Обсуждение</a> | Последнее обновление: 26 апреля 2026
+        </div>
+    </div>
+
+    <script>
+        window.yaContextCb = window.yaContextCb || [];
+        window.yaContextCb.push(() => {
+            if (document.getElementById('yandex_rtb_search')) {
+                Ya.Context.AdvManager.render({
+                    blockId: 'R-A-19168047-6',
+                    renderTo: 'yandex_rtb_search'
+                });
+            }
+        });
+    </script>
+</body>
+</html>
