@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Codepedia — энциклопедия программирования</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📚 Codepedia</h1>
+            <div class="tagline">Свободная энциклопедия программирования</div>
+            <div class="search-bar">
+                <input type="text" placeholder="Поиск..." id="search">
+            </div>
+        </header>
+
+        <div class="layout">
+            <aside class="sidebar">
+                <h3>Содержание</h3>
+                <ul>
+                    <li><a href="#languages">Languages</a>
+                        <ul>
+                            <li><a href="articles/languages/python.html">Python</a></li>
+                            <li><a href="articles/languages/cpp.html">C++</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#algorithms">Algorithms</a>
+                        <ul>
+                            <li><a href="articles/algorithms/sorting.html">Сортировки</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#concepts">Concepts</a>
+                        <ul>
+                            <li><a href="#oop">ООП</a></li>
+                            <li><a href="#fp">Функциональное</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </aside>
+
+            <main class="content">
+                <section id="welcome">
+                    <h2>Добро пожаловать в Codepedia</h2>
+                    <p>Минималистичная энциклопедия для программистов. 42 статьи и растёт.</p>
+                    
+                    <div class="featured">
+                        <h3>Избранные статьи</h3>
+                        <div class="featured-grid">
+                            <div class="card">
+                                <h4><a href="articles/languages/python.html">Python</a></h4>
+                                <p>Высокоуровневый язык с динамической типизацией</p>
+                            </div>
+                            <div class="card">
+                                <h4><a href="articles/languages/cpp.html">C++</a></h4>
+                                <p>Мощный компилируемый язык для системного программирования</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="how-to-add">
+                    <h2>Как добавить статью</h2>
+                    <div class="steps">
+                        <div class="step">
+                            <span class="step-number">1</span>
+                            <p>Форкните <a href="#">репозиторий на GitHub</a></p>
+                        </div>
+                        <div class="step">
+                            <span class="step-number">2</span>
+                            <p>Создайте .md файл в папке <code>articles/[категория]/</code></p>
+                        </div>
+                        <div class="step">
+                            <span class="step-number">3</span>
+                            <p>Используйте <a href="articles/templates/article-template.md">шаблон статьи</a></p>
+                        </div>
+                        <div class="step">
+                            <span class="step-number">4</span>
+                            <p>Сделайте Pull Request</p>
+                        </div>
+                    </div>
+                </section>
+            </main>
+        </div>
+
+        <footer>
+            <p>Codepedia — под лицензией MIT • Последнее обновление: 2026</p>
+            <p><a href="#" class="edit-link">Редактировать эту страницу на GitHub</a></p>
+        </footer>
+    </div>
+
+    <script>
+        // Простой поиск
+        document.getElementById('search').addEventListener('input', function(e) {
+            const query = e.target.value.toLowerCase();
+            const links = document.querySelectorAll('a');
+            links.forEach(link => {
+                const text = link.textContent.toLowerCase();
+                if (text.includes(query) && query.length > 1) {
+                    link.style.backgroundColor = '#ffeb3b';
+                } else {
+                    link.style.backgroundColor = '';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
