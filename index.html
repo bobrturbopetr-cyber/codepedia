@@ -3,362 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Codepedia — свободная энциклопедия программирования. Статьи о языках программирования, алгоритмах, инструментах и концепциях.">
+    <meta name="description" content="Codepedia — свободная энциклопедия программирования. Статьи о Python, C++, Java, JavaScript, Go, Rust, алгоритмах, ООП, Git, Docker и других технологиях.">
+    <meta name="keywords" content="программирование, энциклопедия, python, c++, java, javascript, go, rust, алгоритмы, обучение программированию">
+    <meta name="author" content="Codepedia Community">
+    <meta name="robots" content="index, follow">
+    
     <title>Codepedia — свободная энциклопедия программирования</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Noto Sans', Arial, sans-serif;
-            background: #f6f6f6;
-            color: #202122;
-            line-height: 1.5;
-        }
-
-        /* Основной контейнер (как Wikipedia) */
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            background: white;
-            box-shadow: 0 0 8px rgba(0,0,0,0.05);
-            min-height: 100vh;
-        }
-
-        /* Шапка */
-        .header {
-            background: white;
-            padding: 20px 30px 10px 30px;
-            border-bottom: 1px solid #a2a9b1;
-        }
-
-        .logo h1 {
-            font-size: 30px;
-            font-weight: 500;
-            letter-spacing: -0.3px;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-        }
-
-        .logo h1 span {
-            font-weight: 600;
-            color: #0645ad;
-        }
-
-        .tagline {
-            color: #54595d;
-            font-size: 13px;
-            margin-top: 5px;
-        }
-
-        /* Поиск */
-        .search-bar {
-            margin: 18px 0 10px 0;
-        }
-
-        .search-bar input {
-            width: 320px;
-            padding: 10px 14px;
-            border: 1px solid #a2a9b1;
-            border-radius: 4px;
-            font-size: 14px;
-            font-family: inherit;
-            transition: border-color 0.2s, box-shadow 0.2s;
-        }
-
-        .search-bar input:focus {
-            outline: none;
-            border-color: #0645ad;
-            box-shadow: 0 0 0 2px rgba(6, 69, 173, 0.2);
-        }
-
-        /* Основная сетка */
-        .main-grid {
-            display: flex;
-            gap: 0;
-        }
-
-        /* Боковая панель */
-        .sidebar {
-            width: 270px;
-            background: #f8f9fa;
-            padding: 20px 18px;
-            border-right: 1px solid #a2a9b1;
-            font-size: 14px;
-        }
-
-        .sidebar-section {
-            margin-bottom: 28px;
-        }
-
-        .sidebar-section h3 {
-            font-size: 15px;
-            font-weight: 600;
-            border-bottom: 1px solid #a2a9b1;
-            padding-bottom: 6px;
-            margin-bottom: 12px;
-            color: #000;
-        }
-
-        .sidebar ul {
-            list-style: none;
-            margin-left: 5px;
-        }
-
-        .sidebar li {
-            margin: 8px 0;
-        }
-
-        .sidebar a {
-            text-decoration: none;
-            color: #0645ad;
-            font-size: 13.5px;
-        }
-
-        .sidebar a:hover {
-            text-decoration: underline;
-        }
-
-        .sidebar ul ul {
-            margin-left: 18px;
-        }
-
-        /* Основной контент */
-        .content {
-            flex: 1;
-            padding: 25px 35px;
-            background: white;
-        }
-
-        /* Типографика */
-        .content h1 {
-            font-size: 34px;
-            font-weight: 500;
-            border-bottom: 1px solid #a2a9b1;
-            margin-bottom: 20px;
-            padding-bottom: 8px;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-        }
-
-        .content h2 {
-            font-size: 24px;
-            font-weight: 500;
-            border-bottom: 1px solid #a2a9b1;
-            margin: 32px 0 16px 0;
-            padding-bottom: 6px;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-        }
-
-        .content h3 {
-            font-size: 20px;
-            font-weight: 500;
-            margin: 22px 0 12px 0;
-        }
-
-        .content p {
-            margin: 16px 0;
-            line-height: 1.65;
-            font-size: 15px;
-        }
-
-        .content a {
-            color: #0645ad;
-            text-decoration: none;
-        }
-
-        .content a:hover {
-            text-decoration: underline;
-        }
-
-        /* Статистика */
-        .stats {
-            display: flex;
-            gap: 30px;
-            margin: 25px 0 30px 0;
-            padding: 18px 20px;
-            background: #f8f9fa;
-            border: 1px solid #eaecf0;
-            border-radius: 6px;
-        }
-
-        .stat {
-            text-align: center;
-            flex: 1;
-        }
-
-        .stat-number {
-            font-size: 32px;
-            font-weight: 600;
-            color: #0645ad;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-        }
-
-        .stat-label {
-            font-size: 13px;
-            color: #54595d;
-            margin-top: 4px;
-        }
-
-        /* Карточки статей */
-        .article-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
-            gap: 22px;
-            margin: 25px 0 35px 0;
-        }
-
-        .article-card {
-            border: 1px solid #eaecf0;
-            padding: 20px;
-            background: #ffffff;
-            transition: box-shadow 0.2s, border-color 0.2s;
-            border-radius: 8px;
-        }
-
-        .article-card:hover {
-            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-            border-color: #c8ccd1;
-        }
-
-        .article-card h3 {
-            margin: 0 0 10px 0;
-            font-size: 18px;
-            font-weight: 500;
-        }
-
-        .article-card h3 a {
-            color: #0645ad;
-        }
-
-        .article-card p {
-            margin: 0;
-            font-size: 14px;
-            color: #54595d;
-            line-height: 1.5;
-        }
-
-        .article-card .category {
-            display: inline-block;
-            margin-top: 12px;
-            font-size: 11px;
-            color: #72777d;
-            background: #f0f2f5;
-            padding: 3px 8px;
-            border-radius: 4px;
-        }
-
-        /* Заголовки разделов */
-        .section-title {
-            font-size: 26px;
-            font-weight: 500;
-            margin: 40px 0 18px 0;
-            padding-bottom: 6px;
-            border-bottom: 1px solid #a2a9b1;
-        }
-
-        /* Инфобокс */
-        .info-box {
-            background: #f8f9fa;
-            border: 1px solid #a2a9b1;
-            padding: 15px 20px;
-            margin: 25px 0;
-            font-size: 14px;
-            border-radius: 6px;
-        }
-
-        /* Случайная статья */
-        .random-box {
-            background: #eaecf0;
-            padding: 18px 20px;
-            margin: 20px 0 30px 0;
-            border-left: 4px solid #0645ad;
-            border-radius: 4px;
-            font-size: 14px;
-        }
-
-        .random-box strong {
-            font-weight: 600;
-        }
-
-        .random-box a {
-            font-weight: 500;
-        }
-
-        /* Подвал */
-        .footer {
-            background: #f8f9fa;
-            border-top: 1px solid #a2a9b1;
-            padding: 22px 30px;
-            font-size: 13px;
-            color: #54595d;
-            text-align: center;
-        }
-
-        .footer a {
-            color: #0645ad;
-            text-decoration: none;
-            margin: 0 12px;
-        }
-
-        .footer a:hover {
-            text-decoration: underline;
-        }
-
-        /* Кнопки и утилиты */
-        .btn-github {
-            display: inline-block;
-            background: #24292e;
-            color: white !important;
-            padding: 8px 18px;
-            border-radius: 6px;
-            font-size: 13px;
-            margin-top: 10px;
-        }
-
-        .btn-github:hover {
-            background: #2c3136;
-            text-decoration: none !important;
-        }
-
-        /* Адаптивность */
-        @media (max-width: 900px) {
-            .main-grid {
-                flex-direction: column;
-            }
-            .sidebar {
-                width: 100%;
-                border-right: none;
-                border-bottom: 1px solid #a2a9b1;
-            }
-            .content {
-                padding: 20px;
-            }
-            .stats {
-                flex-wrap: wrap;
-                gap: 15px;
-            }
-            .stat {
-                min-width: 80px;
-            }
-            .search-bar input {
-                width: 100%;
-            }
-        }
-
-        @media (max-width: 700px) {
-            .article-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- Яндекс Реклама -->
+    <script src="https://yandex.ru/ads/system/context.js" async></script>
 </head>
 <body>
     <div class="container">
         <div class="header">
             <div class="logo">
-                <h1><span>Code</span>pedia</h1>
+                <h1>
+                    <span class="code-orange">Code</span>
+                    <span class="pedia">pedia</span>
+                </h1>
                 <div class="tagline">Свободная энциклопедия программирования — пишется сообществом</div>
             </div>
             <div class="search-bar">
@@ -367,7 +30,6 @@
         </div>
 
         <div class="main-grid">
-            <!-- Боковая панель -->
             <aside class="sidebar">
                 <div class="sidebar-section">
                     <h3>🏠 Навигация</h3>
@@ -380,121 +42,117 @@
                 </div>
 
                 <div class="sidebar-section">
-                    <h3>📚 Разделы</h3>
+                    <h3>📚 Языки</h3>
                     <ul>
-                        <li><a href="#languages">Языки программирования</a>
-                            <ul>
-                                <li><a href="articles/python.html">Python</a></li>
-                                <li><a href="articles/cpp.html">C++</a></li>
-                                <li><a href="articles/java.html">Java</a></li>
-                                <li><a href="articles/javascript.html">JavaScript</a></li>
-                                <li><a href="articles/go.html">Go</a></li>
-                                <li><a href="articles/rust.html">Rust</a></li>
-                            </ul>
-                        </li>
-                        <li><a href="#algorithms">Алгоритмы</a>
-                            <ul>
-                                <li><a href="articles/sorting.html">Сортировка</a></li>
-                                <li><a href="articles/search.html">Поиск</a></li>
-                                <li><a href="articles/graphs.html">Графы</a></li>
-                            </ul>
-                        </li>
-                        <li><a href="#concepts">Концепции</a>
-                            <ul>
-                                <li><a href="articles/oop.html">ООП</a></li>
-                                <li><a href="articles/fp.html">Функциональное программирование</a></li>
-                                <li><a href="articles/pointers.html">Указатели и ссылки</a></li>
-                            </ul>
-                        </li>
-                        <li><a href="#tools">Инструменты</a>
-                            <ul>
-                                <li><a href="articles/git.html">Git</a></li>
-                                <li><a href="articles/docker.html">Docker</a></li>
-                                <li><a href="articles/vscode.html">VS Code</a></li>
-                            </ul>
-                        </li>
+                        <li><a href="articles/python.html">Python</a></li>
+                        <li><a href="articles/cpp.html">C++</a></li>
+                        <li><a href="articles/java.html">Java</a></li>
+                        <li><a href="articles/javascript.html">JavaScript</a></li>
+                        <li><a href="articles/go.html">Go</a></li>
+                        <li><a href="articles/rust.html">Rust</a></li>
+                    </ul>
+                </div>
+
+                <div class="sidebar-section">
+                    <h3>🧮 Алгоритмы</h3>
+                    <ul>
+                        <li><a href="articles/sorting.html">Сортировка</a></li>
+                        <li><a href="articles/search.html">Поиск</a></li>
+                        <li><a href="articles/graphs.html">Графы</a></li>
+                    </ul>
+                </div>
+
+                <div class="sidebar-section">
+                    <h3>🧠 Концепции</h3>
+                    <ul>
+                        <li><a href="articles/oop.html">ООП</a></li>
+                        <li><a href="articles/fp.html">Функциональное программирование</a></li>
+                        <li><a href="articles/pointers.html">Указатели и ссылки</a></li>
+                    </ul>
+                </div>
+
+                <div class="sidebar-section">
+                    <h3>🛠️ Инструменты</h3>
+                    <ul>
+                        <li><a href="articles/git.html">Git</a></li>
+                        <li><a href="articles/docker.html">Docker</a></li>
+                        <li><a href="articles/vscode.html">VS Code</a></li>
                     </ul>
                 </div>
 
                 <div class="sidebar-section">
                     <h3>✏️ Участие</h3>
                     <ul>
-                        <li><a href="CONTRIBUTING.md">Как редактировать</a></li>
-                        <li><a href="articles/editor-guide.html">Руководство редактора</a></li>
+                        <li><a href="#">Как редактировать</a></li>
                         <li><a href="#">Создать статью</a></li>
-                        <li><a href="https://github.com/bobrturbopetr-cyber/codepedia/issues">💬 Обсуждения (Issues)</a></li>
+                        <li><a href="#">Обсуждения</a></li>
                     </ul>
                 </div>
 
-                <div class="sidebar-section">
-                    <h3>🔗 Ссылки</h3>
-                    <ul>
-                        <li><a href="https://github.com/bobrturbopetr-cyber/codepedia">🐙 GitHub репозиторий</a></li>
-                        <li><a href="#">О проекте</a></li>
-                        <li><a href="#">Правила</a></li>
-                    </ul>
+                <!-- Реклама в сайдбаре -->
+                <div class="sidebar-ad">
+                    <div class="ad-label">Реклама</div>
+                    <div id="yandex_rtb_sidebar"></div>
                 </div>
             </aside>
 
-            <!-- Основной контент -->
             <main class="content">
                 <h1>Добро пожаловать в Codepedia</h1>
                 
-                <!-- Статистика -->
                 <div class="stats">
                     <div class="stat">
-                        <div class="stat-number">42</div>
-                        <div class="stat-label">статьи</div>
-                    </div>
-                    <div class="stat">
-                        <div class="stat-number">156</div>
-                        <div class="stat-label">редакторов</div>
-                    </div>
-                    <div class="stat">
-                        <div class="stat-number">1,284</div>
-                        <div class="stat-label">правок</div>
+                        <div class="stat-number">15</div>
+                        <div class="stat-label">статей</div>
                     </div>
                     <div class="stat">
                         <div class="stat-number">6</div>
                         <div class="stat-label">разделов</div>
                     </div>
+                    <div class="stat">
+                        <div class="stat-number">∞</div>
+                        <div class="stat-label">свободных знаний</div>
+                    </div>
                 </div>
 
-                <p><strong>Codepedia</strong> — свободная энциклопедия о программировании, которую может редактировать каждый. Мы собираем знания о языках, алгоритмах, концепциях и инструментах, чтобы сделать их доступными для всех. Проект основан на принципах Wikipedia: <strong>нейтральность, проверяемость, свобода знаний</strong>.</p>
+                <p><strong>Codepedia</strong> — свободная энциклопедия о программировании, которую может редактировать каждый. Мы собираем знания о языках, алгоритмах, концепциях и инструментах, чтобы сделать их доступными для всех.</p>
 
-                <!-- Случайная статья -->
                 <div class="random-box">
                     <strong>🎲 Случайная статья:</strong>
-                    <a href="articles/oop.html">Объектно-ориентированное программирование</a> — 
-                    парадигма, в которой программа строится как набор взаимодействующих объектов.
+                    <a href="articles/oop.html">Объектно-ориентированное программирование (ООП)</a> — парадигма, в которой программа строится как набор взаимосвязанных объектов.
                 </div>
 
-                <!-- Раздел: Языки программирования -->
-                <h2 id="languages" class="section-title">📖 Языки программирования</h2>
+                <!-- Блок рекламы -->
+                <div class="ad-container">
+                    <div class="ad-label">Реклама</div>
+                    <div id="yandex_rtb_main"></div>
+                </div>
+
+                <!-- Языки программирования -->
+                <h2 class="section-title">📖 Языки программирования</h2>
                 <div class="article-grid">
                     <div class="article-card">
                         <h3><a href="articles/python.html">Python</a></h3>
-                        <p>Высокоуровневый язык с динамической типизацией. Прост для изучения, огромная экосистема библиотек для Data Science и ML.</p>
+                        <p>Высокоуровневый язык с динамической типизацией. Прост для изучения, огромная экосистема библиотек.</p>
                         <div class="category">#динамический #интерпретируемый</div>
                     </div>
                     <div class="article-card">
                         <h3><a href="articles/cpp.html">C++</a></h3>
-                        <p>Мощный компилируемый язык для системного программирования. Даёт полный контроль над памятью и железом.</p>
+                        <p>Мощный компилируемый язык для системного программирования. Полный контроль над памятью.</p>
                         <div class="category">#компилируемый #статический</div>
                     </div>
                     <div class="article-card">
                         <h3><a href="articles/java.html">Java</a></h3>
-                        <p>Объектно-ориентированный язык, работающий на JVM. "Write once, run anywhere" — кроссплатформенность.</p>
+                        <p>Объектно-ориентированный язык, работающий на JVM. "Write once, run anywhere".</p>
                         <div class="category">#jvm #объектно-ориентированный</div>
                     </div>
                     <div class="article-card">
                         <h3><a href="articles/javascript.html">JavaScript</a></h3>
-                        <p>Язык для веб-разработки. Работает в браузере и на сервере (Node.js). Самый популярный язык в мире.</p>
+                        <p>Язык для веб-разработки. Работает в браузере и на сервере (Node.js).</p>
                         <div class="category">#веб #асинхронный</div>
                     </div>
                     <div class="article-card">
                         <h3><a href="articles/go.html">Go (Golang)</a></h3>
-                        <p>Язык от Google. Простой синтаксис, встроенная конкурентность (горутины), быстрая компиляция.</p>
+                        <p>Язык от Google. Простой синтаксис, встроенная конкурентность, быстрая компиляция.</p>
                         <div class="category">#системный #конкурентный</div>
                     </div>
                     <div class="article-card">
@@ -504,12 +162,12 @@
                     </div>
                 </div>
 
-                <!-- Раздел: Алгоритмы -->
-                <h2 id="algorithms" class="section-title">🧮 Алгоритмы и структуры данных</h2>
+                <!-- Алгоритмы -->
+                <h2 class="section-title">🧮 Алгоритмы и структуры данных</h2>
                 <div class="article-grid">
                     <div class="article-card">
                         <h3><a href="articles/sorting.html">Алгоритмы сортировки</a></h3>
-                        <p>Quicksort, Mergesort, Heapsort, Bubblesort — сравнение сложности и реализация на Python и C++.</p>
+                        <p>Quicksort, Mergesort, Heapsort, Bubblesort — сравнение сложности и реализация.</p>
                         <div class="category">#сортировка #o(n-log-n)</div>
                     </div>
                     <div class="article-card">
@@ -519,85 +177,75 @@
                     </div>
                     <div class="article-card">
                         <h3><a href="articles/graphs.html">Алгоритмы на графах</a></h3>
-                        <p>Dijkstra, BFS, DFS, поиск кратчайшего пути. Обход графов и работа с сетями.</p>
+                        <p>Dijkstra, BFS, DFS, поиск кратчайшего пути. Обход графов.</p>
                         <div class="category">#графы #пути</div>
                     </div>
                 </div>
 
-                <!-- Раздел: Концепции -->
-                <h2 id="concepts" class="section-title">🧠 Ключевые концепции</h2>
+                <!-- Концепции -->
+                <h2 class="section-title">🧠 Ключевые концепции</h2>
                 <div class="article-grid">
                     <div class="article-card">
-                        <h3><a href="articles/oop.html">ООП (Объектно-ориентированное программирование)</a></h3>
+                        <h3><a href="articles/oop.html">ООП</a></h3>
                         <p>Наследование, полиморфизм, инкапсуляция, абстракция. Основные принципы ООП.</p>
                         <div class="category">#парадигма #объекты</div>
                     </div>
                     <div class="article-card">
                         <h3><a href="articles/fp.html">Функциональное программирование</a></h3>
-                        <p>Чистые функции, неизменяемость данных, функции высшего порядка, map/filter/reduce.</p>
+                        <p>Чистые функции, неизменяемость данных, функции высшего порядка.</p>
                         <div class="category">#парадигма #функции</div>
                     </div>
                     <div class="article-card">
                         <h3><a href="articles/pointers.html">Указатели и ссылки</a></h3>
-                        <p>Работа с памятью в C/C++. Указатели, ссылки, умные указатели (unique_ptr, shared_ptr).</p>
+                        <p>Работа с памятью в C/C++. Указатели, ссылки, умные указатели.</p>
                         <div class="category">#память #c-cpp</div>
                     </div>
                 </div>
 
-                <!-- Раздел: Инструменты -->
-                <h2 id="tools" class="section-title">🛠️ Инструменты разработчика</h2>
+                <!-- Инструменты -->
+                <h2 class="section-title">🛠️ Инструменты разработчика</h2>
                 <div class="article-grid">
                     <div class="article-card">
                         <h3><a href="articles/git.html">Git</a></h3>
-                        <p>Система контроля версий. Коммиты, ветки, merge, rebase, работа с удалёнными репозиториями.</p>
+                        <p>Система контроля версий. Коммиты, ветки, merge, rebase.</p>
                         <div class="category">#vcs #github</div>
                     </div>
                     <div class="article-card">
                         <h3><a href="articles/docker.html">Docker</a></h3>
-                        <p>Контейнеризация приложений. Dockerfile, образы, контейнеры, docker-compose.</p>
+                        <p>Контейнеризация приложений. Dockerfile, образы, контейнеры.</p>
                         <div class="category">#devops #контейнеры</div>
                     </div>
                     <div class="article-card">
                         <h3><a href="articles/vscode.html">Visual Studio Code</a></h3>
-                        <p>Популярный редактор кода от Microsoft. Расширения, отладка, интеграция с Git.</p>
+                        <p>Популярный редактор кода от Microsoft. Расширения, отладка.</p>
                         <div class="category">#редактор #ide</div>
                     </div>
                 </div>
 
-                <!-- Инфобокс о вкладе -->
                 <div class="info-box">
                     <strong>✏️ Хотите внести вклад?</strong><br><br>
-                    Codepedia создаётся сообществом. Вы можете:
-                    <ul style="margin: 10px 0 0 25px;">
-                        <li>📝 <strong>Редактировать</strong> существующие статьи — нажмите "Редактировать" внизу любой страницы</li>
-                        <li>➕ <strong>Создать новую статью</strong> — о языке, алгоритме или инструменте, которого ещё нет</li>
-                        <li>💬 <strong>Обсуждать изменения</strong> — через GitHub Issues</li>
-                        <li>🐛 <strong>Сообщать об ошибках</strong> — если нашли неточность или опечатку</li>
-                    </ul>
-                    <a href="https://github.com/bobrturbopetr-cyber/codepedia" class="btn-github">🐙 Перейти на GitHub →</a>
+                    Codepedia создаётся сообществом. Вы можете редактировать существующие статьи, создавать новые и обсуждать изменения.
                 </div>
 
-                <div class="info-box" style="background: #e8f5e9; border-left-color: #4caf50;">
-                    <strong>✅ Статус проекта:</strong> Активно развивается. 42 статьи, 6 разделов. Присоединяйтесь к сообществу!
+                <!-- Ещё один блок рекламы -->
+                <div class="ad-container">
+                    <div class="ad-label">Реклама</div>
+                    <div id="yandex_rtb_footer"></div>
                 </div>
             </main>
         </div>
 
-        <!-- Подвал -->
         <div class="footer">
             <p>Codepedia — свободная энциклопедия программирования | Лицензия MIT</p>
             <p>
                 <a href="#">О проекте</a> •
                 <a href="#">Правила</a> •
                 <a href="#">Сообщество</a> •
-                <a href="https://github.com/bobrturbopetr-cyber/codepedia">GitHub</a> •
-                <a href="CONTRIBUTING.md">Как помочь</a>
+                <a href="privacy.html">Политика конфиденциальности</a>
             </p>
-            <p style="margin-top: 12px; font-size: 11px;">Этот сайт работает на чистом HTML/CSS. Никаких скриптовых зависимостей.</p>
         </div>
     </div>
 
-    <!-- Простой поиск -->
     <script>
         const searchInput = document.getElementById('searchInput');
         const cards = document.querySelectorAll('.article-card');
@@ -621,6 +269,29 @@
                 });
             });
         }
+
+        // Яндекс реклама
+        window.yaContextCb = window.yaContextCb || [];
+        window.yaContextCb.push(() => {
+            if (document.getElementById('yandex_rtb_main')) {
+                Ya.Context.AdvManager.render({
+                    blockId: 'R-A-19168047-1',
+                    renderTo: 'yandex_rtb_main'
+                });
+            }
+            if (document.getElementById('yandex_rtb_sidebar')) {
+                Ya.Context.AdvManager.render({
+                    blockId: 'R-A-19168047-2',
+                    renderTo: 'yandex_rtb_sidebar'
+                });
+            }
+            if (document.getElementById('yandex_rtb_footer')) {
+                Ya.Context.AdvManager.render({
+                    blockId: 'R-A-19168047-3',
+                    renderTo: 'yandex_rtb_footer'
+                });
+            }
+        });
     </script>
 </body>
 </html>
