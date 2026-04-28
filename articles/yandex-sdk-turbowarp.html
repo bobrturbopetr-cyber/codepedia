@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Yandex Games SDK Extension для TurboWarp — полное расширение для интеграции игр Scratch с платформой Яндекс.Игры. Реклама, сохранения, геймплей-метрики и многое другое.">
+    <title>Yandex SDK для TurboWarp — Codepedia</title>
+    <link rel="stylesheet" href="../style.css">
+    <style>
+        .page { max-width: 1000px; margin: 0 auto; background: white; padding: 30px 40px; box-shadow: 0 0 8px rgba(0,0,0,0.1); }
+        .nav { margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid #ddd; }
+        .nav a { margin-right: 20px; color: #0645ad; text-decoration: none; }
+        .nav a:hover { text-decoration: underline; }
+        h1 { font-size: 32px; font-weight: 500; border-bottom: 1px solid #a2a9b1; margin-bottom: 20px; padding-bottom: 8px; }
+        h2 { font-size: 24px; font-weight: 500; border-bottom: 1px solid #a2a9b1; margin: 30px 0 15px 0; padding-bottom: 5px; }
+        h3 { font-size: 20px; font-weight: 500; margin: 20px 0 10px 0; }
+        p { margin: 15px 0; line-height: 1.6; }
+        a { color: #0645ad; text-decoration: none; }
+        a:hover { text-decoration: underline; color: #ff6b00; }
+        .info { background: #f8f9fa; border-left: 4px solid #ff6b00; padding: 12px 20px; margin: 20px 0; border-radius: 4px; }
+        .warning { background: #fff3e0; border-left-color: #ff9800; }
+        .success { background: #e8f5e9; border-left-color: #4caf50; }
+        .toc { background: #f8f9fa; border: 1px solid #a2a9b1; padding: 12px 20px; margin: 20px 0; display: inline-block; width: 280px; border-radius: 4px; }
+        .toc h3 { margin: 0 0 8px 0; }
+        .toc ul { margin-left: 20px; }
+        .toc li { margin: 4px 0; }
+        code { background: #f4f4f4; padding: 2px 6px; border-radius: 3px; font-family: 'Consolas', 'Monaco', monospace; font-size: 14px; }
+        pre { background: #2d2d2d; color: #f8f8f2; padding: 15px; overflow-x: auto; border-radius: 5px; margin: 20px 0; }
+        pre code { background: none; padding: 0; color: inherit; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        th { background: #f4f4f4; font-weight: 600; }
+        tr:nth-child(even) { background: #fafafa; }
+        .footer { margin-top: 40px; padding-top: 15px; border-top: 1px solid #ddd; font-size: 12px; color: #666; }
+        .block-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; margin: 20px 0; }
+        .block-card { background: #f0f2f5; border-radius: 8px; padding: 12px; font-family: monospace; font-size: 13px; border-left: 3px solid #ff6b00; }
+        .block-name { font-weight: bold; color: #0645ad; }
+        .block-desc { font-size: 12px; color: #555; margin-top: 5px; font-family: inherit; }
+        .code-block { background: #1e1e1e; color: #d4d4d4; }
+        @media (max-width: 768px) { .page { padding: 20px; } .toc { width: 100%; } }
+    </style>
+    <script src="https://yandex.ru/ads/system/context.js" async></script>
+</head>
+<body>
+    <div class="page">
+        <div class="nav">
+            <a href="../index.html">🏠 Codepedia</a>
+            <a href="python.html">Python</a>
+            <a href="cpp.html">C++</a>
+            <a href="javascript.html">JavaScript</a>
+            <a href="turbowarp.html">TurboWarp</a>
+        </div>
+
+        <h1>📦 Yandex Games SDK Extension для TurboWarp</h1>
+
+        <div class="info">
+            <strong>📌 Что это:</strong> Расширение для TurboWarp и Scratch, которое подключает игры к платформе Яндекс.Игры. Полная поддержка SDK: реклама, сохранения, геймплей-метрики, определение языка и устройства.
+        </div>
+
+        <div class="toc">
+            <h3>📑 Содержание</h3>
+            <ul>
+                <li><a href="#about">Обзор</a></li>
+                <li><a href="#installation">Установка</a></li>
+                <li><a href="#blocks">Блоки расширения</a></li>
+                <li><a href="#init">Инициализация</a></li>
+                <li><a href="#ads">Реклама</a></li>
+                <li><a href="#saves">Сохранения</a></li>
+                <li><a href="#gameplay">Геймплей-метрики</a></li>
+                <li><a href="#lang">Язык и регион</a></li>
+                <li><a href="#examples">Примеры использования</a></li>
+                <li><a href="#fullcode">Полный код расширения</a></li>
+            </ul>
+        </div>
+
+        <!-- Реклама -->
+        <div class="ad-container" style="margin: 20px 0; padding: 15px; background: #f8f9fa; text-align: center; border-radius: 8px;">
+            <div class="ad-label">Реклама</div>
+            <div id="yandex_rtb_article"></div>
+        </div>
+
+        <!-- ========== ОБЗОР ========== -->
+        <h2 id="about">📖 Обзор</h2>
+        
+        <p><strong>Yandex Games SDK Extension</strong> — это расширение для TurboWarp (и совместимых сред Scratch), которое реализует полный набор функций <strong>Яндекс.Игр SDK версии 1.19</strong>.</p>
+        
+        <p>Расширение позволяет разработчикам, использующим визуальное программирование, публиковать свои проекты на платформе Яндекс.Игр с полной поддержкой всех необходимых функций.</p>
+
+        <div class="success">
+            <strong>✅ Возможности расширения:</strong>
+            <ul style="margin: 10px 0 0 20px;">
+                <li>Инициализация SDK</li>
+                <li>Полноэкранная реклама</li>
+                <li>Видеореклама с наградой</li>
+                <li>Сохранение прогресса игрока</li>
+                <li>Геймплей-метрики (аналитика)</li>
+                <li>Автоопределение языка и региона</li>
+                <li>Определение типа устройства</li>
+                <li>Оценка игры (rate)</li>
+                <li>Управление звуком при сворачивании</li>
+                <li>События паузы/возобновления</li>
+            </ul>
+        </div>
+
+        <!-- ========== УСТАНОВКА ========== -->
+        <h2 id="installation">⚙️ Установка</h2>
+
+        <h3>Способ 1: Через URL (TurboWarp)</h3>
+        <ol>
+            <li>Откройте <strong>TurboWarp</strong> (или стандартный Scratch с турбо-режимом)</li>
+            <li>Перейдите в меню <strong>"Расширения"</strong></li>
+            <li>Выберите <strong>"Загрузить расширение по URL"</strong></li>
+            <li>Вставьте ссылку на JS-файл расширения</li>
+            <li>Нажмите <strong>"Загрузить"</strong></li>
+        </ol>
+
+        <h3>Способ 2: Локальная установка</h3>
+        <ol>
+            <li>Скачайте JS-файл расширения</li>
+            <li>В TurboWarp: <strong>Файл → Загрузить расширение из файла</strong></li>
+            <li>Выберите скачанный файл</li>
+        </ol>
+
+        <h3>Способ 3: Встраивание в HTML (для публикации)</h3>
+        <pre><code>&lt;script src="https://yandex.ru/games/sdk/v1/sdk.js"&gt;&lt;/script&gt;
+&lt;script src="yandex-sdk-extension.js"&gt;&lt;/script&gt;</code></pre>
+
+        <!-- ========== БЛОКИ ========== -->
+        <h2 id="blocks">🧩 Блоки расширения</h2>
+
+        <div class="block-list">
+            <div class="block-card">
+                <div class="block-name">init sdk</div>
+                <div class="block-desc">Инициализация SDK Яндекс.Игр</div>
+            </div>
+            <div class="block-card">
+                <div class="block-name">sdk ready</div>
+                <div class="block-desc">Возвращает true, если SDK готов</div>
+            </div>
+            <div class="block-card">
+                <div class="block-name">game ready call last</div>
+                <div class="block-desc">Сообщает платформе о загрузке игры</div>
+            </div>
+            <div class="block-card">
+                <div class="block-name">show fullscreen ad</div>
+                <div class="block-desc">Показывает полноэкранную рекламу</div>
+            </div>
+            <div class="block-card">
+                <div class="block-name">when ad closed</div>
+                <div class="block-desc">Срабатывает, когда реклама закрыта</div>
+            </div>
+            <div class="block-card">
+                <div class="block-name">show rewarded ad</div>
+                <div class="block-desc">Показывает рекламу с наградой</div>
+            </div>
+            <div class="block-card">
+                <div class="block-name">give reward</div>
+                <div class="block-desc">Дать награду после просмотра</div>
+            </div>
+            <div class="block-card">
+                <div class="block-name">load player data</div>
+                <div class="block-desc">Загружает сохранения игрока</div>
+            </div>
+            <div class="block-card">
+                <div class="block-name">save player data [DATA]</div>
+                <div class="block-desc">Сохраняет данные (JSON или текст)</div>
+            </div>
+            <div class="block-card">
+                <div class="block-name">start gameplay</div>
+                <div class="block-desc">Начинает отсчёт геймплея</div>
+            </div>
+            <div class="block-card">
+                <div class="block-name">stop gameplay</div>
+                <div class="block-desc">Останавливает отсчёт геймплея</div>
+            </div>
+            <div class="block-card">
+                <div class="block-name">game language</div>
+                <div class="block-desc">Возвращает язык (ru, en, tr, kk, be)</div>
+            </div>
+            <div class="block-card">
+                <div class="block-name">domain</div>
+                <div class="block-desc">Возвращает домен (ru, com, tr, kz)</div>
+            </div>
+            <div class="block-card">
+                <div class="block-name">device type</div>
+                <div class="block-desc">Тип устройства (desktop/mobile/tablet)</div>
+            </div>
+            <div class="block-card">
+                <div class="block-name">rate game</div>
+                <div class="block-desc">Показывает окно оценки игры</div>
+            </div>
+            <div class="block-card">
+                <div class="block-name">debug mode</div>
+                <div class="block-desc">Включает режим отладки</div>
+            </div>
+        </div>
+
+        <!-- ========== ИНИЦИАЛИЗАЦИЯ ========== -->
+        <h2 id="init">🚀 Инициализация</h2>
+
+        <p>Для корректной работы расширения необходимо последовательно выполнить несколько шагов:</p>
+
+        <pre><code class="language-scratch">Когда зеленый флаг нажат
+    init sdk
+    ждать пока sdk ready
+    load player data
+    game ready call last</code></pre>
+
+        <div class="info">
+            <strong>💡 Важно:</strong> Блок <code>game ready call last</code> должен вызываться <strong>последним</strong> из всех инициализационных блоков. Он сообщает платформе Яндекс.Игр, что игра полностью загружена и готова к работе.
+        </div>
+
+        <!-- ========== РЕКЛАМА ========== -->
+        <h2 id="ads">📺 Реклама</h2>
+
+        <p>Расширение поддерживает два типа рекламы: <strong>полноэкранную</strong> и <strong>видеорекламу с наградой</strong>.</p>
+
+        <h3>Полноэкранная реклама</h3>
+        <pre><code>Когда зеленый флаг нажат
+    show fullscreen ad
+    когда ad closed
+        ...</code></pre>
+
+        <h3>Реклама с наградой</h3>
+        <pre><code>Когда зеленый флаг нажат
+    show rewarded ad
+    когда rewarded ad watched
+        если give reward, то
+            выдать награду игроку</code></pre>
+
+        <div class="warning">
+            <strong>⚠️ Важно по документации Яндекс.Игр:</strong>
+            <ul style="margin: 10px 0 0 20px;">
+                <li>Рекламу <strong>нельзя</strong> показывать без инициализации SDK</li>
+                <li>Рекламу <strong>нельзя</strong> показывать чаще 1 раза в 30 секунд</li>
+                <li>При показе рекламы геймплей должен быть остановлен через <code>stop gameplay</code></li>
+                <li>После закрытия рекламы геймплей нужно возобновить через <code>start gameplay</code></li>
+            </ul>
+        </div>
+
+        <!-- ========== СОХРАНЕНИЯ ========== -->
+        <h2 id="saves">💾 Сохранения (п.1.9 документации)</h2>
+
+        <p>Яндекс.Игры предоставляют облачное хранилище для сохранения прогресса игрока. Данные привязаны к аккаунту пользователя и синхронизируются между устройствами.</p>
+
+        <pre><code>// Сохраняем прогресс
+save player data {"level": 5, "score": 12450, "items": ["sword", "shield"]}
+
+// Загружаем и читаем
+load player data
+player data  // возвращает {"level":5,"score":12450,...}</code></pre>
+
+        <div class="info">
+            <strong>💡 Совет:</strong> Сохраняйте данные в формате JSON. Это позволяет хранить сложные структуры: уровни, инвентарь, настройки.
+        </div>
+
+        <!-- ========== ГЕЙМПЛЕЙ ========== -->
+        <h2 id="gameplay">🎮 Геймплей-метрики (п.1.19.3)</h2>
+
+        <p>Метрики геймплея помогают платформе анализировать вовлечённость игроков. Яндекс использует эти данные для ранжирования игр в каталоге.</p>
+
+        <pre><code>Когда зеленый флаг нажат
+    start gameplay      // начали отсчёт времени игры
+    
+    // ... игровой процесс ...
+    
+    stop gameplay       // остановили отсчёт (например, при паузе)</code></pre>
+
+        <div class="success">
+            <strong>✅ Правила использования:</strong>
+            <ul style="margin: 10px 0 0 20px;">
+                <li><code>start gameplay</code> — когда игрок активно взаимодействует с игрой</li>
+                <li><code>stop gameplay</code> — при паузе, открытии меню, показе рекламы</li>
+                <li>Не вызывайте эти блоки без необходимости</li>
+            </ul>
+        </div>
+
+        <!-- ========== ЯЗЫК ========== -->
+        <h2 id="lang">🌍 Язык и регион (п.2.14)</h2>
+
+        <p>Расширение автоматически определяет язык и регион пользователя на основе URL и настроек SDK.</p>
+
+        <table>
+            <thead>
+                <tr><th>Язык</th><th>Код</th><th>Домен</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Русский</td><td>ru</td><td>yandex.ru</td></tr>
+                <tr><td>Английский</td><td>en</td><td>yandex.com</td></tr>
+                <tr><td>Турецкий</td><td>tr</td><td>yandex.tr</td></tr>
+                <tr><td>Казахский</td><td>kk</td><td>yandex.kz</td></tr>
+                <tr><td>Белорусский</td><td>be</td><td>yandex.by</td></tr>
+            </tbody>
+        </table>
+
+        <pre><code>// Использование для локализации
+Если game language = ru, то
+    сказать "Привет, игрок!"
+иначе если game language = en, то
+    сказать "Hello, player!"</code></pre>
+
+        <!-- Реклама 2 -->
+        <div class="ad-container" style="margin: 30px 0; padding: 15px; background: #f8f9fa; text-align: center; border-radius: 8px;">
+            <div class="ad-label">Реклама</div>
+            <div id="yandex_rtb_article2"></div>
+        </div>
+
+        <!-- ========== ПРИМЕРЫ ========== -->
+        <h2 id="examples">📋 Примеры использования</h2>
+
+        <h3>Полный пример инициализации игры</h3>
+        <pre><code>Когда зеленый флаг нажат
+    init sdk
+    ждать пока sdk ready
+    wait for exact language
+    load player data
+    start gameplay
+    game ready call last</code></pre>
+
+        <h3>Пример сохранения прогресса уровня</h3>
+        <pre><code>Когда я получаю [сохранить игру v]
+    stop gameplay
+    save player data {level: currentLevel, coins: coinCount}
+    start gameplay</code></pre>
+
+        <h3>Пример показа рекламы за бонус</h3>
+        <pre><code>Когда спрайт нажат
+    stop gameplay
+    show rewarded ad
+    когда rewarded ad watched
+        если give reward, то
+            добавить 100 к монетам
+            сказать "Спасибо за просмотр!"
+    start gameplay</code></pre>
+
+        <!-- ========== ПОЛНЫЙ КОД ========== -->
+        <h2 id="fullcode">📜 Полный код расширения</h2>
+
+        <p>Расширение реализует следующие ключевые функции SDK:</p>
+
+        <table>
+            <thead><tr><th>Функция</th><th>Реализация в расширении</th></tr></thead>
+            <tbody>
+                <tr><td>init()</td><td>Загрузка SDK.js и инициализация YaGames</td></tr>
+                <tr><td>LoadingAPI.ready()</td><td>game ready call last</td></tr>
+                <tr><td>adv.showFullscreenAdv()</td><td>show fullscreen ad</td></tr>
+                <tr><td>adv.showRewardedVideo()</td><td>show rewarded ad</td></tr>
+                <tr><td>player.getData() / setData()</td><td>load / save player data</td></tr>
+                <tr><td>GameplayAPI.start() / stop()</td><td>start / stop gameplay</td></tr>
+                <tr><td>environment.i18n.lang / tld</td><td>game language / domain</td></tr>
+                <tr><td>deviceInfo.type / isMobile()</td><td>device type / is mobile</td></tr>
+                <tr><td>feedback.canReview() / requestReview()</td><td>can rate game / rate game</td></tr>
+                <tr><td>events on('game_api_pause/resume')</td><td>when game paused / resumed</td></tr>
+            </tbody>
+        </table>
+
+        <div class="info">
+            <strong>🔗 Ссылка на расширение:</strong>
+            <p>Полный JavaScript-код расширения доступен в репозитории Codepedia и может быть использован для встраивания в любой проект Scratch/TurboWarp.</p>
+        </div>
+
+        <div class="warning">
+            <strong>📚 Источники:</strong>
+            <ul style="margin: 10px 0 0 20px;">
+                <li><a href="https://yandex.ru/dev/games/doc/dg/concepts/sdk.html" target="_blank">Официальная документация Яндекс.Игр SDK</a></li>
+                <li><a href="https://yandex.ru/dev/games/doc/dg/api/loadingapi.html" target="_blank">LoadingAPI — инициализация игры</a></li>
+                <li><a href="https://yandex.ru/dev/games/doc/dg/api/adv.html" target="_blank">Реклама в Яндекс.Играх</a></li>
+                <li><a href="https://yandex.ru/dev/games/doc/dg/api/player-data.html" target="_blank">Сохранение данных игрока</a></li>
+            </ul>
+        </div>
+
+        <div class="footer">
+            <p>Статья создана при поддержке Codepedia | Автор: Петр Машков</p>
+            <p>© 2024-2026 Codepedia — свободная энциклопедия программирования</p>
+            <p><a href="../index.html">🏠 На главную</a> | <a href="#">✏️ Редактировать</a> | <a href="#">💬 Обсуждение</a></p>
+        </div>
+    </div>
+
+    <script>
+        window.yaContextCb = window.yaContextCb || [];
+        window.yaContextCb.push(() => {
+            if (document.getElementById('yandex_rtb_article')) {
+                Ya.Context.AdvManager.render({
+                    blockId: 'R-A-19168047-6',
+                    renderTo: 'yandex_rtb_article'
+                });
+            }
+            if (document.getElementById('yandex_rtb_article2')) {
+                Ya.Context.AdvManager.render({
+                    blockId: 'R-A-19168047-6',
+                    renderTo: 'yandex_rtb_article2'
+                });
+            }
+        });
+    </script>
+</body>
+</html>
