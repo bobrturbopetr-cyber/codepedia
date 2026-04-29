@@ -285,8 +285,8 @@
                 <div class="sidebar-section">
                     <h3>✏️ Участие</h3>
                     <ul>
+                        <li><a href="create.html">➕ Создать статью</a></li>
                         <li><a href="#">Как редактировать</a></li>
-                        <li><a href="#">Создать статью</a></li>
                         <li><a href="#">Обсуждения</a></li>
                     </ul>
                 </div>
@@ -521,7 +521,6 @@
             openLoginModal();
         }
         
-        // Закрытие по клику вне окна
         window.onclick = function(event) {
             if (event.target.classList.contains('modal')) {
                 event.target.classList.remove('active');
@@ -529,8 +528,6 @@
         }
         
         // ========== РАБОТА С API ==========
-        const API_URL = '';
-        
         function getSessionId() {
             return localStorage.getItem('sessionId');
         }
@@ -566,7 +563,7 @@
             }
             
             try {
-                const res = await fetch(`${API_URL}/api/register`, {
+                const res = await fetch('/api/register', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email, password, name: name || email.split('@')[0] })
@@ -606,7 +603,7 @@
             }
             
             try {
-                const res = await fetch(`${API_URL}/api/login`, {
+                const res = await fetch('/api/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email, password })
@@ -619,7 +616,6 @@
                     localStorage.setItem('user', JSON.stringify(data.user));
                     closeLoginModal();
                     updateUI();
-                    // Очищаем поля
                     document.getElementById('loginPassword').value = '';
                 } else {
                     errorDiv.textContent = data.error || 'Ошибка входа';
@@ -635,7 +631,7 @@
             const sessionId = getSessionId();
             if (sessionId) {
                 try {
-                    await fetch(`${API_URL}/api/logout`, {
+                    await fetch('/api/logout', {
                         method: 'POST',
                         headers: { 'X-Session-Id': sessionId }
                     });
@@ -647,7 +643,6 @@
         }
         
         function loginWithYandex() {
-            // Зарегистрируйте приложение на https://oauth.yandex.ru/
             const clientId = 'ВАШ_CLIENT_ID';
             const redirectUri = `${window.location.origin}/api/yandex-callback`;
             window.location.href = `https://oauth.yandex.ru/authorize?response_type=code&client_id=${clientId}&redirect_uri=${redirectUri}`;
@@ -662,7 +657,6 @@
                 document.getElementById('authButtons').style.display = 'none';
                 document.getElementById('userInfo').style.display = 'flex';
                 document.getElementById('userName').textContent = user.name || user.email;
-                // Аватар пока ставим заглушку
                 document.getElementById('userAvatar').src = `https://api.dicebear.com/7.x/initials/svg?seed=${user.name || user.email}`;
             } else {
                 document.getElementById('authButtons').style.display = 'flex';
@@ -697,7 +691,6 @@
         // ========== ИНИЦИАЛИЗАЦИЯ ==========
         updateUI();
         
-        // Закрытие модалок по Escape
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 document.getElementById('loginModal').classList.remove('active');
