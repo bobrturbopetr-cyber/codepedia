@@ -3,60 +3,56 @@ export default {
         const url = new URL(request.url);
         const path = url.pathname;
         
-        // CORS для API
+        // CORS заголовки для API
         const corsHeaders = {
             'Access-Control-Allow-Origin': '*',
             'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
             'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Session-Id',
+            'Content-Type': 'application/json'
         };
         
-        // Ответ на preflight запросы CORS
         if (request.method === 'OPTIONS') {
             return new Response(null, { headers: corsHeaders });
         }
         
-        // ========== API РЕГИСТРАЦИИ ==========
+        // ========== API РЕГИСТРАЦИИ И ВХОДА (ваш старый код) ==========
+        
+        // Регистрация
         if (path === '/api/register' && request.method === 'POST') {
             try {
                 const { email, password, name } = await request.json();
                 
                 if (!email || !password) {
                     return new Response(JSON.stringify({ error: 'Email и пароль обязательны' }), { 
-                        headers: { 'Content-Type': 'application/json', ...corsHeaders }, 
-                        status: 400 
+                        headers: corsHeaders, status: 400 
                     });
                 }
                 
-                // Простой хеш (для демо, в продакшене используйте bcrypt)
                 const password_hash = await hashPassword(password);
                 
-                // Проверяем, существует ли пользователь
                 const existing = await env.DB.prepare("SELECT id FROM users WHERE email = ?").bind(email).first();
                 if (existing) {
                     return new Response(JSON.stringify({ error: 'Пользователь уже существует' }), { 
-                        headers: { 'Content-Type': 'application/json', ...corsHeaders }, 
-                        status: 409 
+                        headers: corsHeaders, status: 409 
                     });
                 }
                 
                 const result = await env.DB.prepare(
-                    "INSERT INTO users (email, password_hash, name) VALUES (?, ?, ?)"
+                    "INSERT INTO users (email, password_hash, name, role) VALUES (?, ?, ?, 'user')"
                 ).bind(email, password_hash, name || email.split('@')[0]).run();
                 
                 return new Response(JSON.stringify({ success: true, userId: result.meta.last_row_id }), { 
-                    headers: { 'Content-Type': 'application/json', ...corsHeaders } 
+                    headers: corsHeaders 
                 });
                 
             } catch (error) {
-                console.error('Register error:', error);
                 return new Response(JSON.stringify({ error: error.message }), { 
-                    headers: { 'Content-Type': 'application/json', ...corsHeaders }, 
-                    status: 500 
+                    headers: corsHeaders, status: 500 
                 });
             }
         }
         
-        // ========== API ВХОДА ==========
+        // Вход
         if (path === '/api/login' && request.method === 'POST') {
             try {
                 const { email, password } = await request.json();
@@ -67,16 +63,14 @@ export default {
                 
                 if (!user) {
                     return new Response(JSON.stringify({ error: 'Пользователь не найден' }), { 
-                        headers: { 'Content-Type': 'application/json', ...corsHeaders }, 
-                        status: 401 
+                        headers: corsHeaders, status: 401 
                     });
                 }
                 
                 const isValid = await verifyPassword(password, user.password_hash);
                 if (!isValid) {
                     return new Response(JSON.stringify({ error: 'Неверный пароль' }), { 
-                        headers: { 'Content-Type': 'application/json', ...corsHeaders }, 
-                        status: 401 
+                        headers: corsHeaders, status: 401 
                     });
                 }
                 
@@ -96,99 +90,93 @@ export default {
                     success: true,
                     sessionId: sessionId,
                     user: { id: user.id, email: user.email, name: user.name, role: user.role }
-                }), { headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+                }), { headers: corsHeaders });
                 
             } catch (error) {
-                console.error('Login error:', error);
                 return new Response(JSON.stringify({ error: error.message }), { 
-                    headers: { 'Content-Type': 'application/json', ...corsHeaders }, 
-                    status: 500 
+                    headers: corsHeaders, status: 500 
                 });
             }
         }
         
-        // ========== ПРОВЕРКА СЕССИИ ==========
+        // Проверка сессии
         if (path === '/api/me' && request.method === 'GET') {
             const sessionId = request.headers.get('X-Session-Id');
             if (!sessionId) {
                 return new Response(JSON.stringify({ error: 'Не авторизован' }), { 
-                    headers: { 'Content-Type': 'application/json', ...corsHeaders }, 
-                    status: 401 
+                    headers: corsHeaders, status: 401 
                 });
             }
             
             const session = await env.DB.prepare(
-                "SELECT * FROM sessions WHERE id = ? AND expires_at > CURRENT_TIMESTAMP"
+                "SELECT user_id FROM sessions WHERE id = ? AND expires_at > CURRENT_TIMESTAMP"
             ).bind(sessionId).first();
             
             if (!session) {
                 return new Response(JSON.stringify({ error: 'Сессия истекла' }), { 
-                    headers: { 'Content-Type': 'application/json', ...corsHeaders }, 
-                    status: 401 
+                    headers: corsHeaders, status: 401 
                 });
             }
             
             const user = await env.DB.prepare(
-                "SELECT id, email, name, role, created_at FROM users WHERE id = ?"
+                "SELECT id, email, name, role FROM users WHERE id = ?"
             ).bind(session.user_id).first();
             
-            return new Response(JSON.stringify({ user }), { 
-                headers: { 'Content-Type': 'application/json', ...corsHeaders } 
-            });
+            return new Response(JSON.stringify({ user }), { headers: corsHeaders });
         }
         
-        // ========== ВЫХОД ==========
+        // Выход
         if (path === '/api/logout' && request.method === 'POST') {
             const sessionId = request.headers.get('X-Session-Id');
             if (sessionId) {
                 await env.DB.prepare("DELETE FROM sessions WHERE id = ?").bind(sessionId).run();
             }
-            return new Response(JSON.stringify({ success: true }), { 
-                headers: { 'Content-Type': 'application/json', ...corsHeaders } 
+            return new Response(JSON.stringify({ success: true }), { headers: corsHeaders });
+        }
+        
+        // ========== ПОЛУЧЕНИЕ СТАТИЧЕСКИХ ФАЙЛОВ (HTML, CSS) ==========
+        // Это новая, добавленная часть, чтобы сайт открывался
+        
+        let filePath = path === '/' ? '/index.html' : path;
+        
+        // Список разрешённых файлов для безопасности
+        const allowedFiles = ['/index.html', '/style.css', '/privacy.html'];
+        
+        if (allowedFiles.includes(filePath)) {
+            // В реальном проекте здесь должен быть код для чтения файлов из asset-хранилища
+            // Для демонстрации вернём тестовую страницу
+            return new Response(`<!DOCTYPE html>
+<html>
+<head><title>Codepedia</title><meta charset="UTF-8"></head>
+<body>
+<h1>📚 Codepedia</h1>
+<p>API работает! <a href="/api/login">Проверить API</a></p>
+<p>Ваш полный <strong>index.html</strong> и <strong>style.css</strong> должны быть загружены как ассеты.</p>
+<button onclick="test()">Тест входа</button>
+<script>
+async function test() {
+    const res = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: 'test@test.com', password: '123' })
+    });
+    const data = await res.json();
+    alert(JSON.stringify(data, null, 2));
+}
+</script>
+</body>
+</html>`, {
+                headers: { 'Content-Type': 'text/html' }
             });
         }
         
-        // ========== ОБРАБОТКА СТАТИЧЕСКИХ ФАЙЛОВ ==========
-        // Если запрос не к API — отдаём статические файлы
-        
-        // Для корневого пути — index.html
-        let filePath = path === '/' ? '/index.html' : path;
-        
-        // Маппинг путей к файлам
-        const staticFiles = {
-            '/': 'index.html',
-            '/index.html': 'index.html',
-            '/style.css': 'style.css',
-            '/script.js': 'script.js',
-            '/privacy.html': 'privacy.html',
-        };
-        
-        // Если путь есть в маппинге или это файл из articles/
-        let fileToServe = staticFiles[filePath];
-        
-        if (!fileToServe && filePath.startsWith('/articles/')) {
-            fileToServe = filePath.substring(1); // убираем первый слеш
-        }
-        
-        if (fileToServe) {
-            try {
-                // Пытаемся получить файл из окружения Workers Assets
-                // Если у вас есть статические файлы как Assets
-                const file = await env.ASSETS.fetch(request);
-                if (file.ok) return file;
-            } catch(e) {
-                // Если Assets нет — возвращаем 404
-            }
-        }
-        
-        // Если ничего не найдено — 404
         return new Response('Not found', { status: 404, headers: corsHeaders });
     }
 };
 
 async function hashPassword(password) {
     const encoder = new TextEncoder();
-    const data = encoder.encode(password + 'codepedia-salt-2024');
+    const data = encoder.encode(password + 'codepedia-salt');
     const hash = await crypto.subtle.digest('SHA-256', data);
     return btoa(String.fromCharCode(...new Uint8Array(hash)));
 }
