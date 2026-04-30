@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Чтение статьи — Codepedia</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .article-container { max-width: 1000px; margin: 0 auto; background: white; padding: 40px; border-radius: 12px; }
+        .article-header { border-bottom: 1px solid #eee; padding-bottom: 20px; margin-bottom: 30px; }
+        .article-meta { color: #666; font-size: 14px; margin: 10px 0; }
+        .article-content { line-height: 1.8; }
+        .article-content pre { background: #2d2d2d; color: #f8f8f2; padding: 15px; overflow-x: auto; border-radius: 8px; }
+        .article-content code { background: #f4f4f4; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+        .loading { text-align: center; padding: 50px; }
+        .error { color: #c62828; text-align: center; padding: 50px; }
+        .difficulty-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; margin-right: 10px; }
+        .difficulty-easy { background: #2e7d32; color: white; }
+        .difficulty-medium { background: #ed6c02; color: white; }
+        .difficulty-hard { background: #d32f2f; color: white; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo"><h1><span style="color:#ff6b00">Code</span><span style="color:#4a90e2">pedia</span></h1></div>
+        <div class="nav-links"><a href="index.html">🏠 Главная</a></div>
+    </div>
+    <div class="article-container" id="articleContainer">
+        <div class="loading">Загрузка статьи...</div>
+    </div>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const slug = urlParams.get('slug');
+
+        async function loadArticle() {
+            if (!slug) {
+                document.getElementById('articleContainer').innerHTML = '<div class="error">Не указана статья</div>';
+                return;
+            }
+            try {
+                const res = await fetch(`/api/articles/${slug}`);
+                if (!res.ok) throw new Error('Статья не найдена');
+                const article = await res.json();
+                
+                const difficultyClass = article.difficulty === 'easy' ? 'difficulty-easy' : article.difficulty === 'medium' ? 'difficulty-medium' : 'difficulty-hard';
+                const difficultyText = article.difficulty === 'easy' ? '🌱 Новичок' : article.difficulty === 'medium' ? '📘 Средний' : '🔥 Продвинутый';
+                const categoryText = { languages: '📖 Языки', algorithms: '🧮 Алгоритмы', concepts: '🧠 Концепции', tools: '🛠️ Инструменты' }[article.category] || article.category;
+                
+                document.getElementById('articleContainer').innerHTML = `
+                    <div class="article-header">
+                        <div><span class="difficulty-badge ${difficultyClass}">${difficultyText}</span> <span style="color:#666">${categoryText}</span></div>
+                        <h1>${escapeHtml(article.title)}</h1>
+                        <div class="article-meta">👤 ${article.author_name || 'Аноним'} • 📅 ${article.date} • 👁️ ${article.views} просмотров</div>
+                    </div>
+                    <div class="article-content">${article.content}</div>
+                    <div class="article-meta" style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee;">
+                        🏷️ Теги: ${article.tags && article.tags.length ? article.tags.map(t => `#${t}`).join(' ') : 'нет'}
+                    </div>
+                `;
+            } catch (err) {
+                document.getElementById('articleContainer').innerHTML = `<div class="error">Ошибка загрузки статьи: ${err.message}</div>`;
+            }
+        }
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        loadArticle();
+    </script>
+</body>
+</html>
