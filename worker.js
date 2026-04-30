@@ -137,11 +137,55 @@ export default {
         
         // ========== API ДЛЯ СТАТЕЙ ==========
         
-        // Создание статьи (только для авторизованных)
+        // Получение всех статей (доступно всем)
+        if (path === '/api/articles' && request.method === 'GET') {
+            const articles = await env.DB.prepare(
+                "SELECT id, title, slug, category, difficulty, excerpt, author_name, date, views FROM articles WHERE status = 'published' OR status IS NULL ORDER BY date DESC"
+            ).all();
+            
+            return new Response(JSON.stringify(articles.results), { 
+                headers: corsHeaders 
+            });
+        }
+        
+        // Получение одной статьи по slug (доступно всем)
+        if (path.startsWith('/api/articles/') && request.method === 'GET') {
+            const slug = path.replace('/api/articles/', '');
+            const article = await env.DB.prepare(
+                "SELECT * FROM articles WHERE slug = ?"
+            ).bind(slug).first();
+            
+            if (!article) {
+                return new Response(JSON.stringify({ error: 'Статья не найдена' }), { 
+                    headers: corsHeaders, status: 404 
+                });
+            }
+            
+            // Увеличиваем счётчик просмотров
+            await env.DB.prepare(
+                "UPDATE articles SET views = views + 1 WHERE slug = ?"
+            ).bind(slug).run();
+            
+            // Преобразуем tags обратно в массив
+            if (article.tags) {
+                try {
+                    article.tags = JSON.parse(article.tags);
+                } catch(e) {
+                    article.tags = [];
+                }
+            }
+            
+            return new Response(JSON.stringify(article), { 
+                headers: corsHeaders 
+            });
+        }
+        
+        // Создание статьи — ТОЛЬКО ДЛЯ ЗАРЕГИСТРИРОВАННЫХ ПОЛЬЗОВАТЕЛЕЙ
         if (path === '/api/articles' && request.method === 'POST') {
+            // Проверяем сессию
             const sessionId = request.headers.get('X-Session-Id');
             if (!sessionId) {
-                return new Response(JSON.stringify({ error: 'Не авторизован' }), { 
+                return new Response(JSON.stringify({ error: 'Необходимо войти в систему' }), { 
                     headers: corsHeaders, status: 401 
                 });
             }
@@ -151,21 +195,23 @@ export default {
             ).bind(sessionId).first();
             
             if (!session) {
-                return new Response(JSON.stringify({ error: 'Сессия истекла' }), { 
+                return new Response(JSON.stringify({ error: 'Сессия истекла. Войдите снова.' }), { 
                     headers: corsHeaders, status: 401 
                 });
             }
             
+            // Получаем данные пользователя
             const user = await env.DB.prepare(
-                "SELECT id, name, role FROM users WHERE id = ?"
+                "SELECT id, name FROM users WHERE id = ?"
             ).bind(session.user_id).first();
             
-            if (user.role !== 'admin' && user.role !== 'editor') {
-                return new Response(JSON.stringify({ error: 'Недостаточно прав' }), { 
-                    headers: corsHeaders, status: 403 
+            if (!user) {
+                return new Response(JSON.stringify({ error: 'Пользователь не найден' }), { 
+                    headers: corsHeaders, status: 401 
                 });
             }
             
+            // ✅ Любой зарегистрированный пользователь может создать статью
             try {
                 const { title, slug, category, difficulty, tags, excerpt, content, date } = await request.json();
                 
@@ -175,6 +221,7 @@ export default {
                     });
                 }
                 
+                // Проверка на уникальность slug
                 const existing = await env.DB.prepare(
                     "SELECT id FROM articles WHERE slug = ?"
                 ).bind(slug).first();
@@ -185,6 +232,7 @@ export default {
                     });
                 }
                 
+                // Сохраняем статью
                 const result = await env.DB.prepare(
                     `INSERT INTO articles (title, slug, category, difficulty, tags, excerpt, content, author_id, author_name, date) 
                      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
@@ -211,47 +259,6 @@ export default {
             }
         }
         
-        // Получение всех статей
-        if (path === '/api/articles' && request.method === 'GET') {
-            const articles = await env.DB.prepare(
-                "SELECT id, title, slug, category, difficulty, excerpt, author_name, date, views FROM articles WHERE status = 'published' ORDER BY date DESC"
-            ).all();
-            
-            return new Response(JSON.stringify(articles.results), { 
-                headers: corsHeaders 
-            });
-        }
-        
-        // Получение одной статьи по slug
-        if (path.startsWith('/api/articles/') && request.method === 'GET') {
-            const slug = path.replace('/api/articles/', '');
-            const article = await env.DB.prepare(
-                "SELECT * FROM articles WHERE slug = ?"
-            ).bind(slug).first();
-            
-            if (!article) {
-                return new Response(JSON.stringify({ error: 'Статья не найдена' }), { 
-                    headers: corsHeaders, status: 404 
-                });
-            }
-            
-            await env.DB.prepare(
-                "UPDATE articles SET views = views + 1 WHERE slug = ?"
-            ).bind(slug).run();
-            
-            if (article.tags) {
-                try {
-                    article.tags = JSON.parse(article.tags);
-                } catch(e) {
-                    article.tags = [];
-                }
-            }
-            
-            return new Response(JSON.stringify(article), { 
-                headers: corsHeaders 
-            });
-        }
-        
         // ========== ОТДАЧА СТАТИЧЕСКИХ ФАЙЛОВ ==========
         
         // Маппинг путей к файлам
@@ -276,16 +283,16 @@ export default {
                     return asset;
                 }
             } catch(e) {
-                // Если Assets нет, возвращаем HTML-заглушку
+                // Если Assets нет, возвращаем HTML-заглушку для основных страниц
                 if (fileName === 'index.html') {
                     return new Response(`<!DOCTYPE html>
 <html>
 <head><title>Codepedia</title><meta charset="UTF-8"></head>
 <body>
 <h1>📚 Codepedia</h1>
-<p>Сайт работает! API доступен.</p>
-<p><a href="/api/login">Проверить API</a></p>
-<button onclick="test()">Тест входа</button>
+<p>Добро пожаловать в энциклопедию программирования!</p>
+<p><a href="/api/login">Войти</a> | <a href="/create.html">Создать статью</a></p>
+<button onclick="test()">Тест API</button>
 <script>
 async function test() {
     const res = await fetch('/api/login', {
@@ -316,7 +323,9 @@ async function test() {
                     });
                 }
                 if (fileName === 'style.css') {
-                    return new Response(`body { font-family: sans-serif; background: #f5f5f5; margin: 0; padding: 20px; }`, {
+                    return new Response(`body { font-family: sans-serif; background: #f5f5f5; margin: 0; padding: 20px; }
+h1 { color: #ff6b00; }
+a { color: #0645ad; }`, {
                         headers: { 'Content-Type': 'text/css' }
                     });
                 }
@@ -329,8 +338,8 @@ async function test() {
 <html>
 <head><title>Статья</title><meta charset="UTF-8"></head>
 <body>
-<h1>📖 Статья</h1>
-<p>Содержание статьи загружается... (API работает)</p>
+<h1>📖 Чтение статьи</h1>
+<p>Содержание статьи загружается через API.</p>
 <p><a href="/">На главную</a></p>
 </body>
 </html>`, {
