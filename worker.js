@@ -11,11 +11,12 @@ export default {
             'Content-Type': 'application/json'
         };
         
+        // Preflight запросы
         if (request.method === 'OPTIONS') {
             return new Response(null, { headers: corsHeaders });
         }
         
-        // ========== API РЕГИСТРАЦИИ И ВХОДА (ваш старый код) ==========
+        // ========== API РЕГИСТРАЦИИ И ВХОДА ==========
         
         // Регистрация
         if (path === '/api/register' && request.method === 'POST') {
@@ -134,18 +135,6 @@ export default {
             return new Response(JSON.stringify({ success: true }), { headers: corsHeaders });
         }
         
-        // ========== ПОЛУЧЕНИЕ СТАТИЧЕСКИХ ФАЙЛОВ (HTML, CSS) ==========
-        // Это новая, добавленная часть, чтобы сайт открывался
-        
-        let filePath = path === '/' ? '/index.html' : path;
-        
-        // Список разрешённых файлов для безопасности
-        const allowedFiles = ['/index.html', '/style.css', '/privacy.html'];
-        
-        if (allowedFiles.includes(filePath)) {
-            // В реальном проекте здесь должен быть код для чтения файлов из asset-хранилища
-            // Для демонстрации вернём тестовую страницу
-            return new Response(`<!DOCTYPE html>
         // ========== API ДЛЯ СТАТЕЙ ==========
         
         // Создание статьи (только для авторизованных)
@@ -186,7 +175,6 @@ export default {
                     });
                 }
                 
-                // Проверка на уникальность slug
                 const existing = await env.DB.prepare(
                     "SELECT id FROM articles WHERE slug = ?"
                 ).bind(slug).first();
@@ -226,7 +214,7 @@ export default {
         // Получение всех статей
         if (path === '/api/articles' && request.method === 'GET') {
             const articles = await env.DB.prepare(
-                "SELECT id, title, slug, category, difficulty, excerpt, author_name, date, views FROM articles ORDER BY date DESC"
+                "SELECT id, title, slug, category, difficulty, excerpt, author_name, date, views FROM articles WHERE status = 'published' ORDER BY date DESC"
             ).all();
             
             return new Response(JSON.stringify(articles.results), { 
@@ -247,12 +235,10 @@ export default {
                 });
             }
             
-            // Увеличиваем счётчик просмотров
             await env.DB.prepare(
                 "UPDATE articles SET views = views + 1 WHERE slug = ?"
             ).bind(slug).run();
             
-            // Преобразуем tags обратно в массив
             if (article.tags) {
                 try {
                     article.tags = JSON.parse(article.tags);
@@ -266,93 +252,39 @@ export default {
             });
         }
         
-        // Обновление статьи
-        if (path.startsWith('/api/articles/') && request.method === 'PUT') {
-            const sessionId = request.headers.get('X-Session-Id');
-            if (!sessionId) {
-                return new Response(JSON.stringify({ error: 'Не авторизован' }), { 
-                    headers: corsHeaders, status: 401 
-                });
-            }
-            
-            const session = await env.DB.prepare(
-                "SELECT user_id FROM sessions WHERE id = ? AND expires_at > CURRENT_TIMESTAMP"
-            ).bind(sessionId).first();
-            
-            if (!session) {
-                return new Response(JSON.stringify({ error: 'Сессия истекла' }), { 
-                    headers: corsHeaders, status: 401 
-                });
-            }
-            
-            const user = await env.DB.prepare(
-                "SELECT role FROM users WHERE id = ?"
-            ).bind(session.user_id).first();
-            
-            if (user.role !== 'admin' && user.role !== 'editor') {
-                return new Response(JSON.stringify({ error: 'Недостаточно прав' }), { 
-                    headers: corsHeaders, status: 403 
-                });
-            }
-            
-            const slug = path.replace('/api/articles/', '');
-            const { title, category, difficulty, tags, excerpt, content } = await request.json();
-            
-            await env.DB.prepare(
-                `UPDATE articles SET 
-                    title = ?, category = ?, difficulty = ?, 
-                    tags = ?, excerpt = ?, content = ?, 
-                    updated_at = CURRENT_TIMESTAMP 
-                 WHERE slug = ?`
-            ).bind(title, category, difficulty, JSON.stringify(tags || []), excerpt || '', content, slug).run();
-            
-            return new Response(JSON.stringify({ success: true }), { 
-                headers: corsHeaders 
-            });
-        }
+        // ========== ОТДАЧА СТАТИЧЕСКИХ ФАЙЛОВ ==========
         
-        // Удаление статьи
-        if (path.startsWith('/api/articles/') && request.method === 'DELETE') {
-            const sessionId = request.headers.get('X-Session-Id');
-            if (!sessionId) {
-                return new Response(JSON.stringify({ error: 'Не авторизован' }), { 
-                    headers: corsHeaders, status: 401 
-                });
-            }
+        // Маппинг путей к файлам
+        const staticFiles = {
+            '/': 'index.html',
+            '/index.html': 'index.html',
+            '/create.html': 'create.html',
+            '/article.html': 'article.html',
+            '/style.css': 'style.css',
+            '/script.js': 'script.js',
+            '/privacy.html': 'privacy.html'
+        };
+        
+        // Если запрос к известному статическому файлу
+        if (staticFiles[path]) {
+            const fileName = staticFiles[path];
             
-            const session = await env.DB.prepare(
-                "SELECT user_id FROM sessions WHERE id = ? AND expires_at > CURRENT_TIMESTAMP"
-            ).bind(sessionId).first();
-            
-            if (!session) {
-                return new Response(JSON.stringify({ error: 'Сессия истекла' }), { 
-                    headers: corsHeaders, status: 401 
-                });
-            }
-            
-            const user = await env.DB.prepare(
-                "SELECT role FROM users WHERE id = ?"
-            ).bind(session.user_id).first();
-            
-            if (user.role !== 'admin') {
-                return new Response(JSON.stringify({ error: 'Только админ может удалять статьи' }), { 
-                    headers: corsHeaders, status: 403 
-                });
-            }
-            
-            const slug = path.replace('/api/articles/', '');
-            await env.DB.prepare("DELETE FROM articles WHERE slug = ?").bind(slug).run();
-            
-            return new Response(JSON.stringify({ success: true }), { 
-                headers: corsHeaders 
-            });
-        }
+            // Пытаемся получить файл из Assets
+            try {
+                const asset = await env.ASSETS.fetch(new Request(`https://fake-host/${fileName}`));
+                if (asset.status === 200) {
+                    return asset;
+                }
+            } catch(e) {
+                // Если Assets нет, возвращаем HTML-заглушку
+                if (fileName === 'index.html') {
+                    return new Response(`<!DOCTYPE html>
 <html>
 <head><title>Codepedia</title><meta charset="UTF-8"></head>
 <body>
 <h1>📚 Codepedia</h1>
-<p>API работает! <a href="/api/login">Проверить API</a></p>
-<p>Ваш полный <strong>index.html</strong> и <strong>style.css</strong> должны быть загружены как ассеты.</p>
+<p>Сайт работает! API доступен.</p>
+<p><a href="/api/login">Проверить API</a></p>
 <button onclick="test()">Тест входа</button>
 <script>
 async function test() {
@@ -367,11 +299,47 @@ async function test() {
 </script>
 </body>
 </html>`, {
+                        headers: { 'Content-Type': 'text/html' }
+                    });
+                }
+                if (fileName === 'create.html') {
+                    return new Response(`<!DOCTYPE html>
+<html>
+<head><title>Создать статью</title><meta charset="UTF-8"></head>
+<body>
+<h1>📝 Создать статью</h1>
+<p>Форма создания статьи будет здесь.</p>
+<p><a href="/">На главную</a></p>
+</body>
+</html>`, {
+                        headers: { 'Content-Type': 'text/html' }
+                    });
+                }
+                if (fileName === 'style.css') {
+                    return new Response(`body { font-family: sans-serif; background: #f5f5f5; margin: 0; padding: 20px; }`, {
+                        headers: { 'Content-Type': 'text/css' }
+                    });
+                }
+            }
+        }
+        
+        // Если путь начинается с /articles/ — отдаём заглушку
+        if (path.startsWith('/articles/')) {
+            return new Response(`<!DOCTYPE html>
+<html>
+<head><title>Статья</title><meta charset="UTF-8"></head>
+<body>
+<h1>📖 Статья</h1>
+<p>Содержание статьи загружается... (API работает)</p>
+<p><a href="/">На главную</a></p>
+</body>
+</html>`, {
                 headers: { 'Content-Type': 'text/html' }
             });
         }
         
-        return new Response('Not found', { status: 404, headers: corsHeaders });
+        // Если ничего не подошло — 404
+        return new Response('Not found', { status: 404 });
     }
 };
 
