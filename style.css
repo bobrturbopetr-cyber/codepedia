@@ -10,6 +10,43 @@ body {
     color: #202122;
     line-height: 1.5;
 }
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: transparent;
+    padding: 0;
+}
+
+.user-avatar {
+    width: 36px !important;
+    height: 36px !important;
+    border-radius: 50%;
+    object-fit: cover;
+    max-width: 36px !important;
+    min-width: 36px !important;
+}
+
+.user-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+    white-space: nowrap;
+}
+
+.logout-btn {
+    background: #eee;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.logout-btn:hover {
+    background: #ffebee;
+    color: #c62828;
+}
 
 .container {
     max-width: 1400px;
