@@ -11,198 +11,65 @@
     <title>Codepedia — свободная энциклопедия программирования</title>
     <link rel="stylesheet" href="style.css">
     
-    <!-- Яндекс РСЯ реклама -->
-    <script src="https://yandex.ru/ads/system/context.js" async></script>
-    
     <style>
-        /* Дополнительные стили для модальных окон и авторизации */
-        .auth-buttons {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-        
-        .login-btn-header, .register-btn-header {
-            padding: 8px 16px;
+        .article-card {
+            border: 1px solid #eaecf0;
+            padding: 20px;
+            background: #ffffff;
+            transition: box-shadow 0.2s, border-color 0.2s;
             border-radius: 8px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 500;
-            transition: all 0.2s;
         }
-        
-        .login-btn-header {
-            background: transparent;
-            border: 1px solid #4a90e2;
-            color: #4a90e2;
-        }
-        
-        .login-btn-header:hover {
-            background: #4a90e2;
-            color: white;
-        }
-        
-        .register-btn-header {
-            background: #ff6b00;
-            border: none;
-            color: white;
-        }
-        
-        .register-btn-header:hover {
-            background: #ff8533;
-        }
-        
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        
-        .user-avatar {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            object-fit: cover;
-        }
-        
-        .user-name {
-            font-weight: 500;
-            color: #333;
-        }
-        
-        .logout-btn {
-            background: transparent;
-            border: 1px solid #ddd;
-            padding: 6px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 12px;
-        }
-        
-        .logout-btn:hover {
-            background: #fee;
-            border-color: #c00;
-            color: #c00;
-        }
-        
-        /* Модальные окна */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        .modal.active {
-            display: flex;
-        }
-        
-        .modal-content {
-            background: white;
-            padding: 30px;
-            border-radius: 16px;
-            width: 400px;
-            max-width: 90%;
-            position: relative;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-        }
-        
-        .modal-close {
-            position: absolute;
-            top: 15px;
-            right: 20px;
-            font-size: 28px;
-            cursor: pointer;
-            color: #999;
-        }
-        
-        .modal-close:hover {
-            color: #333;
-        }
-        
-        .modal h2 {
-            margin-bottom: 20px;
-            font-size: 24px;
-        }
-        
-        .modal input {
-            width: 100%;
-            padding: 12px;
-            margin: 10px 0;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 14px;
-        }
-        
-        .modal input:focus {
-            outline: none;
+        .article-card:hover {
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
             border-color: #ff6b00;
         }
-        
-        .modal button {
-            width: 100%;
-            padding: 12px;
-            margin: 10px 0;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            cursor: pointer;
-            font-weight: 500;
+        .article-card h3 {
+            margin: 0 0 8px 0;
+            font-size: 18px;
         }
-        
-        .btn-primary-modal {
-            background: #ff6b00;
-            color: white;
-        }
-        
-        .btn-primary-modal:hover {
-            background: #ff8533;
-        }
-        
-        .yandex-btn {
-            background: #fc3f1d;
-            color: white;
-        }
-        
-        .yandex-btn:hover {
-            background: #e63510;
-        }
-        
-        .modal hr {
-            margin: 15px 0;
-            border: none;
-            border-top: 1px solid #eee;
-        }
-        
-        .modal .switch-link {
-            text-align: center;
-            margin-top: 15px;
-            font-size: 13px;
-        }
-        
-        .modal .switch-link a {
-            color: #ff6b00;
+        .article-card h3 a {
+            color: #0645ad;
             text-decoration: none;
         }
-        
-        .error-message {
-            color: #d32f2f;
-            font-size: 12px;
-            margin: 5px 0;
-            display: none;
+        .article-card p {
+            margin: 0 0 10px 0;
+            font-size: 14px;
+            color: #54595d;
         }
-        
-        .success-message {
-            color: #2e7d32;
+        .article-meta {
             font-size: 12px;
-            margin: 5px 0;
-            display: none;
+            color: #72777d;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        .category-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            background: #f0f2f5;
+        }
+        .difficulty-easy { background: #2e7d32; color: white; }
+        .difficulty-medium { background: #ed6c02; color: white; }
+        .difficulty-hard { background: #d32f2f; color: white; }
+        .article-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 22px;
+            margin: 25px 0 35px 0;
+        }
+        .section-title {
+            font-size: 26px;
+            font-weight: 500;
+            margin: 40px 0 18px 0;
+            padding-bottom: 6px;
+            border-bottom: 1px solid #a2a9b1;
+        }
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
         }
     </style>
 </head>
@@ -210,14 +77,11 @@
     <div class="container">
         <div class="header">
             <div class="logo">
-                <h1>
-                    <span class="code-orange">Code</span>
-                    <span class="pedia">pedia</span>
-                </h1>
+                <h1><span class="code-orange">Code</span><span class="pedia">pedia</span></h1>
                 <div class="tagline">Свободная энциклопедия программирования — создано Петром Машковым</div>
             </div>
             <div class="search-bar">
-                <input type="text" placeholder="Поиск по Codepedia... (Python, C++, Java...)" id="searchInput">
+                <input type="text" placeholder="Поиск по Codepedia..." id="searchInput">
             </div>
             <div class="auth-buttons" id="authButtons">
                 <button class="login-btn-header" onclick="openLoginModal()">Вход</button>
@@ -238,62 +102,23 @@
                         <li><a href="#">Главная страница</a></li>
                         <li><a href="#">Содержание</a></li>
                         <li><a href="#">Случайная статья</a></li>
-                        <li><a href="#">Свежие правки</a></li>
                     </ul>
                 </div>
-
                 <div class="sidebar-section">
-                    <h3>📚 Языки</h3>
+                    <h3>📚 Разделы</h3>
                     <ul>
-                        <li><a href="articles/python.html">Python</a></li>
-                        <li><a href="articles/cpp.html">C++</a></li>
-                        <li><a href="articles/java.html">Java</a></li>
-                        <li><a href="articles/javascript.html">JavaScript</a></li>
-                        <li><a href="articles/go.html">Go</a></li>
-                        <li><a href="articles/rust.html">Rust</a></li>
+                        <li><a href="#" data-category="languages">📖 Языки программирования</a></li>
+                        <li><a href="#" data-category="algorithms">🧮 Алгоритмы</a></li>
+                        <li><a href="#" data-category="concepts">🧠 Концепции</a></li>
+                        <li><a href="#" data-category="tools">🛠️ Инструменты</a></li>
                     </ul>
                 </div>
-
-                <div class="sidebar-section">
-                    <h3>🧮 Алгоритмы</h3>
-                    <ul>
-                        <li><a href="articles/sorting.html">Сортировка</a></li>
-                        <li><a href="articles/search.html">Поиск</a></li>
-                        <li><a href="articles/graphs.html">Графы</a></li>
-                    </ul>
-                </div>
-
-                <div class="sidebar-section">
-                    <h3>🧠 Концепции</h3>
-                    <ul>
-                        <li><a href="articles/oop.html">ООП</a></li>
-                        <li><a href="articles/fp.html">Функциональное программирование</a></li>
-                        <li><a href="articles/pointers.html">Указатели и ссылки</a></li>
-                    </ul>
-                </div>
-
-                <div class="sidebar-section">
-                    <h3>🛠️ Инструменты</h3>
-                    <ul>
-                        <li><a href="articles/git.html">Git</a></li>
-                        <li><a href="articles/docker.html">Docker</a></li>
-                        <li><a href="articles/vscode.html">VS Code</a></li>
-                        <li><a href="articles/yandex-sdk-turbowarp.html">Yandex SDK</a></li>
-                    </ul>
-                </div>
-
                 <div class="sidebar-section">
                     <h3>✏️ Участие</h3>
                     <ul>
                         <li><a href="create.html">➕ Создать статью</a></li>
                         <li><a href="#">Как редактировать</a></li>
-                        <li><a href="#">Обсуждения</a></li>
                     </ul>
-                </div>
-
-                <div class="sidebar-ad">
-                    <div class="ad-label">Реклама</div>
-                    <div id="yandex_rtb_sidebar"></div>
                 </div>
             </aside>
 
@@ -302,7 +127,7 @@
                 
                 <div class="stats">
                     <div class="stat">
-                        <div class="stat-number">15+</div>
+                        <div class="stat-number" id="statCount">0</div>
                         <div class="stat-label">статей</div>
                     </div>
                     <div class="stat">
@@ -317,125 +142,8 @@
 
                 <p><strong>Codepedia</strong> — свободная энциклопедия о программировании, созданная <strong>Петром Машковым</strong>. Здесь собраны знания о языках, алгоритмах, концепциях и инструментах, чтобы сделать их доступными для всех.</p>
 
-                <div class="random-box">
-                    <strong>🎲 Случайная статья:</strong>
-                    <a href="articles/oop.html">Объектно-ориентированное программирование (ООП)</a> — парадигма, в которой программа строится как набор взаимосвязанных объектов.
-                </div>
-
-                <div class="ad-container">
-                    <div class="ad-label">Реклама</div>
-                    <div id="yandex_rtb_1"></div>
-                </div>
-
-                <h2 class="section-title">📖 Языки программирования</h2>
-                <div class="article-grid">
-                    <div class="article-card">
-                        <h3><a href="articles/python.html">Python</a></h3>
-                        <p>Высокоуровневый язык с динамической типизацией. Прост для изучения.</p>
-                        <div class="category">#динамический #интерпретируемый</div>
-                    </div>
-                    <div class="article-card">
-                        <h3><a href="articles/cpp.html">C++</a></h3>
-                        <p>Мощный компилируемый язык для системного программирования.</p>
-                        <div class="category">#компилируемый #статический</div>
-                    </div>
-                    <div class="article-card">
-                        <h3><a href="articles/java.html">Java</a></h3>
-                        <p>Объектно-ориентированный язык, работающий на JVM.</p>
-                        <div class="category">#jvm #объектно-ориентированный</div>
-                    </div>
-                    <div class="article-card">
-                        <h3><a href="articles/javascript.html">JavaScript</a></h3>
-                        <p>Язык для веб-разработки. Работает в браузере и на сервере.</p>
-                        <div class="category">#веб #асинхронный</div>
-                    </div>
-                    <div class="article-card">
-                        <h3><a href="articles/go.html">Go (Golang)</a></h3>
-                        <p>Язык от Google. Простой синтаксис, встроенная конкурентность.</p>
-                        <div class="category">#системный #конкурентный</div>
-                    </div>
-                    <div class="article-card">
-                        <h3><a href="articles/rust.html">Rust</a></h3>
-                        <p>Безопасный системный язык без сборщика мусора.</p>
-                        <div class="category">#безопасный #системный</div>
-                    </div>
-                </div>
-
-                <div class="ad-container">
-                    <div class="ad-label">Реклама</div>
-                    <div id="yandex_rtb_2"></div>
-                </div>
-
-                <h2 class="section-title">🧮 Алгоритмы и структуры данных</h2>
-                <div class="article-grid">
-                    <div class="article-card">
-                        <h3><a href="articles/sorting.html">Алгоритмы сортировки</a></h3>
-                        <p>Quicksort, Mergesort, Bubblesort — сравнение сложности.</p>
-                        <div class="category">#сортировка #o(n-log-n)</div>
-                    </div>
-                    <div class="article-card">
-                        <h3><a href="articles/search.html">Алгоритмы поиска</a></h3>
-                        <p>Бинарный поиск, линейный поиск, хеш-таблицы.</p>
-                        <div class="category">#поиск #o(log-n)</div>
-                    </div>
-                    <div class="article-card">
-                        <h3><a href="articles/graphs.html">Алгоритмы на графах</a></h3>
-                        <p>Dijkstra, BFS, DFS, поиск кратчайшего пути.</p>
-                        <div class="category">#графы #пути</div>
-                    </div>
-                </div>
-
-                <h2 class="section-title">🧠 Ключевые концепции</h2>
-                <div class="article-grid">
-                    <div class="article-card">
-                        <h3><a href="articles/oop.html">ООП</a></h3>
-                        <p>Наследование, полиморфизм, инкапсуляция, абстракция.</p>
-                        <div class="category">#парадигма #объекты</div>
-                    </div>
-                    <div class="article-card">
-                        <h3><a href="articles/fp.html">Функциональное программирование</a></h3>
-                        <p>Чистые функции, неизменяемость, функции высшего порядка.</p>
-                        <div class="category">#парадигма #функции</div>
-                    </div>
-                    <div class="article-card">
-                        <h3><a href="articles/pointers.html">Указатели и ссылки</a></h3>
-                        <p>Работа с памятью в C/C++.</p>
-                        <div class="category">#память #c-cpp</div>
-                    </div>
-                </div>
-
-                <div class="ad-container">
-                    <div class="ad-label">Реклама</div>
-                    <div id="yandex_rtb_3"></div>
-                </div>
-
-                <h2 class="section-title">🛠️ Инструменты разработчика</h2>
-                <div class="article-grid">
-                    <div class="article-card">
-                        <h3><a href="articles/git.html">Git</a></h3>
-                        <p>Система контроля версий. Коммиты, ветки, merge, rebase.</p>
-                        <div class="category">#vcs #github</div>
-                    </div>
-                    <div class="article-card">
-                        <h3><a href="articles/docker.html">Docker</a></h3>
-                        <p>Контейнеризация приложений. Dockerfile, образы, контейнеры.</p>
-                        <div class="category">#devops #контейнеры</div>
-                    </div>
-                    <div class="article-card">
-                        <h3><a href="articles/vscode.html">Visual Studio Code</a></h3>
-                        <p>Популярный редактор кода от Microsoft.</p>
-                        <div class="category">#редактор #ide</div>
-                    </div>
-                </div>
-
-                <div class="info-box">
-                    <strong>✏️ О проекте</strong><br><br>
-                    <strong>Codepedia</strong> создана <strong>Петром Машковым</strong> как свободная энциклопедия программирования. Проект открыт для сообщества — каждый может внести свой вклад, редактируя статьи или создавая новые.
-                </div>
-
-                <div class="ad-container">
-                    <div class="ad-label">Реклама</div>
-                    <div id="yandex_rtb_4"></div>
+                <div id="articlesContainer">
+                    <div class="loading">Загрузка статей...</div>
                 </div>
             </main>
         </div>
@@ -443,210 +151,180 @@
         <div class="footer">
             <p>Codepedia — свободная энциклопедия программирования</p>
             <p>Создатель: <strong>Петр Машков</strong> | © 2024-2026 Codepedia</p>
-            <p>
-                <a href="#">О проекте</a> •
-                <a href="#">Правила</a> •
-                <a href="#">Сообщество</a> •
-                <a href="privacy.html">Политика конфиденциальности</a>
-            </p>
-            <p style="margin-top: 10px; font-size: 11px;">Все права защищены. При копировании материалов ссылка на Codepedia обязательна.</p>
-        </div>
-    </div>
-
-    <!-- Модальное окно входа -->
-    <div id="loginModal" class="modal">
-        <div class="modal-content">
-            <span class="modal-close" onclick="closeLoginModal()">&times;</span>
-            <h2>Вход в Codepedia</h2>
-            <div id="loginError" class="error-message"></div>
-            <input type="email" id="loginEmail" placeholder="Email" autocomplete="email">
-            <input type="password" id="loginPassword" placeholder="Пароль" autocomplete="current-password">
-            <button class="btn-primary-modal" onclick="login()">Войти</button>
-            <hr>
-            <button class="yandex-btn" onclick="loginWithYandex()">Войти через Яндекс</button>
-            <div class="switch-link">
-                Нет аккаунта? <a href="#" onclick="switchToRegister()">Зарегистрируйтесь</a>
-            </div>
-        </div>
-    </div>
-
-    <!-- Модальное окно регистрации -->
-    <div id="registerModal" class="modal">
-        <div class="modal-content">
-            <span class="modal-close" onclick="closeRegisterModal()">&times;</span>
-            <h2>Регистрация</h2>
-            <div id="registerError" class="error-message"></div>
-            <div id="registerSuccess" class="success-message"></div>
-            <input type="email" id="regEmail" placeholder="Email" autocomplete="email">
-            <input type="text" id="regName" placeholder="Ваше имя (как будут видеть другие)">
-            <input type="password" id="regPassword" placeholder="Пароль (минимум 6 символов)" autocomplete="new-password">
-            <input type="password" id="regPassword2" placeholder="Повторите пароль" autocomplete="new-password">
-            <button class="btn-primary-modal" onclick="register()">Зарегистрироваться</button>
-            <hr>
-            <button class="yandex-btn" onclick="loginWithYandex()">Зарегистрироваться через Яндекс</button>
-            <div class="switch-link">
-                Уже есть аккаунт? <a href="#" onclick="switchToLogin()">Войдите</a>
-            </div>
         </div>
     </div>
 
     <script>
-        // ========== УПРАВЛЕНИЕ МОДАЛЬНЫМИ ОКНАМИ ==========
-        function openLoginModal() {
-            document.getElementById('loginModal').classList.add('active');
-            document.getElementById('loginError').style.display = 'none';
-        }
+        let allArticles = [];
+        let currentCategory = 'all';
         
-        function closeLoginModal() {
-            document.getElementById('loginModal').classList.remove('active');
+        // Статические статьи из папки articles/
+        const staticArticles = [
+            { id: 'python', title: 'Python', slug: 'python', category: 'languages', difficulty: 'easy', excerpt: 'Высокоуровневый язык с динамической типизацией. Прост для изучения.', author_name: 'Редакция', date: '2024-01-15', isStatic: true },
+            { id: 'cpp', title: 'C++', slug: 'cpp', category: 'languages', difficulty: 'hard', excerpt: 'Мощный компилируемый язык для системного программирования.', author_name: 'Редакция', date: '2024-01-15', isStatic: true },
+            { id: 'java', title: 'Java', slug: 'java', category: 'languages', difficulty: 'medium', excerpt: 'Объектно-ориентированный язык, работающий на JVM.', author_name: 'Редакция', date: '2024-01-15', isStatic: true },
+            { id: 'javascript', title: 'JavaScript', slug: 'javascript', category: 'languages', difficulty: 'medium', excerpt: 'Язык для веб-разработки. Работает в браузере и на сервере.', author_name: 'Редакция', date: '2024-01-15', isStatic: true },
+            { id: 'go', title: 'Go (Golang)', slug: 'go', category: 'languages', difficulty: 'medium', excerpt: 'Язык от Google. Простой синтаксис, встроенная конкурентность.', author_name: 'Редакция', date: '2024-01-15', isStatic: true },
+            { id: 'rust', title: 'Rust', slug: 'rust', category: 'languages', difficulty: 'hard', excerpt: 'Безопасный системный язык без сборщика мусора.', author_name: 'Редакция', date: '2024-01-15', isStatic: true },
+            { id: 'sorting', title: 'Алгоритмы сортировки', slug: 'sorting', category: 'algorithms', difficulty: 'medium', excerpt: 'Quicksort, Mergesort, Bubblesort — сравнение сложности.', author_name: 'Редакция', date: '2024-01-15', isStatic: true },
+            { id: 'search', title: 'Алгоритмы поиска', slug: 'search', category: 'algorithms', difficulty: 'medium', excerpt: 'Бинарный поиск, линейный поиск, хеш-таблицы.', author_name: 'Редакция', date: '2024-01-15', isStatic: true },
+            { id: 'graphs', title: 'Алгоритмы на графах', slug: 'graphs', category: 'algorithms', difficulty: 'hard', excerpt: 'Dijkstra, BFS, DFS, поиск кратчайшего пути.', author_name: 'Редакция', date: '2024-01-15', isStatic: true },
+            { id: 'oop', title: 'Объектно-ориентированное программирование', slug: 'oop', category: 'concepts', difficulty: 'medium', excerpt: 'Наследование, полиморфизм, инкапсуляция, абстракция.', author_name: 'Редакция', date: '2024-01-15', isStatic: true },
+            { id: 'fp', title: 'Функциональное программирование', slug: 'fp', category: 'concepts', difficulty: 'medium', excerpt: 'Чистые функции, неизменяемость, функции высшего порядка.', author_name: 'Редакция', date: '2024-01-15', isStatic: true },
+            { id: 'pointers', title: 'Указатели и ссылки', slug: 'pointers', category: 'concepts', difficulty: 'hard', excerpt: 'Работа с памятью в C/C++.', author_name: 'Редакция', date: '2024-01-15', isStatic: true },
+            { id: 'git', title: 'Git', slug: 'git', category: 'tools', difficulty: 'medium', excerpt: 'Система контроля версий. Коммиты, ветки, merge, rebase.', author_name: 'Редакция', date: '2024-01-15', isStatic: true },
+            { id: 'docker', title: 'Docker', slug: 'docker', category: 'tools', difficulty: 'medium', excerpt: 'Контейнеризация приложений. Dockerfile, образы, контейнеры.', author_name: 'Редакция', date: '2024-01-15', isStatic: true },
+            { id: 'vscode', title: 'Visual Studio Code', slug: 'vscode', category: 'tools', difficulty: 'easy', excerpt: 'Популярный редактор кода от Microsoft.', author_name: 'Редакция', date: '2024-01-15', isStatic: true }
+        ];
+
+        function getDifficultyClass(difficulty) {
+            if (difficulty === 'easy') return 'difficulty-easy';
+            if (difficulty === 'medium') return 'difficulty-medium';
+            return 'difficulty-hard';
         }
-        
-        function openRegisterModal() {
-            document.getElementById('registerModal').classList.add('active');
-            document.getElementById('registerError').style.display = 'none';
-            document.getElementById('registerSuccess').style.display = 'none';
+
+        function getDifficultyText(difficulty) {
+            if (difficulty === 'easy') return '🌱 Новичок';
+            if (difficulty === 'medium') return '📘 Средний';
+            return '🔥 Продвинутый';
         }
-        
-        function closeRegisterModal() {
-            document.getElementById('registerModal').classList.remove('active');
+
+        function getCategoryText(category) {
+            const categories = {
+                languages: '📖 Языки',
+                algorithms: '🧮 Алгоритмы',
+                concepts: '🧠 Концепции',
+                tools: '🛠️ Инструменты'
+            };
+            return categories[category] || category;
         }
-        
-        function switchToRegister() {
-            closeLoginModal();
-            openRegisterModal();
-        }
-        
-        function switchToLogin() {
-            closeRegisterModal();
-            openLoginModal();
-        }
-        
-        window.onclick = function(event) {
-            if (event.target.classList.contains('modal')) {
-                event.target.classList.remove('active');
+
+        function getArticleLink(article) {
+            if (article.isStatic) {
+                return `articles/${article.slug}.html`;
             }
+            return `article.html?slug=${article.slug}`;
         }
-        
-        // ========== РАБОТА С API ==========
-        function getSessionId() {
-            return localStorage.getItem('sessionId');
-        }
-        
-        async function register() {
-            const email = document.getElementById('regEmail').value;
-            const name = document.getElementById('regName').value;
-            const password = document.getElementById('regPassword').value;
-            const password2 = document.getElementById('regPassword2').value;
+
+        function renderArticles() {
+            const container = document.getElementById('articlesContainer');
+            let filtered = allArticles;
             
-            const errorDiv = document.getElementById('registerError');
-            const successDiv = document.getElementById('registerSuccess');
+            if (currentCategory !== 'all') {
+                filtered = allArticles.filter(a => a.category === currentCategory);
+            }
             
-            errorDiv.style.display = 'none';
-            successDiv.style.display = 'none';
+            document.getElementById('statCount').textContent = allArticles.length;
             
-            if (!email || !password) {
-                errorDiv.textContent = 'Заполните все поля';
-                errorDiv.style.display = 'block';
+            if (filtered.length === 0) {
+                container.innerHTML = '<div class="loading">📭 Статей не найдено</div>';
                 return;
             }
             
-            if (password !== password2) {
-                errorDiv.textContent = 'Пароли не совпадают';
-                errorDiv.style.display = 'block';
-                return;
-            }
+            const html = `
+                <div class="article-grid">
+                    ${filtered.map(article => `
+                        <div class="article-card">
+                            <div class="article-meta" style="margin-bottom: 10px;">
+                                <span class="category-badge">${getCategoryText(article.category)}</span>
+                                <span class="${getDifficultyClass(article.difficulty)}" style="padding: 2px 8px; border-radius: 20px; font-size: 11px;">${getDifficultyText(article.difficulty)}</span>
+                            </div>
+                            <h3><a href="${getArticleLink(article)}">${escapeHtml(article.title)}</a></h3>
+                            <p>${escapeHtml(article.excerpt || article.title)}</p>
+                            <div class="article-meta">
+                                <span>👤 ${escapeHtml(article.author_name || 'Аноним')}</span>
+                                <span>📅 ${article.date || '2024'}</span>
+                                ${article.views ? `<span>👁️ ${article.views} просмотров</span>` : ''}
+                                ${article.isStatic ? '<span>📄 Из архива</span>' : '<span>✏️ Пользовательская</span>'}
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
             
-            if (password.length < 6) {
-                errorDiv.textContent = 'Пароль должен быть минимум 6 символов';
-                errorDiv.style.display = 'block';
-                return;
-            }
-            
+            container.innerHTML = html;
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        async function loadUserArticles() {
             try {
-                const res = await fetch('/api/register', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, password, name: name || email.split('@')[0] })
-                });
-                
-                const data = await res.json();
-                
-                if (res.ok && data.success) {
-                    successDiv.textContent = 'Регистрация успешна! Теперь войдите.';
-                    successDiv.style.display = 'block';
-                    setTimeout(() => {
-                        closeRegisterModal();
-                        openLoginModal();
-                        document.getElementById('loginEmail').value = email;
-                    }, 2000);
-                } else {
-                    errorDiv.textContent = data.error || 'Ошибка регистрации';
-                    errorDiv.style.display = 'block';
+                const res = await fetch('/api/articles');
+                if (res.ok) {
+                    const userArticles = await res.json();
+                    return userArticles.map(a => ({ ...a, isStatic: false }));
                 }
             } catch (err) {
-                errorDiv.textContent = 'Ошибка соединения с сервером';
-                errorDiv.style.display = 'block';
+                console.error('Ошибка загрузки статей из БД:', err);
             }
+            return [];
         }
-        
-        async function login() {
-            const email = document.getElementById('loginEmail').value;
-            const password = document.getElementById('loginPassword').value;
+
+        async function loadAllArticles() {
+            const container = document.getElementById('articlesContainer');
+            container.innerHTML = '<div class="loading">Загрузка статей...</div>';
             
-            const errorDiv = document.getElementById('loginError');
-            errorDiv.style.display = 'none';
+            const userArticles = await loadUserArticles();
+            allArticles = [...staticArticles, ...userArticles];
+            allArticles.sort((a, b) => new Date(b.date) - new Date(a.date));
             
-            if (!email || !password) {
-                errorDiv.textContent = 'Введите email и пароль';
-                errorDiv.style.display = 'block';
-                return;
-            }
-            
-            try {
-                const res = await fetch('/api/login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, password })
-                });
-                
-                const data = await res.json();
-                
-                if (res.ok && data.success) {
-                    localStorage.setItem('sessionId', data.sessionId);
-                    localStorage.setItem('user', JSON.stringify(data.user));
-                    closeLoginModal();
-                    updateUI();
-                    document.getElementById('loginPassword').value = '';
+            renderArticles();
+        }
+
+        // Поиск
+        const searchInput = document.getElementById('searchInput');
+        if (searchInput) {
+            searchInput.addEventListener('input', function(e) {
+                const query = e.target.value.toLowerCase().trim();
+                if (query === '') {
+                    renderArticles();
                 } else {
-                    errorDiv.textContent = data.error || 'Ошибка входа';
-                    errorDiv.style.display = 'block';
+                    const filtered = allArticles.filter(a => 
+                        a.title.toLowerCase().includes(query) || 
+                        (a.excerpt && a.excerpt.toLowerCase().includes(query))
+                    );
+                    const container = document.getElementById('articlesContainer');
+                    if (filtered.length === 0) {
+                        container.innerHTML = '<div class="loading">🔍 Статей не найдено</div>';
+                    } else {
+                        container.innerHTML = `
+                            <div class="article-grid">
+                                ${filtered.map(article => `
+                                    <div class="article-card">
+                                        <div class="article-meta" style="margin-bottom: 10px;">
+                                            <span class="category-badge">${getCategoryText(article.category)}</span>
+                                            <span class="${getDifficultyClass(article.difficulty)}" style="padding: 2px 8px; border-radius: 20px; font-size: 11px;">${getDifficultyText(article.difficulty)}</span>
+                                        </div>
+                                        <h3><a href="${getArticleLink(article)}">${escapeHtml(article.title)}</a></h3>
+                                        <p>${escapeHtml(article.excerpt || article.title)}</p>
+                                        <div class="article-meta">
+                                            <span>👤 ${escapeHtml(article.author_name || 'Аноним')}</span>
+                                            <span>📅 ${article.date || '2024'}</span>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        `;
+                    }
                 }
-            } catch (err) {
-                errorDiv.textContent = 'Ошибка соединения с сервером';
-                errorDiv.style.display = 'block';
-            }
+            });
         }
-        
-        async function logout() {
-            const sessionId = getSessionId();
-            if (sessionId) {
-                try {
-                    await fetch('/api/logout', {
-                        method: 'POST',
-                        headers: { 'X-Session-Id': sessionId }
-                    });
-                } catch(e) {}
-            }
-            localStorage.removeItem('sessionId');
-            localStorage.removeItem('user');
-            updateUI();
-        }
-        
-        function loginWithYandex() {
-            const clientId = 'ВАШ_CLIENT_ID';
-            const redirectUri = `${window.location.origin}/api/yandex-callback`;
-            window.location.href = `https://oauth.yandex.ru/authorize?response_type=code&client_id=${clientId}&redirect_uri=${redirectUri}`;
-        }
+
+        // Фильтр по категориям
+        document.querySelectorAll('[data-category]').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                currentCategory = link.dataset.category;
+                renderArticles();
+            });
+        });
+
+        // Авторизация (функции из предыдущего кода)
+        function getSessionId() { return localStorage.getItem('sessionId'); }
         
         async function updateUI() {
             const sessionId = getSessionId();
@@ -664,59 +342,22 @@
             }
         }
         
-        // ========== ПОИСК ПО СТАТЬЯМ ==========
-        const searchInput = document.getElementById('searchInput');
-        const cards = document.querySelectorAll('.article-card');
-        
-        if (searchInput) {
-            searchInput.addEventListener('input', function(e) {
-                const query = e.target.value.toLowerCase().trim();
-                
-                cards.forEach(card => {
-                    const title = card.querySelector('h3 a')?.textContent.toLowerCase() || '';
-                    const desc = card.querySelector('p')?.textContent.toLowerCase() || '';
-                    const category = card.querySelector('.category')?.textContent.toLowerCase() || '';
-                    
-                    if (query === '') {
-                        card.style.display = 'block';
-                    } else if (title.includes(query) || desc.includes(query) || category.includes(query)) {
-                        card.style.display = 'block';
-                    } else {
-                        card.style.display = 'none';
-                    }
-                });
-            });
+        async function logout() {
+            const sessionId = getSessionId();
+            if (sessionId) {
+                await fetch('/api/logout', { method: 'POST', headers: { 'X-Session-Id': sessionId } });
+            }
+            localStorage.removeItem('sessionId');
+            localStorage.removeItem('user');
+            updateUI();
+            window.location.reload();
         }
         
-        // ========== ИНИЦИАЛИЗАЦИЯ ==========
+        function openLoginModal() { window.location.href = '#login'; }
+        function openRegisterModal() { window.location.href = '#register'; }
+        
         updateUI();
-        
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                document.getElementById('loginModal').classList.remove('active');
-                document.getElementById('registerModal').classList.remove('active');
-            }
-        });
-        
-        // Яндекс РСЯ реклама
-        window.yaContextCb = window.yaContextCb || [];
-        window.yaContextCb.push(() => {
-            if (document.getElementById('yandex_rtb_sidebar')) {
-                Ya.Context.AdvManager.render({ blockId: 'R-A-19168047-1', renderTo: 'yandex_rtb_sidebar' });
-            }
-            if (document.getElementById('yandex_rtb_1')) {
-                Ya.Context.AdvManager.render({ blockId: 'R-A-19168047-2', renderTo: 'yandex_rtb_1' });
-            }
-            if (document.getElementById('yandex_rtb_2')) {
-                Ya.Context.AdvManager.render({ blockId: 'R-A-19168047-3', renderTo: 'yandex_rtb_2' });
-            }
-            if (document.getElementById('yandex_rtb_3')) {
-                Ya.Context.AdvManager.render({ blockId: 'R-A-19168047-4', renderTo: 'yandex_rtb_3' });
-            }
-            if (document.getElementById('yandex_rtb_4')) {
-                Ya.Context.AdvManager.render({ blockId: 'R-A-19168047-5', renderTo: 'yandex_rtb_4' });
-            }
-        });
+        loadAllArticles();
     </script>
 </body>
 </html>
