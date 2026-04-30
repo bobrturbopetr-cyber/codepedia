@@ -20,9 +20,15 @@
         .message { padding: 12px; border-radius: 8px; margin-bottom: 20px; display: none; }
         .message.success { background: #e8f5e9; color: #2e7d32; display: block; }
         .message.error { background: #ffebee; color: #c62828; display: block; }
+        .message.warning { background: #fff3e0; color: #ed6c02; display: block; }
         .header { background: #0f1228; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
         .logo h1 { font-size: 24px; color: #ff6b00; margin: 0; }
         .nav-links a { color: #e0e0e0; text-decoration: none; margin-left: 20px; }
+        .auth-buttons { display: flex; gap: 10px; }
+        .login-btn { background: transparent; border: 1px solid #4a90e2; color: #4a90e2; padding: 6px 12px; border-radius: 6px; cursor: pointer; }
+        .user-info { display: flex; align-items: center; gap: 15px; }
+        .user-name { color: white; }
+        .logout-btn { background: #555; border: none; padding: 6px 12px; border-radius: 6px; color: white; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -31,23 +37,24 @@
         <div class="nav-links">
             <a href="index.html">🏠 Главная</a>
             <a href="create.html">✏️ Создать</a>
-            <a href="my-articles.html">📄 Мои статьи</a>
         </div>
+        <div id="authBlock"></div>
     </div>
 
     <div class="create-container">
         <h1>✏️ Создать новую статью</h1>
         <div id="message" class="message"></div>
 
-        <form id="articleForm">
+        <div id="createForm" style="display: none;">
             <div class="form-row">
                 <div class="form-group">
-                    <label>📝 Название *</label>
+                    <label>📝 Название статьи *</label>
                     <input type="text" id="title" required>
                 </div>
                 <div class="form-group">
                     <label>🔖 URL (slug) *</label>
                     <input type="text" id="slug" required placeholder="vvedenie-v-python">
+                    <small>Только латиница, цифры и дефисы</small>
                 </div>
             </div>
             <div class="form-row">
@@ -70,25 +77,115 @@
                 </div>
                 <div class="form-group">
                     <label>🏷️ Теги (через запятую)</label>
-                    <input type="text" id="tags" placeholder="python, основы">
+                    <input type="text" id="tags" placeholder="python, основы, уроки">
                 </div>
             </div>
             <div class="form-group">
                 <label>📌 Краткое описание</label>
-                <textarea id="excerpt" rows="3"></textarea>
+                <textarea id="excerpt" rows="3" placeholder="Коротко о чём статья..."></textarea>
             </div>
             <div class="form-group">
-                <label>📄 Содержание (HTML)</label>
-                <textarea id="content" rows="15" required></textarea>
+                <label>📄 Содержание статьи (HTML)</label>
+                <textarea id="content" rows="15" placeholder="&lt;h2&gt;Введение&lt;/h2&gt;
+&lt;p&gt;Текст статьи...&lt;/p&gt;
+
+&lt;h2&gt;Пример кода&lt;/h2&gt;
+&lt;pre&gt;&lt;code&gt;
+print('Hello, Codepedia!')
+&lt;/code&gt;&lt;/pre&gt;" required></textarea>
+                <small>Можно использовать HTML: заголовки &lt;h2&gt;, &lt;h3&gt;, абзацы &lt;p&gt;, &lt;pre&gt;&lt;code&gt; для кода</small>
             </div>
-            <button type="button" class="btn-save" onclick="saveArticle()">💾 Опубликовать</button>
-        </form>
+            <button type="button" class="btn-save" onclick="saveArticle()">💾 Опубликовать статью</button>
+        </div>
+        
+        <div id="loginRequired" style="display: none; text-align: center; padding: 50px;">
+            <h2>🔐 Требуется авторизация</h2>
+            <p>Только зарегистрированные пользователи могут создавать статьи.</p>
+            <button class="login-btn" onclick="window.location.href='index.html'">Войти или зарегистрироваться</button>
+        </div>
     </div>
 
     <script>
-        function getSessionId() { return localStorage.getItem('sessionId'); }
+        let currentUser = null;
+        let currentSessionId = localStorage.getItem('sessionId');
 
+        async function checkAuth() {
+            if (!currentSessionId) {
+                showLoginRequired();
+                return false;
+            }
+            
+            try {
+                const res = await fetch('/api/me', {
+                    headers: { 'X-Session-Id': currentSessionId }
+                });
+                
+                if (res.ok) {
+                    const data = await res.json();
+                    currentUser = data.user;
+                    showCreateForm();
+                    updateUI();
+                    return true;
+                } else {
+                    localStorage.removeItem('sessionId');
+                    currentSessionId = null;
+                    showLoginRequired();
+                    return false;
+                }
+            } catch (err) {
+                showLoginRequired();
+                return false;
+            }
+        }
+        
+        function showCreateForm() {
+            document.getElementById('createForm').style.display = 'block';
+            document.getElementById('loginRequired').style.display = 'none';
+        }
+        
+        function showLoginRequired() {
+            document.getElementById('createForm').style.display = 'none';
+            document.getElementById('loginRequired').style.display = 'block';
+        }
+        
+        function updateUI() {
+            const authBlock = document.getElementById('authBlock');
+            if (currentUser) {
+                authBlock.innerHTML = `
+                    <div class="user-info">
+                        <span class="user-name">👤 ${currentUser.name || currentUser.email}</span>
+                        <button class="logout-btn" onclick="logout()">Выйти</button>
+                    </div>
+                `;
+            } else {
+                authBlock.innerHTML = `
+                    <div class="auth-buttons">
+                        <button class="login-btn" onclick="window.location.href='index.html'">Вход</button>
+                    </div>
+                `;
+            }
+        }
+        
+        async function logout() {
+            if (currentSessionId) {
+                await fetch('/api/logout', {
+                    method: 'POST',
+                    headers: { 'X-Session-Id': currentSessionId }
+                });
+            }
+            localStorage.removeItem('sessionId');
+            currentSessionId = null;
+            currentUser = null;
+            showLoginRequired();
+            updateUI();
+        }
+        
         async function saveArticle() {
+            if (!currentUser) {
+                showMessage('Необходимо войти в систему', 'warning');
+                return;
+            }
+            
             const title = document.getElementById('title').value;
             const slug = document.getElementById('slug').value;
             const category = document.getElementById('category').value;
@@ -99,50 +196,70 @@
             const msgDiv = document.getElementById('message');
 
             if (!title || !slug || !content) {
-                msgDiv.className = 'message error';
-                msgDiv.textContent = 'Заполните название, URL и содержание';
+                showMessage('❌ Заполните название, URL и содержание статьи', 'error');
                 return;
             }
 
-            const sessionId = getSessionId();
-            if (!sessionId) {
-                msgDiv.className = 'message error';
-                msgDiv.textContent = 'Необходимо войти в систему';
+            if (!/^[a-z0-9-]+$/.test(slug)) {
+                showMessage('❌ URL может содержать только латиницу, цифры и дефисы', 'error');
                 return;
             }
+
+            showMessage('⏳ Публикация...', 'success');
 
             try {
                 const res = await fetch('/api/articles', {
                     method: 'POST',
-                    headers: {
+                    headers: { 
                         'Content-Type': 'application/json',
-                        'X-Session-Id': sessionId
+                        'X-Session-Id': currentSessionId
                     },
-                    body: JSON.stringify({ title, slug, category, difficulty, tags, excerpt, content, date: new Date().toISOString().split('T')[0] })
+                    body: JSON.stringify({ 
+                        title, slug, category, difficulty, tags, 
+                        excerpt, content,
+                        date: new Date().toISOString().split('T')[0]
+                    })
                 });
 
                 const data = await res.json();
 
                 if (res.ok && data.success) {
-                    msgDiv.className = 'message success';
-                    msgDiv.textContent = `Статья "${title}" успешно создана!`;
-                    document.getElementById('articleForm').reset();
-                    setTimeout(() => { window.location.href = `article.html?slug=${slug}`; }, 1500);
+                    showMessage(`✅ Статья "${title}" успешно опубликована!`, 'success');
+                    document.getElementById('title').value = '';
+                    document.getElementById('slug').value = '';
+                    document.getElementById('content').value = '';
+                    setTimeout(() => {
+                        window.location.href = `/article.html?slug=${slug}`;
+                    }, 2000);
                 } else {
-                    msgDiv.className = 'message error';
-                    msgDiv.textContent = data.error || 'Ошибка при создании';
+                    showMessage(`❌ ${data.error || 'Ошибка при публикации'}`, 'error');
                 }
             } catch (err) {
-                msgDiv.className = 'message error';
-                msgDiv.textContent = 'Ошибка соединения с сервером';
+                showMessage('❌ Ошибка соединения с сервером', 'error');
             }
+        }
+        
+        function showMessage(msg, type) {
+            const msgDiv = document.getElementById('message');
+            msgDiv.className = `message ${type}`;
+            msgDiv.textContent = msg;
+            setTimeout(() => {
+                msgDiv.className = 'message';
+            }, 5000);
         }
 
         // Автогенерация slug из названия
         document.getElementById('title').addEventListener('input', function() {
-            const slug = this.value.toLowerCase().replace(/[^a-zа-яё0-9\s]/gi, '').replace(/\s+/g, '-').replace(/[^a-z0-9-]/gi, '');
+            let slug = this.value
+                .toLowerCase()
+                .replace(/[^a-zа-яё0-9\s]/gi, '')
+                .replace(/\s+/g, '-')
+                .replace(/[^a-z0-9-]/gi, '');
             document.getElementById('slug').value = slug;
         });
+        
+        // Запуск проверки авторизации
+        checkAuth();
     </script>
 </body>
 </html>
