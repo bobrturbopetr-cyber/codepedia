@@ -146,6 +146,207 @@ export default {
             // В реальном проекте здесь должен быть код для чтения файлов из asset-хранилища
             // Для демонстрации вернём тестовую страницу
             return new Response(`<!DOCTYPE html>
+        // ========== API ДЛЯ СТАТЕЙ ==========
+        
+        // Создание статьи (только для авторизованных)
+        if (path === '/api/articles' && request.method === 'POST') {
+            const sessionId = request.headers.get('X-Session-Id');
+            if (!sessionId) {
+                return new Response(JSON.stringify({ error: 'Не авторизован' }), { 
+                    headers: corsHeaders, status: 401 
+                });
+            }
+            
+            const session = await env.DB.prepare(
+                "SELECT user_id FROM sessions WHERE id = ? AND expires_at > CURRENT_TIMESTAMP"
+            ).bind(sessionId).first();
+            
+            if (!session) {
+                return new Response(JSON.stringify({ error: 'Сессия истекла' }), { 
+                    headers: corsHeaders, status: 401 
+                });
+            }
+            
+            const user = await env.DB.prepare(
+                "SELECT id, name, role FROM users WHERE id = ?"
+            ).bind(session.user_id).first();
+            
+            if (user.role !== 'admin' && user.role !== 'editor') {
+                return new Response(JSON.stringify({ error: 'Недостаточно прав' }), { 
+                    headers: corsHeaders, status: 403 
+                });
+            }
+            
+            try {
+                const { title, slug, category, difficulty, tags, excerpt, content, date } = await request.json();
+                
+                if (!title || !slug || !content) {
+                    return new Response(JSON.stringify({ error: 'Заполните обязательные поля' }), { 
+                        headers: corsHeaders, status: 400 
+                    });
+                }
+                
+                // Проверка на уникальность slug
+                const existing = await env.DB.prepare(
+                    "SELECT id FROM articles WHERE slug = ?"
+                ).bind(slug).first();
+                
+                if (existing) {
+                    return new Response(JSON.stringify({ error: 'Статья с таким URL уже существует' }), { 
+                        headers: corsHeaders, status: 409 
+                    });
+                }
+                
+                const result = await env.DB.prepare(
+                    `INSERT INTO articles (title, slug, category, difficulty, tags, excerpt, content, author_id, author_name, date) 
+                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+                ).bind(
+                    title, slug, category, difficulty, 
+                    JSON.stringify(tags || []), 
+                    excerpt || '', 
+                    content, 
+                    user.id, 
+                    user.name, 
+                    date || new Date().toISOString().split('T')[0]
+                ).run();
+                
+                return new Response(JSON.stringify({ 
+                    success: true, 
+                    id: result.meta.last_row_id,
+                    slug: slug
+                }), { headers: corsHeaders });
+                
+            } catch (error) {
+                return new Response(JSON.stringify({ error: error.message }), { 
+                    headers: corsHeaders, status: 500 
+                });
+            }
+        }
+        
+        // Получение всех статей
+        if (path === '/api/articles' && request.method === 'GET') {
+            const articles = await env.DB.prepare(
+                "SELECT id, title, slug, category, difficulty, excerpt, author_name, date, views FROM articles ORDER BY date DESC"
+            ).all();
+            
+            return new Response(JSON.stringify(articles.results), { 
+                headers: corsHeaders 
+            });
+        }
+        
+        // Получение одной статьи по slug
+        if (path.startsWith('/api/articles/') && request.method === 'GET') {
+            const slug = path.replace('/api/articles/', '');
+            const article = await env.DB.prepare(
+                "SELECT * FROM articles WHERE slug = ?"
+            ).bind(slug).first();
+            
+            if (!article) {
+                return new Response(JSON.stringify({ error: 'Статья не найдена' }), { 
+                    headers: corsHeaders, status: 404 
+                });
+            }
+            
+            // Увеличиваем счётчик просмотров
+            await env.DB.prepare(
+                "UPDATE articles SET views = views + 1 WHERE slug = ?"
+            ).bind(slug).run();
+            
+            // Преобразуем tags обратно в массив
+            if (article.tags) {
+                try {
+                    article.tags = JSON.parse(article.tags);
+                } catch(e) {
+                    article.tags = [];
+                }
+            }
+            
+            return new Response(JSON.stringify(article), { 
+                headers: corsHeaders 
+            });
+        }
+        
+        // Обновление статьи
+        if (path.startsWith('/api/articles/') && request.method === 'PUT') {
+            const sessionId = request.headers.get('X-Session-Id');
+            if (!sessionId) {
+                return new Response(JSON.stringify({ error: 'Не авторизован' }), { 
+                    headers: corsHeaders, status: 401 
+                });
+            }
+            
+            const session = await env.DB.prepare(
+                "SELECT user_id FROM sessions WHERE id = ? AND expires_at > CURRENT_TIMESTAMP"
+            ).bind(sessionId).first();
+            
+            if (!session) {
+                return new Response(JSON.stringify({ error: 'Сессия истекла' }), { 
+                    headers: corsHeaders, status: 401 
+                });
+            }
+            
+            const user = await env.DB.prepare(
+                "SELECT role FROM users WHERE id = ?"
+            ).bind(session.user_id).first();
+            
+            if (user.role !== 'admin' && user.role !== 'editor') {
+                return new Response(JSON.stringify({ error: 'Недостаточно прав' }), { 
+                    headers: corsHeaders, status: 403 
+                });
+            }
+            
+            const slug = path.replace('/api/articles/', '');
+            const { title, category, difficulty, tags, excerpt, content } = await request.json();
+            
+            await env.DB.prepare(
+                `UPDATE articles SET 
+                    title = ?, category = ?, difficulty = ?, 
+                    tags = ?, excerpt = ?, content = ?, 
+                    updated_at = CURRENT_TIMESTAMP 
+                 WHERE slug = ?`
+            ).bind(title, category, difficulty, JSON.stringify(tags || []), excerpt || '', content, slug).run();
+            
+            return new Response(JSON.stringify({ success: true }), { 
+                headers: corsHeaders 
+            });
+        }
+        
+        // Удаление статьи
+        if (path.startsWith('/api/articles/') && request.method === 'DELETE') {
+            const sessionId = request.headers.get('X-Session-Id');
+            if (!sessionId) {
+                return new Response(JSON.stringify({ error: 'Не авторизован' }), { 
+                    headers: corsHeaders, status: 401 
+                });
+            }
+            
+            const session = await env.DB.prepare(
+                "SELECT user_id FROM sessions WHERE id = ? AND expires_at > CURRENT_TIMESTAMP"
+            ).bind(sessionId).first();
+            
+            if (!session) {
+                return new Response(JSON.stringify({ error: 'Сессия истекла' }), { 
+                    headers: corsHeaders, status: 401 
+                });
+            }
+            
+            const user = await env.DB.prepare(
+                "SELECT role FROM users WHERE id = ?"
+            ).bind(session.user_id).first();
+            
+            if (user.role !== 'admin') {
+                return new Response(JSON.stringify({ error: 'Только админ может удалять статьи' }), { 
+                    headers: corsHeaders, status: 403 
+                });
+            }
+            
+            const slug = path.replace('/api/articles/', '');
+            await env.DB.prepare("DELETE FROM articles WHERE slug = ?").bind(slug).run();
+            
+            return new Response(JSON.stringify({ success: true }), { 
+                headers: corsHeaders 
+            });
+        }
 <html>
 <head><title>Codepedia</title><meta charset="UTF-8"></head>
 <body>
