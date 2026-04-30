@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Создать статью — Codepedia</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .create-container { max-width: 1200px; margin: 0 auto; padding: 30px; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; font-weight: 600; margin-bottom: 8px; }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px;
+            font-family: inherit;
+        }
+        .form-group textarea { min-height: 400px; font-family: monospace; resize: vertical; }
+        .form-row { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; }
+        .btn-save { background: #ff6b00; color: white; padding: 12px 30px; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold; }
+        .btn-save:hover { background: #ff8533; }
+        .message { padding: 12px; border-radius: 8px; margin-bottom: 20px; display: none; }
+        .message.success { background: #e8f5e9; color: #2e7d32; display: block; }
+        .message.error { background: #ffebee; color: #c62828; display: block; }
+        .header { background: #0f1228; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
+        .logo h1 { font-size: 24px; color: #ff6b00; margin: 0; }
+        .nav-links a { color: #e0e0e0; text-decoration: none; margin-left: 20px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo"><h1><span style="color:#ff6b00">Code</span><span style="color:#4a90e2">pedia</span></h1></div>
+        <div class="nav-links">
+            <a href="index.html">🏠 Главная</a>
+            <a href="create.html">✏️ Создать</a>
+            <a href="my-articles.html">📄 Мои статьи</a>
+        </div>
+    </div>
+
+    <div class="create-container">
+        <h1>✏️ Создать новую статью</h1>
+        <div id="message" class="message"></div>
+
+        <form id="articleForm">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>📝 Название *</label>
+                    <input type="text" id="title" required>
+                </div>
+                <div class="form-group">
+                    <label>🔖 URL (slug) *</label>
+                    <input type="text" id="slug" required placeholder="vvedenie-v-python">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>📂 Категория</label>
+                    <select id="category">
+                        <option value="languages">📖 Языки программирования</option>
+                        <option value="algorithms">🧮 Алгоритмы</option>
+                        <option value="concepts">🧠 Концепции</option>
+                        <option value="tools">🛠️ Инструменты</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>⭐ Сложность</label>
+                    <select id="difficulty">
+                        <option value="easy">🌱 Новичок</option>
+                        <option value="medium">📘 Средний</option>
+                        <option value="hard">🔥 Продвинутый</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>🏷️ Теги (через запятую)</label>
+                    <input type="text" id="tags" placeholder="python, основы">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>📌 Краткое описание</label>
+                <textarea id="excerpt" rows="3"></textarea>
+            </div>
+            <div class="form-group">
+                <label>📄 Содержание (HTML)</label>
+                <textarea id="content" rows="15" required></textarea>
+            </div>
+            <button type="button" class="btn-save" onclick="saveArticle()">💾 Опубликовать</button>
+        </form>
+    </div>
+
+    <script>
+        function getSessionId() { return localStorage.getItem('sessionId'); }
+
+        async function saveArticle() {
+            const title = document.getElementById('title').value;
+            const slug = document.getElementById('slug').value;
+            const category = document.getElementById('category').value;
+            const difficulty = document.getElementById('difficulty').value;
+            const tags = document.getElementById('tags').value.split(',').map(t => t.trim()).filter(t => t);
+            const excerpt = document.getElementById('excerpt').value;
+            const content = document.getElementById('content').value;
+            const msgDiv = document.getElementById('message');
+
+            if (!title || !slug || !content) {
+                msgDiv.className = 'message error';
+                msgDiv.textContent = 'Заполните название, URL и содержание';
+                return;
+            }
+
+            const sessionId = getSessionId();
+            if (!sessionId) {
+                msgDiv.className = 'message error';
+                msgDiv.textContent = 'Необходимо войти в систему';
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/articles', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Session-Id': sessionId
+                    },
+                    body: JSON.stringify({ title, slug, category, difficulty, tags, excerpt, content, date: new Date().toISOString().split('T')[0] })
+                });
+
+                const data = await res.json();
+
+                if (res.ok && data.success) {
+                    msgDiv.className = 'message success';
+                    msgDiv.textContent = `Статья "${title}" успешно создана!`;
+                    document.getElementById('articleForm').reset();
+                    setTimeout(() => { window.location.href = `article.html?slug=${slug}`; }, 1500);
+                } else {
+                    msgDiv.className = 'message error';
+                    msgDiv.textContent = data.error || 'Ошибка при создании';
+                }
+            } catch (err) {
+                msgDiv.className = 'message error';
+                msgDiv.textContent = 'Ошибка соединения с сервером';
+            }
+        }
+
+        // Автогенерация slug из названия
+        document.getElementById('title').addEventListener('input', function() {
+            const slug = this.value.toLowerCase().replace(/[^a-zа-яё0-9\s]/gi, '').replace(/\s+/g, '-').replace(/[^a-z0-9-]/gi, '');
+            document.getElementById('slug').value = slug;
+        });
+    </script>
+</body>
+</html>
