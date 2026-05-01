@@ -7,7 +7,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Codepedia — свободная энциклопедия программирования. Статьи о Python, C++, Java, JavaScript, Go, Rust, алгоритмах, ООП, Git, Docker и других технологиях.">
-    <meta name="keywords" content="программирование, энциклопедия, python, c++, java, javascript, go, rust, алгоритмы, обучение программированию">
+    <meta name="keywords" content="программирование, энциклопедия, python, c++, java, javascript, go, rust, algoritms">
     <meta name="author" content="Петр Машков">
     <meta name="robots" content="index, follow">
     
@@ -15,65 +15,76 @@
     <link rel="stylesheet" href="style.css">
     
     <style>
-        .article-card {
-            border: 1px solid #eaecf0;
-            padding: 20px;
-            background: #ffffff;
-            transition: box-shadow 0.2s, border-color 0.2s;
-            border-radius: 8px;
-        }
-        .article-card:hover {
-            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-            border-color: #ff6b00;
-        }
-        .article-card h3 {
-            margin: 0 0 8px 0;
-            font-size: 18px;
-        }
-        .article-card h3 a {
-            color: #0645ad;
-            text-decoration: none;
-        }
-        .article-card p {
-            margin: 0 0 10px 0;
-            font-size: 14px;
-            color: #54595d;
-        }
-        .article-meta {
-            font-size: 12px;
-            color: #72777d;
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-        .category-badge {
-            display: inline-block;
-            padding: 3px 8px;
-            border-radius: 4px;
-            font-size: 11px;
-            background: #f0f2f5;
-        }
+        /* Основные стили */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif; background: #f6f6f6; color: #202122; line-height: 1.5; }
+        .container { max-width: 1400px; margin: 0 auto; background: white; box-shadow: 0 0 8px rgba(0,0,0,0.05); min-height: 100vh; }
+        .header { background: white; padding: 20px 30px 10px 30px; border-bottom: 1px solid #a2a9b1; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
+        .logo h1 { font-size: 30px; font-weight: 500; }
+        .code-orange { font-weight: 700; color: #ff6b00; }
+        .pedia { font-weight: 600; color: #0645ad; }
+        .tagline { color: #54595d; font-size: 13px; margin-top: 5px; }
+        .search-bar input { width: 280px; padding: 10px 14px; border: 1px solid #a2a9b1; border-radius: 4px; font-size: 14px; }
+        .main-grid { display: flex; gap: 0; }
+        .sidebar { width: 270px; background: #f8f9fa; padding: 20px 18px; border-right: 1px solid #a2a9b1; font-size: 14px; }
+        .sidebar-section { margin-bottom: 28px; }
+        .sidebar-section h3 { font-size: 15px; font-weight: 600; border-bottom: 1px solid #a2a9b1; padding-bottom: 6px; margin-bottom: 12px; }
+        .sidebar ul { list-style: none; margin-left: 5px; }
+        .sidebar li { margin: 8px 0; }
+        .sidebar a { text-decoration: none; color: #0645ad; font-size: 13.5px; }
+        .sidebar a:hover { text-decoration: underline; color: #ff6b00; }
+        .content { flex: 1; padding: 25px 35px; background: white; }
+        .content h1 { font-size: 34px; font-weight: 500; border-bottom: 1px solid #a2a9b1; margin-bottom: 20px; padding-bottom: 8px; }
+        .stats { display: flex; gap: 30px; margin: 25px 0 30px 0; padding: 18px 20px; background: #f8f9fa; border-radius: 6px; }
+        .stat { text-align: center; flex: 1; }
+        .stat-number { font-size: 32px; font-weight: 600; color: #ff6b00; }
+        .stat-label { font-size: 13px; color: #54595d; margin-top: 4px; }
+        .footer { background: #f8f9fa; border-top: 1px solid #a2a9b1; padding: 22px 30px; font-size: 13px; color: #54595d; text-align: center; }
+        .footer a { color: #0645ad; text-decoration: none; margin: 0 12px; }
+        
+        /* Кнопки авторизации */
+        .auth-buttons { display: flex; gap: 12px; align-items: center; }
+        .login-btn-header { background: transparent; border: 1.5px solid #4a90e2; color: #4a90e2; padding: 8px 20px; border-radius: 30px; cursor: pointer; font-size: 14px; font-weight: 600; transition: all 0.3s ease; }
+        .login-btn-header:hover { background: #4a90e2; color: white; transform: translateY(-2px); }
+        .register-btn-header { background: linear-gradient(135deg, #ff6b00 0%, #ff8533 100%); border: none; color: white; padding: 8px 20px; border-radius: 30px; cursor: pointer; font-size: 14px; font-weight: 600; transition: all 0.3s ease; box-shadow: 0 2px 6px rgba(255, 107, 0, 0.3); }
+        .register-btn-header:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(255, 107, 0, 0.4); }
+        .user-info { display: flex; align-items: center; gap: 12px; background: #f8f9fa; padding: 6px 16px 6px 10px; border-radius: 50px; border: 1px solid #e0e0e0; }
+        .user-avatar { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; border: 2px solid #ff6b00; }
+        .user-name { font-size: 14px; font-weight: 600; color: #333; }
+        .logout-btn { background: transparent; border: 1px solid #ddd; color: #666; padding: 6px 16px; border-radius: 30px; cursor: pointer; font-size: 13px; transition: all 0.3s ease; }
+        .logout-btn:hover { background: #ffebee; border-color: #ff5252; color: #ff1744; }
+        
+        /* Модальные окна */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
+        .modal.active { display: flex; }
+        .modal-content { background: white; padding: 30px; border-radius: 16px; width: 400px; max-width: 90%; position: relative; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+        .modal-close { position: absolute; top: 15px; right: 20px; font-size: 28px; cursor: pointer; color: #999; }
+        .modal-close:hover { color: #333; }
+        .modal h2 { margin-bottom: 20px; font-size: 24px; }
+        .modal input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; }
+        .modal button { width: 100%; padding: 12px; margin: 10px 0; border: none; border-radius: 8px; font-size: 16px; cursor: pointer; font-weight: 500; }
+        .btn-primary-modal { background: #ff6b00; color: white; }
+        .yandex-btn { background: #fc3f1d; color: white; }
+        .modal hr { margin: 15px 0; border: none; border-top: 1px solid #eee; }
+        .switch-link { text-align: center; margin-top: 15px; font-size: 13px; }
+        .switch-link a { color: #ff6b00; text-decoration: none; }
+        .error-message { color: #d32f2f; font-size: 12px; margin: 5px 0; display: none; }
+        
+        /* Карточки статей */
+        .article-card { border: 1px solid #eaecf0; padding: 20px; background: #ffffff; transition: box-shadow 0.2s, border-color 0.2s; border-radius: 8px; }
+        .article-card:hover { box-shadow: 0 2px 12px rgba(0,0,0,0.08); border-color: #ff6b00; }
+        .article-card h3 { margin: 0 0 8px 0; font-size: 18px; }
+        .article-card h3 a { color: #0645ad; text-decoration: none; }
+        .article-card p { margin: 0 0 10px 0; font-size: 14px; color: #54595d; }
+        .article-meta { font-size: 12px; color: #72777d; display: flex; gap: 15px; flex-wrap: wrap; }
+        .category-badge { display: inline-block; padding: 3px 8px; border-radius: 4px; font-size: 11px; background: #f0f2f5; }
         .difficulty-easy { background: #2e7d32; color: white; }
         .difficulty-medium { background: #ed6c02; color: white; }
         .difficulty-hard { background: #d32f2f; color: white; }
-        .article-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 22px;
-            margin: 25px 0 35px 0;
-        }
-        .section-title {
-            font-size: 26px;
-            font-weight: 500;
-            margin: 40px 0 18px 0;
-            padding-bottom: 6px;
-            border-bottom: 1px solid #a2a9b1;
-        }
-        .loading {
-            text-align: center;
-            padding: 40px;
-            color: #666;
-        }
+        .article-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 22px; margin: 25px 0 35px 0; }
+        .loading { text-align: center; padding: 40px; color: #666; }
+        
+        @media (max-width: 768px) { .main-grid { flex-direction: column; } .sidebar { width: 100%; } .auth-buttons { margin-top: 10px; } }
     </style>
 </head>
 <body>
@@ -157,11 +168,198 @@
         </div>
     </div>
 
+    <!-- Модальное окно входа -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeLoginModal()">&times;</span>
+            <h2>Вход в Codepedia</h2>
+            <div id="loginError" class="error-message"></div>
+            <input type="email" id="loginEmail" placeholder="Email" autocomplete="email">
+            <input type="password" id="loginPassword" placeholder="Пароль" autocomplete="current-password">
+            <button class="btn-primary-modal" onclick="login()">Войти</button>
+            <hr>
+            <button class="yandex-btn" onclick="loginWithYandex()">Войти через Яндекс</button>
+            <div class="switch-link">
+                Нет аккаунта? <a href="#" onclick="closeLoginModal(); openRegisterModal()">Зарегистрируйтесь</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно регистрации -->
+    <div id="registerModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeRegisterModal()">&times;</span>
+            <h2>Регистрация</h2>
+            <div id="registerError" class="error-message"></div>
+            <div id="registerSuccess" class="error-message" style="color:#2e7d32"></div>
+            <input type="email" id="regEmail" placeholder="Email" autocomplete="email">
+            <input type="text" id="regName" placeholder="Ваше имя (как будут видеть другие)">
+            <input type="password" id="regPassword" placeholder="Пароль (минимум 6 символов)" autocomplete="new-password">
+            <input type="password" id="regPassword2" placeholder="Повторите пароль" autocomplete="new-password">
+            <button class="btn-primary-modal" onclick="register()">Зарегистрироваться</button>
+            <hr>
+            <button class="yandex-btn" onclick="loginWithYandex()">Зарегистрироваться через Яндекс</button>
+            <div class="switch-link">
+                Уже есть аккаунт? <a href="#" onclick="closeRegisterModal(); openLoginModal()">Войдите</a>
+            </div>
+        </div>
+    </div>
+
     <script>
+        // ========== МОДАЛЬНЫЕ ОКНА ==========
+        function openLoginModal() {
+            document.getElementById('loginModal').classList.add('active');
+            document.getElementById('loginError').style.display = 'none';
+        }
+        function closeLoginModal() {
+            document.getElementById('loginModal').classList.remove('active');
+        }
+        function openRegisterModal() {
+            document.getElementById('registerModal').classList.add('active');
+            document.getElementById('registerError').style.display = 'none';
+        }
+        function closeRegisterModal() {
+            document.getElementById('registerModal').classList.remove('active');
+        }
+        
+        window.onclick = function(event) {
+            if (event.target.classList && event.target.classList.contains('modal')) {
+                event.target.classList.remove('active');
+            }
+        }
+        
+        // ========== АВТОРИЗАЦИЯ ==========
+        function getSessionId() { return localStorage.getItem('sessionId'); }
+        
+        async function login() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const errorDiv = document.getElementById('loginError');
+            
+            if (!email || !password) {
+                errorDiv.textContent = 'Введите email и пароль';
+                errorDiv.style.display = 'block';
+                return;
+            }
+            
+            try {
+                const res = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const data = await res.json();
+                
+                if (res.ok && data.success) {
+                    localStorage.setItem('sessionId', data.sessionId);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    closeLoginModal();
+                    updateUI();
+                    window.location.reload();
+                } else {
+                    errorDiv.textContent = data.error || 'Ошибка входа';
+                    errorDiv.style.display = 'block';
+                }
+            } catch (err) {
+                errorDiv.textContent = 'Ошибка соединения с сервером';
+                errorDiv.style.display = 'block';
+            }
+        }
+        
+        async function register() {
+            const email = document.getElementById('regEmail').value;
+            const name = document.getElementById('regName').value;
+            const password = document.getElementById('regPassword').value;
+            const password2 = document.getElementById('regPassword2').value;
+            const errorDiv = document.getElementById('registerError');
+            const successDiv = document.getElementById('registerSuccess');
+            
+            errorDiv.style.display = 'none';
+            successDiv.style.display = 'none';
+            
+            if (!email || !password) {
+                errorDiv.textContent = 'Заполните email и пароль';
+                errorDiv.style.display = 'block';
+                return;
+            }
+            if (password !== password2) {
+                errorDiv.textContent = 'Пароли не совпадают';
+                errorDiv.style.display = 'block';
+                return;
+            }
+            if (password.length < 6) {
+                errorDiv.textContent = 'Пароль должен быть минимум 6 символов';
+                errorDiv.style.display = 'block';
+                return;
+            }
+            
+            try {
+                const res = await fetch('/api/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password, name: name || email.split('@')[0] })
+                });
+                
+                const data = await res.json();
+                
+                if (res.ok && data.success) {
+                    successDiv.textContent = 'Регистрация успешна! Теперь войдите.';
+                    successDiv.style.display = 'block';
+                    setTimeout(() => {
+                        closeRegisterModal();
+                        openLoginModal();
+                        document.getElementById('loginEmail').value = email;
+                    }, 2000);
+                } else {
+                    errorDiv.textContent = data.error || 'Ошибка регистрации';
+                    errorDiv.style.display = 'block';
+                }
+            } catch (err) {
+                errorDiv.textContent = 'Ошибка соединения с сервером';
+                errorDiv.style.display = 'block';
+            }
+        }
+        
+        async function logout() {
+            const sessionId = getSessionId();
+            if (sessionId) {
+                await fetch('/api/logout', { method: 'POST', headers: { 'X-Session-Id': sessionId } });
+            }
+            localStorage.removeItem('sessionId');
+            localStorage.removeItem('user');
+            updateUI();
+            window.location.reload();
+        }
+        
+        function loginWithYandex() {
+            alert('Функция входа через Яндекс будет добавлена позже. Пока используйте email.');
+        }
+        
+        async function updateUI() {
+            const sessionId = getSessionId();
+            const userStr = localStorage.getItem('user');
+            const authButtons = document.getElementById('authButtons');
+            const userInfo = document.getElementById('userInfo');
+            const userName = document.getElementById('userName');
+            const userAvatar = document.getElementById('userAvatar');
+            
+            if (sessionId && userStr && authButtons && userInfo) {
+                const user = JSON.parse(userStr);
+                authButtons.style.display = 'none';
+                userInfo.style.display = 'flex';
+                if (userName) userName.textContent = user.name || user.email;
+                if (userAvatar) userAvatar.src = `https://api.dicebear.com/7.x/initials/svg?seed=${user.name || user.email}`;
+            } else if (authButtons && userInfo) {
+                authButtons.style.display = 'flex';
+                userInfo.style.display = 'none';
+            }
+        }
+        
+        // ========== СТАТЬИ ==========
         let allArticles = [];
         let currentCategory = 'all';
         
-        // Статические статьи из папки articles/
         const staticArticles = [
             { id: 'python', title: 'Python', slug: 'python', category: 'languages', difficulty: 'easy', excerpt: 'Высокоуровневый язык с динамической типизацией. Прост для изучения.', author_name: 'Редакция', date: '2024-01-15', isStatic: true },
             { id: 'cpp', title: 'C++', slug: 'cpp', category: 'languages', difficulty: 'hard', excerpt: 'Мощный компилируемый язык для системного программирования.', author_name: 'Редакция', date: '2024-01-15', isStatic: true },
@@ -180,184 +378,61 @@
             { id: 'vscode', title: 'Visual Studio Code', slug: 'vscode', category: 'tools', difficulty: 'easy', excerpt: 'Популярный редактор кода от Microsoft.', author_name: 'Редакция', date: '2024-01-15', isStatic: true }
         ];
 
-        function getDifficultyClass(difficulty) {
-            if (difficulty === 'easy') return 'difficulty-easy';
-            if (difficulty === 'medium') return 'difficulty-medium';
-            return 'difficulty-hard';
-        }
-
-        function getDifficultyText(difficulty) {
-            if (difficulty === 'easy') return '🌱 Новичок';
-            if (difficulty === 'medium') return '📘 Средний';
-            return '🔥 Продвинутый';
-        }
-
-        function getCategoryText(category) {
-            const categories = {
-                languages: '📖 Языки',
-                algorithms: '🧮 Алгоритмы',
-                concepts: '🧠 Концепции',
-                tools: '🛠️ Инструменты'
-            };
-            return categories[category] || category;
-        }
-
-        function getArticleLink(article) {
-            if (article.isStatic) {
-                return `articles/${article.slug}.html`;
-            }
-            return `article.html?slug=${article.slug}`;
-        }
+        function getDifficultyClass(d) { return d === 'easy' ? 'difficulty-easy' : d === 'medium' ? 'difficulty-medium' : 'difficulty-hard'; }
+        function getDifficultyText(d) { return d === 'easy' ? '🌱 Новичок' : d === 'medium' ? '📘 Средний' : '🔥 Продвинутый'; }
+        function getCategoryText(c) { const cat = { languages: '📖 Языки', algorithms: '🧮 Алгоритмы', concepts: '🧠 Концепции', tools: '🛠️ Инструменты' }; return cat[c] || c; }
+        function getArticleLink(a) { return a.isStatic ? `articles/${a.slug}.html` : `article.html?slug=${a.slug}`; }
+        function escapeHtml(t) { const div = document.createElement('div'); div.textContent = t; return div.innerHTML; }
 
         function renderArticles() {
             const container = document.getElementById('articlesContainer');
-            let filtered = allArticles;
-            
-            if (currentCategory !== 'all') {
-                filtered = allArticles.filter(a => a.category === currentCategory);
-            }
-            
+            let filtered = currentCategory === 'all' ? allArticles : allArticles.filter(a => a.category === currentCategory);
             document.getElementById('statCount').textContent = allArticles.length;
-            
-            if (filtered.length === 0) {
-                container.innerHTML = '<div class="loading">📭 Статей не найдено</div>';
-                return;
-            }
-            
-            const html = `
-                <div class="article-grid">
-                    ${filtered.map(article => `
-                        <div class="article-card">
-                            <div class="article-meta" style="margin-bottom: 10px;">
-                                <span class="category-badge">${getCategoryText(article.category)}</span>
-                                <span class="${getDifficultyClass(article.difficulty)}" style="padding: 2px 8px; border-radius: 20px; font-size: 11px;">${getDifficultyText(article.difficulty)}</span>
-                            </div>
-                            <h3><a href="${getArticleLink(article)}">${escapeHtml(article.title)}</a></h3>
-                            <p>${escapeHtml(article.excerpt || article.title)}</p>
-                            <div class="article-meta">
-                                <span>👤 ${escapeHtml(article.author_name || 'Аноним')}</span>
-                                <span>📅 ${article.date || '2024'}</span>
-                                ${article.views ? `<span>👁️ ${article.views} просмотров</span>` : ''}
-                                ${article.isStatic ? '<span>📄 Из архива</span>' : '<span>✏️ Пользовательская</span>'}
-                            </div>
-                        </div>
-                    `).join('')}
-                </div>
-            `;
-            
-            container.innerHTML = html;
-        }
-
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
+            if (!filtered.length) { container.innerHTML = '<div class="loading">📭 Статей не найдено</div>'; return; }
+            container.innerHTML = `<div class="article-grid">${filtered.map(a => `
+                <div class="article-card">
+                    <div class="article-meta" style="margin-bottom: 10px;">
+                        <span class="category-badge">${getCategoryText(a.category)}</span>
+                        <span class="${getDifficultyClass(a.difficulty)}" style="padding:2px 8px;border-radius:20px;font-size:11px;">${getDifficultyText(a.difficulty)}</span>
+                    </div>
+                    <h3><a href="${getArticleLink(a)}">${escapeHtml(a.title)}</a></h3>
+                    <p>${escapeHtml(a.excerpt || a.title)}</p>
+                    <div class="article-meta"><span>👤 ${escapeHtml(a.author_name || 'Аноним')}</span><span>📅 ${a.date || '2024'}</span>${a.views ? `<span>👁️ ${a.views}</span>` : ''}${a.isStatic ? '<span>📄 Архив</span>' : '<span>✏️ Пользовательская</span>'}</div>
+                </div>`).join('')}</div>`;
         }
 
         async function loadUserArticles() {
             try {
                 const res = await fetch('/api/articles');
-                if (res.ok) {
-                    const userArticles = await res.json();
-                    return userArticles.map(a => ({ ...a, isStatic: false }));
-                }
-            } catch (err) {
-                console.error('Ошибка загрузки статей из БД:', err);
-            }
+                if (res.ok) return (await res.json()).map(a => ({ ...a, isStatic: false }));
+            } catch(e) { console.error(e); }
             return [];
         }
 
         async function loadAllArticles() {
-            const container = document.getElementById('articlesContainer');
-            container.innerHTML = '<div class="loading">Загрузка статей...</div>';
-            
+            document.getElementById('articlesContainer').innerHTML = '<div class="loading">Загрузка статей...</div>';
             const userArticles = await loadUserArticles();
             allArticles = [...staticArticles, ...userArticles];
-            allArticles.sort((a, b) => new Date(b.date) - new Date(a.date));
-            
+            allArticles.sort((a,b) => new Date(b.date) - new Date(a.date));
             renderArticles();
         }
 
-        // Поиск
-        const searchInput = document.getElementById('searchInput');
-        if (searchInput) {
-            searchInput.addEventListener('input', function(e) {
-                const query = e.target.value.toLowerCase().trim();
-                if (query === '') {
-                    renderArticles();
-                } else {
-                    const filtered = allArticles.filter(a => 
-                        a.title.toLowerCase().includes(query) || 
-                        (a.excerpt && a.excerpt.toLowerCase().includes(query))
-                    );
-                    const container = document.getElementById('articlesContainer');
-                    if (filtered.length === 0) {
-                        container.innerHTML = '<div class="loading">🔍 Статей не найдено</div>';
-                    } else {
-                        container.innerHTML = `
-                            <div class="article-grid">
-                                ${filtered.map(article => `
-                                    <div class="article-card">
-                                        <div class="article-meta" style="margin-bottom: 10px;">
-                                            <span class="category-badge">${getCategoryText(article.category)}</span>
-                                            <span class="${getDifficultyClass(article.difficulty)}" style="padding: 2px 8px; border-radius: 20px; font-size: 11px;">${getDifficultyText(article.difficulty)}</span>
-                                        </div>
-                                        <h3><a href="${getArticleLink(article)}">${escapeHtml(article.title)}</a></h3>
-                                        <p>${escapeHtml(article.excerpt || article.title)}</p>
-                                        <div class="article-meta">
-                                            <span>👤 ${escapeHtml(article.author_name || 'Аноним')}</span>
-                                            <span>📅 ${article.date || '2024'}</span>
-                                        </div>
-                                    </div>
-                                `).join('')}
-                            </div>
-                        `;
-                    }
-                }
-            });
-        }
-
-        // Фильтр по категориям
-        document.querySelectorAll('[data-category]').forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                currentCategory = link.dataset.category;
-                renderArticles();
-            });
+        document.getElementById('searchInput')?.addEventListener('input', e => {
+            const q = e.target.value.toLowerCase().trim();
+            if (!q) { renderArticles(); return; }
+            const filtered = allArticles.filter(a => a.title.toLowerCase().includes(q) || (a.excerpt && a.excerpt.toLowerCase().includes(q)));
+            document.getElementById('articlesContainer').innerHTML = filtered.length ? `<div class="article-grid">${filtered.map(a => `
+                <div class="article-card">
+                    <div class="article-meta" style="margin-bottom:10px;"><span class="category-badge">${getCategoryText(a.category)}</span><span class="${getDifficultyClass(a.difficulty)}" style="padding:2px8px;border-radius:20px;font-size:11px;">${getDifficultyText(a.difficulty)}</span></div>
+                    <h3><a href="${getArticleLink(a)}">${escapeHtml(a.title)}</a></h3>
+                    <p>${escapeHtml(a.excerpt || a.title)}</p>
+                    <div class="article-meta"><span>👤 ${escapeHtml(a.author_name || 'Аноним')}</span><span>📅 ${a.date || '2024'}</span></div>
+                </div>`).join('')}</div>` : '<div class="loading">🔍 Статей не найдено</div>';
         });
 
-        // Авторизация (функции из предыдущего кода)
-        function getSessionId() { return localStorage.getItem('sessionId'); }
-        
-        async function updateUI() {
-            const sessionId = getSessionId();
-            const userStr = localStorage.getItem('user');
-            
-            if (sessionId && userStr) {
-                const user = JSON.parse(userStr);
-                document.getElementById('authButtons').style.display = 'none';
-                document.getElementById('userInfo').style.display = 'flex';
-                document.getElementById('userName').textContent = user.name || user.email;
-                document.getElementById('userAvatar').src = `https://api.dicebear.com/7.x/initials/svg?seed=${user.name || user.email}`;
-            } else {
-                document.getElementById('authButtons').style.display = 'flex';
-                document.getElementById('userInfo').style.display = 'none';
-            }
-        }
-        
-        async function logout() {
-            const sessionId = getSessionId();
-            if (sessionId) {
-                await fetch('/api/logout', { method: 'POST', headers: { 'X-Session-Id': sessionId } });
-            }
-            localStorage.removeItem('sessionId');
-            localStorage.removeItem('user');
-            updateUI();
-            window.location.reload();
-        }
-        
-        function openLoginModal() { window.location.href = '#login'; }
-        function openRegisterModal() { window.location.href = '#register'; }
+        document.querySelectorAll('[data-category]').forEach(link => {
+            link.addEventListener('click', e => { e.preventDefault(); currentCategory = link.dataset.category; renderArticles(); });
+        });
         
         updateUI();
         loadAllArticles();
