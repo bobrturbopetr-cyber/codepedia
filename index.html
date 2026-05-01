@@ -126,6 +126,15 @@
                         <li><a href="#" data-category="algorithms">🧮 Алгоритмы</a></li>
                         <li><a href="#" data-category="concepts">🧠 Концепции</a></li>
                         <li><a href="#" data-category="tools">🛠️ Инструменты</a></li>
+                        <li><a href="courses.html">🎓 Курсы по программированию</a></li>
+                    </ul>
+                </div>
+                <div class="sidebar-section">
+                    <h3>🎓 Обучение</h3>
+                    <ul>
+                        <li><a href="courses.html">📚 Codepedia Courses</a></li>
+                        <li><a href="progress.html">📊 Мой прогресс</a></li>
+                        <li><a href="tutor.html">💬 Связаться с репетитором</a></li>
                     </ul>
                 </div>
                 <div class="sidebar-section">
@@ -376,13 +385,14 @@
             { id: 'pointers', title: 'Указатели и ссылки', slug: 'pointers', category: 'concepts', difficulty: 'hard', excerpt: 'Работа с памятью в C/C++.', author_name: 'Редакция', date: '2024-01-15', isStatic: true },
             { id: 'git', title: 'Git', slug: 'git', category: 'tools', difficulty: 'medium', excerpt: 'Система контроля версий. Коммиты, ветки, merge, rebase.', author_name: 'Редакция', date: '2024-01-15', isStatic: true },
             { id: 'docker', title: 'Docker', slug: 'docker', category: 'tools', difficulty: 'medium', excerpt: 'Контейнеризация приложений. Dockerfile, образы, контейнеры.', author_name: 'Редакция', date: '2024-01-15', isStatic: true },
-            { id: 'vscode', title: 'Visual Studio Code', slug: 'vscode', category: 'tools', difficulty: 'easy', excerpt: 'Популярный редактор кода от Microsoft.', author_name: 'Редакция', date: '2024-01-15', isStatic: true }
+            { id: 'vscode', title: 'Visual Studio Code', slug: 'vscode', category: 'tools', difficulty: 'easy', excerpt: 'Популярный редактор кода от Microsoft.', author_name: 'Редакция', date: '2024-01-15', isStatic: true },
+            { id: 'vsosh', title: 'ВСОШ по программированию', slug: 'vsosh', category: 'courses', difficulty: 'hard', excerpt: 'Подготовка к Всероссийской олимпиаде школьников. Курс из 7 уроков.', author_name: 'Codepedia Courses', date: '2025-01-01', isStatic: false, specialLink: 'courses.html' }
         ];
 
         function getDifficultyClass(d) { return d === 'easy' ? 'difficulty-easy' : d === 'medium' ? 'difficulty-medium' : 'difficulty-hard'; }
         function getDifficultyText(d) { return d === 'easy' ? '🌱 Новичок' : d === 'medium' ? '📘 Средний' : '🔥 Продвинутый'; }
-        function getCategoryText(c) { const cat = { languages: '📖 Языки', algorithms: '🧮 Алгоритмы', concepts: '🧠 Концепции', tools: '🛠️ Инструменты' }; return cat[c] || c; }
-        function getArticleLink(a) { return a.isStatic ? `articles/${a.slug}.html` : `article.html?slug=${a.slug}`; }
+        function getCategoryText(c) { const cat = { languages: '📖 Языки', algorithms: '🧮 Алгоритмы', concepts: '🧠 Концепции', tools: '🛠️ Инструменты', courses: '🎓 Курсы' }; return cat[c] || c; }
+        function getArticleLink(a) { if (a.specialLink) return a.specialLink; return a.isStatic ? `articles/${a.slug}.html` : `article.html?slug=${a.slug}`; }
         function escapeHtml(t) { const div = document.createElement('div'); div.textContent = t; return div.innerHTML; }
 
         function renderArticles() {
@@ -394,11 +404,11 @@
                 <div class="article-card">
                     <div class="article-meta" style="margin-bottom: 10px;">
                         <span class="category-badge">${getCategoryText(a.category)}</span>
-                        <span class="${getDifficultyClass(a.difficulty)}" style="padding:2px 8px;border-radius:20px;font-size:11px;">${getDifficultyText(a.difficulty)}</span>
+                        ${a.difficulty ? `<span class="${getDifficultyClass(a.difficulty)}" style="padding:2px 8px;border-radius:20px;font-size:11px;">${getDifficultyText(a.difficulty)}</span>` : ''}
                     </div>
                     <h3><a href="${getArticleLink(a)}">${escapeHtml(a.title)}</a></h3>
                     <p>${escapeHtml(a.excerpt || a.title)}</p>
-                    <div class="article-meta"><span>👤 ${escapeHtml(a.author_name || 'Аноним')}</span><span>📅 ${a.date || '2024'}</span>${a.views ? `<span>👁️ ${a.views}</span>` : ''}${a.isStatic ? '<span>📄 Архив</span>' : '<span>✏️ Пользовательская</span>'}</div>
+                    <div class="article-meta"><span>👤 ${escapeHtml(a.author_name || 'Аноним')}</span><span>📅 ${a.date || '2024'}</span>${a.views ? `<span>👁️ ${a.views}</span>` : ''}${a.isStatic ? '<span>📄 Архив</span>' : a.specialLink ? '<span>🎓 Курс</span>' : '<span>✏️ Пользовательская</span>'}</div>
                 </div>`).join('')}</div>`;
         }
 
@@ -424,7 +434,7 @@
             const filtered = allArticles.filter(a => a.title.toLowerCase().includes(q) || (a.excerpt && a.excerpt.toLowerCase().includes(q)));
             document.getElementById('articlesContainer').innerHTML = filtered.length ? `<div class="article-grid">${filtered.map(a => `
                 <div class="article-card">
-                    <div class="article-meta" style="margin-bottom:10px;"><span class="category-badge">${getCategoryText(a.category)}</span><span class="${getDifficultyClass(a.difficulty)}" style="padding:2px8px;border-radius:20px;font-size:11px;">${getDifficultyText(a.difficulty)}</span></div>
+                    <div class="article-meta" style="margin-bottom:10px;"><span class="category-badge">${getCategoryText(a.category)}</span>${a.difficulty ? `<span class="${getDifficultyClass(a.difficulty)}" style="padding:2px8px;border-radius:20px;font-size:11px;">${getDifficultyText(a.difficulty)}</span>` : ''}</div>
                     <h3><a href="${getArticleLink(a)}">${escapeHtml(a.title)}</a></h3>
                     <p>${escapeHtml(a.excerpt || a.title)}</p>
                     <div class="article-meta"><span>👤 ${escapeHtml(a.author_name || 'Аноним')}</span><span>📅 ${a.date || '2024'}</span></div>
