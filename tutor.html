@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Репетитор — Codepedia Courses</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .chat-container { display: flex; gap: 30px; flex-wrap: wrap; }
+        .chat-messages { flex: 2; background: #0f1228; border-radius: 16px; height: 500px; display: flex; flex-direction: column; }
+        .messages-list { flex: 1; overflow-y: auto; padding: 20px; }
+        .message { margin-bottom: 20px; display: flex; }
+        .message.user { justify-content: flex-end; }
+        .message.tutor { justify-content: flex-start; }
+        .message-bubble { max-width: 70%; padding: 12px 16px; border-radius: 18px; }
+        .message.user .message-bubble { background: #ff6b00; color: white; }
+        .message.tutor .message-bubble { background: #1a1f3a; color: white; }
+        .message-time { font-size: 10px; color: #666; margin-top: 5px; margin-left: 10px; }
+        .chat-input-area { padding: 20px; border-top: 1px solid #1a1f3a; display: flex; gap: 10px; }
+        .chat-input { flex: 1; background: #1a1f3a; border: none; padding: 12px; border-radius: 24px; color: white; }
+        .send-btn { background: #ff6b00; border: none; padding: 12px 24px; border-radius: 24px; color: white; cursor: pointer; }
+        .info-card { flex: 1; background: #0f1228; border-radius: 16px; padding: 20px; }
+        .info-card h3 { margin-bottom: 15px; }
+        .info-item { margin-bottom: 12px; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo"><h1><span class="code-orange">Code</span><span class="pedia">pedia</span> <span style="font-size:14px">Courses</span></h1></div>
+        <div class="nav-links">
+            <a href="index.html">🏠 Главная</a>
+            <a href="courses.html">📚 Курсы</a>
+            <a href="progress.html">📊 Мой прогресс</a>
+            <a href="tutor.html" class="active">💬 Репетитор</a>
+        </div>
+        <div id="authBlock"></div>
+    </div>
+
+    <div class="container" style="padding: 30px;">
+        <div id="chatContent" style="display: none;">
+            <div class="chat-container">
+                <div class="chat-messages">
+                    <div class="messages-list" id="messagesList"></div>
+                    <div class="chat-input-area">
+                        <input type="text" id="messageInput" class="chat-input" placeholder="Задайте вопрос репетитору...">
+                        <button class="send-btn" onclick="sendMessage()">📤 Отправить</button>
+                    </div>
+                </div>
+                <div class="info-card">
+                    <h3>👨‍🏫 Ваш репетитор</h3>
+                    <div class="info-item"><strong>Имя:</strong> Алексей Владимирович</div>
+                    <div class="info-item"><strong>Экспертиза:</strong> ВСОШ, ВКОШ, ICPC</div>
+                    <div class="info-item"><strong>Часы ответов:</strong> Пн-Пт 10:00-20:00</div>
+                    <div class="info-item"><strong>Ответы:</strong> в течение 24 часов</div>
+                    <hr style="margin: 15px 0; border-color: #1a1f3a;">
+                    <div class="info-item">📧 <strong>Прямая связь:</strong> tutor@codepedia.space</div>
+                </div>
+            </div>
+        </div>
+        <div id="loginRequired" style="text-align: center; padding: 80px;">
+            <h2>🔐 Требуется авторизация</h2>
+            <p>Войдите в аккаунт, чтобы общаться с репетитором</p>
+            <button class="login-btn-header" onclick="window.location.href='index.html'">Войти</button>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>Codepedia Courses — подготовка к ВСОШ | © 2024-2026</p>
+    </div>
+
+    <script>
+        let currentUser = null;
+        let currentSessionId = localStorage.getItem('sessionId');
+        let messages = [];
+
+        async function fetchWithAuth(url, options = {}) {
+            const res = await fetch(url, { ...options, headers: { ...options.headers, 'X-Session-Id': currentSessionId } });
+            return res;
+        }
+
+        async function loadMessages() {
+            try {
+                const res = await fetchWithAuth('/api/tutor-messages');
+                if (res.ok) {
+                    messages = await res.json();
+                    renderMessages();
+                }
+            } catch(e) { console.error(e); }
+        }
+
+        function renderMessages() {
+            const container = document.getElementById('messagesList');
+            if (!container) return;
+            container.innerHTML = messages.map(msg => `
+                <div class="message ${msg.direction === 'to_user' ? 'tutor' : 'user'}">
+                    <div>
+                        <div class="message-bubble">${escapeHtml(msg.message)}</div>
+                        <div class="message-time">${new Date(msg.created_at).toLocaleString()}</div>
+                    </div>
+                </div>
+            `).join('');
+            container.scrollTop = container.scrollHeight;
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const text = input.value.trim();
+            if (!text) return;
+            input.value = '';
+            try {
+                const res = await fetchWithAuth('/api/tutor-messages', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: text, direction: 'to_tutor' })
+                });
+                if (res.ok) {
+                    messages.push({ message: text, direction: 'to_tutor', created_at: new Date().toISOString() });
+                    renderMessages();
+                }
+            } catch(e) { alert('Ошибка отправки'); input.value = text; }
+        }
+
+        function escapeHtml(text) { const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
+
+        async function loadUser() {
+            if (!currentSessionId) return null;
+            try {
+                const res = await fetch('/api/me', { headers: { 'X-Session-Id': currentSessionId } });
+                if (res.ok) { const data = await res.json(); currentUser = data.user; return currentUser; }
+            } catch(e) {}
+            return null;
+        }
+
+        function updateUI() {
+            const authBlock = document.getElementById('authBlock');
+            if (currentUser) {
+                authBlock.innerHTML = `<div class="user-info"><img class="user-avatar" src="https://api.dicebear.com/7.x/initials/svg?seed=${currentUser.name || currentUser.email}" width="36" height="36" style="border-radius: 50%;"><span class="user-name">${currentUser.name || currentUser.email}</span><button class="logout-btn" onclick="logout()">Выйти</button></div>`;
+                document.getElementById('chatContent').style.display = 'block';
+                document.getElementById('loginRequired').style.display = 'none';
+                loadMessages();
+                setInterval(loadMessages, 30000);
+            } else {
+                authBlock.innerHTML = `<div class="auth-buttons"><button class="login-btn-header" onclick="window.location.href='index.html'">Вход</button><button class="register-btn-header" onclick="window.location.href='index.html'">Регистрация</button></div>`;
+                document.getElementById('chatContent').style.display = 'none';
+                document.getElementById('loginRequired').style.display = 'block';
+            }
+        }
+
+        async function logout() {
+            if (currentSessionId) await fetch('/api/logout', { method: 'POST', headers: { 'X-Session-Id': currentSessionId } });
+            localStorage.removeItem('sessionId');
+            localStorage.removeItem('user');
+            window.location.href = 'index.html';
+        }
+
+        async function init() {
+            await loadUser();
+            updateUI();
+        }
+        init();
+    </script>
+</body>
+</html>
