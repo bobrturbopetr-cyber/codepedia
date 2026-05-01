@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Урок — Codepedia Courses</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .lesson-container { display: flex; gap: 30px; }
+        .theory { flex: 1.5; background: #0f1228; border-radius: 16px; padding: 30px; }
+        .task { flex: 1; background: #0f1228; border-radius: 16px; padding: 30px; }
+        .task h3 { color: #ff6b00; margin-bottom: 15px; }
+        .task pre { background: #1a1f3a; padding: 15px; border-radius: 8px; overflow-x: auto; }
+        .solution-input { width: 100%; min-height: 200px; background: #1a1f3a; border: 1px solid #2a2f4a; color: white; font-family: monospace; padding: 15px; border-radius: 8px; margin: 15px 0; }
+        .check-btn { background: #ff6b00; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; }
+        .check-btn:hover { background: #ff8533; }
+        .feedback { margin-top: 15px; padding: 12px; border-radius: 8px; display: none; }
+        .feedback.success { background: #2e7d32; display: block; }
+        .feedback.error { background: #c62828; display: block; }
+        .navigation { margin-top: 30px; display: flex; justify-content: space-between; }
+        .complete-btn { background: #4a90e2; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; }
+        @media (max-width: 768px) { .lesson-container { flex-direction: column; } }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo"><h1><span class="code-orange">Code</span><span class="pedia">pedia</span> <span style="font-size:14px">Courses</span></h1></div>
+        <div class="nav-links">
+            <a href="index.html">🏠 Главная</a>
+            <a href="courses.html">📚 Курсы</a>
+            <a href="progress.html">📊 Мой прогресс</a>
+            <a href="tutor.html">💬 Репетитор</a>
+        </div>
+        <div id="authBlock"></div>
+    </div>
+
+    <div class="container" style="padding: 30px;">
+        <div id="lessonContent"></div>
+    </div>
+
+    <div class="footer">
+        <p>Codepedia Courses — подготовка к ВСОШ | © 2024-2026</p>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const courseId = urlParams.get('course_id');
+        const lessonId = urlParams.get('lesson_id');
+        let currentUser = null;
+        let currentSessionId = localStorage.getItem('sessionId');
+
+        async function fetchWithAuth(url, options = {}) {
+            const res = await fetch(url, { ...options, headers: { ...options.headers, 'X-Session-Id': currentSessionId } });
+            return res;
+        }
+
+        async function loadLesson() {
+            if (!courseId || !lessonId) { window.location.href = 'courses.html'; return; }
+            try {
+                const [lessonRes, progressRes] = await Promise.all([
+                    fetch(`/api/lessons/${lessonId}`),
+                    currentUser ? fetchWithAuth(`/api/user-progress/${lessonId}`) : Promise.resolve({ ok: false, json: async () => ({ completed: false }) })
+                ]);
+                
+                const lesson = await lessonRes.json();
+                const progress = progressRes.ok ? await progressRes.json() : { completed: false };
+                
+                document.getElementById('lessonContent').innerHTML = `
+                    <div class="lesson-container">
+                        <div class="theory">
+                            <h1>${escapeHtml(lesson.title)}</h1>
+                            ${lesson.theory || '<p>Теория загружается...</p>'}
+                        </div>
+                        <div class="task">
+                            <h3>📝 Задание</h3>
+                            <p>${escapeHtml(lesson.task || 'Решите задачу и отправьте решение на проверку.')}</p>
+                            ${lesson.task_examples ? `<pre><code>${escapeHtml(lesson.task_examples)}</code></pre>` : ''}
+                            <textarea id="solution" class="solution-input" placeholder="Введите ваше решение..."></textarea>
+                            <button class="check-btn" onclick="checkSolution()">🔍 Проверить решение</button>
+                            <div id="feedback" class="feedback"></div>
+                            <div class="navigation">
+                                <button class="complete-btn" id="completeBtn" onclick="completeLesson()" ${progress.completed ? 'disabled' : ''}>✅ Завершить урок</button>
+                                <a href="course.html?id=${courseId}" style="color: #4a90e2;">← Вернуться к курсу</a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                if (progress.completed) {
+                    document.getElementById('completeBtn').textContent = '✅ Пройдено';
+                    document.getElementById('solution').value = progress.solution || '';
+                }
+            } catch(e) {
+                document.getElementById('lessonContent').innerHTML = '<div class="loading">Ошибка загрузки урока</div>';
+            }
+        }
+
+        async function checkSolution() {
+            const solution = document.getElementById('solution').value;
+            if (!solution.trim()) {
+                showFeedback('Введите решение', 'error');
+                return;
+            }
+            try {
+                const res = await fetch('/api/check-solution', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-Session-Id': currentSessionId },
+                    body: JSON.stringify({ lesson_id: lessonId, solution })
+                });
+                const data = await res.json();
+                if (data.correct !== undefined) {
+                    if (data.correct) showFeedback('✅ Решение верное!', 'success');
+                    else showFeedback('❌ Решение неверное. Попробуйте ещё раз.', 'error');
+                } else {
+                    showFeedback(data.message || 'Ошибка проверки', 'error');
+                }
+            } catch(e) {
+                showFeedback('Ошибка соединения', 'error');
+            }
+        }
+
+        async function completeLesson() {
+            if (!currentUser) {
+                alert('Войдите в аккаунт, чтобы сохранить прогресс');
+                return;
+            }
+            const solution = document.getElementById('solution').value;
+            try {
+                const res = await fetchWithAuth('/api/user-progress', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ lesson_id: lessonId, solution, completed: true })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    document.getElementById('completeBtn').textContent = '✅ Пройдено';
+                    document.getElementById('completeBtn').disabled = true;
+                    showFeedback('Прогресс сохранён!', 'success');
+                    setTimeout(() => { window.location.href = `course.html?id=${courseId}`; }, 1500);
+                } else {
+                    showFeedback(data.error || 'Ошибка сохранения', 'error');
+                }
+            } catch(e) {
+                showFeedback('Ошибка соединения', 'error');
+            }
+        }
+
+        function showFeedback(msg, type) {
+            const fb = document.getElementById('feedback');
+            fb.textContent = msg;
+            fb.className = `feedback ${type}`;
+            setTimeout(() => { fb.className = 'feedback'; }, 5000);
+        }
+
+        function escapeHtml(text) { const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
+
+        async function loadUser() {
+            if (!currentSessionId) return null;
+            try {
+                const res = await fetch('/api/me', { headers: { 'X-Session-Id': currentSessionId } });
+                if (res.ok) { const data = await res.json(); currentUser = data.user; return currentUser; }
+            } catch(e) {}
+            return null;
+        }
+
+        function updateUI() {
+            const authBlock = document.getElementById('authBlock');
+            if (currentUser) {
+                authBlock.innerHTML = `<div class="user-info"><img class="user-avatar" src="https://api.dicebear.com/7.x/initials/svg?seed=${currentUser.name || currentUser.email}" width="36" height="36" style="border-radius: 50%;"><span class="user-name">${currentUser.name || currentUser.email}</span><button class="logout-btn" onclick="logout()">Выйти</button></div>`;
+            } else {
+                authBlock.innerHTML = `<div class="auth-buttons"><button class="login-btn-header" onclick="window.location.href='index.html'">Вход</button><button class="register-btn-header" onclick="window.location.href='index.html'">Регистрация</button></div>`;
+            }
+        }
+
+        async function logout() {
+            if (currentSessionId) await fetch('/api/logout', { method: 'POST', headers: { 'X-Session-Id': currentSessionId } });
+            localStorage.removeItem('sessionId');
+            localStorage.removeItem('user');
+            window.location.href = 'index.html';
+        }
+
+        async function init() {
+            await loadUser();
+            updateUI();
+            await loadLesson();
+        }
+        init();
+    </script>
+</body>
+</html>
