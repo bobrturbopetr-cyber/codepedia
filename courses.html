@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Курсы — Codepedia Courses</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .courses-header {
+            background: linear-gradient(135deg, #0f1228 0%, #1a1f3a 100%);
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .courses-header h1 { color: #ff6b00; margin-bottom: 10px; }
+        .courses-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+        }
+        .course-card {
+            background: #0f1228;
+            border-radius: 16px;
+            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: 1px solid #1a1f3a;
+        }
+        .course-card:hover { transform: translateY(-4px); box-shadow: 0 10px 30px rgba(0,0,0,0.3); border-color: #ff6b00; }
+        .course-cover { height: 160px; background: linear-gradient(135deg, #ff6b00, #4a90e2); display: flex; align-items: center; justify-content: center; font-size: 64px; }
+        .course-info { padding: 20px; }
+        .course-title { font-size: 22px; font-weight: bold; margin-bottom: 8px; }
+        .course-title a { color: white; text-decoration: none; }
+        .course-desc { color: #a0a0a0; font-size: 14px; margin-bottom: 15px; line-height: 1.5; }
+        .course-meta { display: flex; gap: 15px; font-size: 13px; color: #ff6b00; margin-bottom: 15px; }
+        .progress-bar { height: 4px; background: #1a1f3a; border-radius: 2px; overflow: hidden; margin-bottom: 15px; }
+        .progress-fill { height: 100%; background: #ff6b00; width: 0%; transition: width 0.3s; }
+        .btn-continue { background: #ff6b00; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; width: 100%; font-weight: bold; }
+        .btn-continue:hover { background: #ff8533; }
+        .level-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 11px; margin-bottom: 10px; }
+        .level-beginner { background: #2e7d32; }
+        .level-intermediate { background: #ed6c02; }
+        .level-advanced { background: #d32f2f; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo"><h1><span class="code-orange">Code</span><span class="pedia">pedia</span> <span style="font-size:14px">Courses</span></h1></div>
+        <div class="nav-links">
+            <a href="index.html">🏠 Главная</a>
+            <a href="courses.html" class="active">📚 Курсы</a>
+            <a href="progress.html">📊 Мой прогресс</a>
+            <a href="tutor.html">💬 Репетитор</a>
+        </div>
+        <div id="authBlock"></div>
+    </div>
+
+    <div class="container" style="padding: 30px;">
+        <div class="courses-header">
+            <h1>🎓 Codepedia Courses</h1>
+            <p>Подготовка к Всероссийской олимпиаде школьников по информатике</p>
+        </div>
+        <div id="coursesGrid" class="courses-grid">
+            <div class="loading">Загрузка курсов...</div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>Codepedia Courses — подготовка к ВСОШ | © 2024-2026</p>
+    </div>
+
+    <script>
+        let currentUser = null;
+        let currentSessionId = localStorage.getItem('sessionId');
+
+        async function fetchWithAuth(url, options = {}) {
+            const res = await fetch(url, {
+                ...options,
+                headers: { ...options.headers, 'X-Session-Id': currentSessionId }
+            });
+            return res;
+        }
+
+        async function loadUser() {
+            if (!currentSessionId) return null;
+            try {
+                const res = await fetch('/api/me', { headers: { 'X-Session-Id': currentSessionId } });
+                if (res.ok) {
+                    const data = await res.json();
+                    currentUser = data.user;
+                    return currentUser;
+                }
+            } catch(e) {}
+            return null;
+        }
+
+        async function loadCourses() {
+            try {
+                const coursesRes = await fetch('/api/courses');
+                const courses = await coursesRes.json();
+                
+                let progress = {};
+                if (currentUser) {
+                    const progressRes = await fetchWithAuth('/api/user-progress');
+                    if (progressRes.ok) progress = await progressRes.json();
+                }
+                
+                const grid = document.getElementById('coursesGrid');
+                if (!courses.length) {
+                    grid.innerHTML = '<div class="loading">Курсы скоро появятся...</div>';
+                    return;
+                }
+                
+                grid.innerHTML = courses.map(course => {
+                    const courseProgress = progress[course.id] || { completed: 0, total: course.lessons_count };
+                    const percent = courseProgress.total ? (courseProgress.completed / courseProgress.total * 100) : 0;
+                    const levelText = { beginner: '🌱 Начинающий', intermediate: '📘 Средний', advanced: '🔥 Продвинутый' }[course.level];
+                    const levelClass = { beginner: 'level-beginner', intermediate: 'level-intermediate', advanced: 'level-advanced' }[course.level];
+                    
+                    return `
+                        <div class="course-card">
+                            <div class="course-cover">${course.cover || '📚'}</div>
+                            <div class="course-info">
+                                <div><span class="level-badge ${levelClass}">${levelText}</span></div>
+                                <div class="course-title"><a href="course.html?id=${course.id}">${escapeHtml(course.title)}</a></div>
+                                <div class="course-desc">${escapeHtml(course.description)}</div>
+                                <div class="course-meta">
+                                    <span>⏱️ ${course.duration}</span>
+                                    <span>📖 ${course.lessons_count} уроков</span>
+                                </div>
+                                <div class="progress-bar"><div class="progress-fill" style="width: ${percent}%"></div></div>
+                                <button class="btn-continue" onclick="window.location.href='course.html?id=${course.id}'">
+                                    ${percent === 0 ? '🚀 Начать курс' : percent === 100 ? '✅ Пройден' : '📖 Продолжить'}
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            } catch(e) {
+                document.getElementById('coursesGrid').innerHTML = '<div class="loading">Ошибка загрузки курсов</div>';
+            }
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function updateUI() {
+            const authBlock = document.getElementById('authBlock');
+            if (currentUser) {
+                authBlock.innerHTML = `
+                    <div class="user-info" style="display: flex; align-items: center; gap: 12px;">
+                        <img class="user-avatar" src="https://api.dicebear.com/7.x/initials/svg?seed=${currentUser.name || currentUser.email}" width="36" height="36" style="border-radius: 50%;">
+                        <span class="user-name">${currentUser.name || currentUser.email}</span>
+                        <button class="logout-btn" onclick="logout()">Выйти</button>
+                    </div>
+                `;
+            } else {
+                authBlock.innerHTML = `
+                    <div class="auth-buttons">
+                        <button class="login-btn-header" onclick="window.location.href='index.html'">Вход</button>
+                        <button class="register-btn-header" onclick="window.location.href='index.html'">Регистрация</button>
+                    </div>
+                `;
+            }
+        }
+
+        async function logout() {
+            if (currentSessionId) await fetch('/api/logout', { method: 'POST', headers: { 'X-Session-Id': currentSessionId } });
+            localStorage.removeItem('sessionId');
+            localStorage.removeItem('user');
+            window.location.href = 'index.html';
+        }
+
+        async function init() {
+            await loadUser();
+            updateUI();
+            await loadCourses();
+        }
+        init();
+    </script>
+</body>
+</html>
