@@ -10,28 +10,153 @@ body {
     color: #202122;
     line-height: 1.5;
 }
+/* ========== КНОПКИ АВТОРИЗАЦИИ ========== */
+
+/* Контейнер кнопок входа */
+.auth-buttons {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+/* Кнопка "Вход" */
+.login-btn-header {
+    background: transparent;
+    border: 1.5px solid #4a90e2;
+    color: #4a90e2;
+    padding: 8px 20px;
+    border-radius: 30px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    letter-spacing: 0.3px;
+}
+
+.login-btn-header:hover {
+    background: #4a90e2;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+}
+
+.login-btn-header:active {
+    transform: translateY(0);
+}
+
+/* Кнопка "Регистрация" */
+.register-btn-header {
+    background: linear-gradient(135deg, #ff6b00 0%, #ff8533 100%);
+    border: none;
+    color: white;
+    padding: 8px 20px;
+    border-radius: 30px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    letter-spacing: 0.3px;
+    box-shadow: 0 2px 6px rgba(255, 107, 0, 0.3);
+}
+
+.register-btn-header:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(255, 107, 0, 0.4);
+    background: linear-gradient(135deg, #ff8533 0%, #ff9a55 100%);
+}
+
+.register-btn-header:active {
+    transform: translateY(0);
+}
+
+/* ========== БЛОК ПОЛЬЗОВАТЕЛЯ (АВАТАР + ИМЯ + ВЫЙТИ) ========== */
 .user-info {
     display: flex;
     align-items: center;
-    gap: 12px;
-    background: transparent;
-    padding: 0;
+    gap: 15px;
+    background: #f8f9fa;
+    padding: 6px 16px 6px 10px;
+    border-radius: 50px;
+    border: 1px solid #e0e0e0;
+    transition: all 0.3s ease;
 }
 
+.user-info:hover {
+    border-color: #ff6b00;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+/* Аватарка */
 .user-avatar {
-    width: 36px !important;
-    height: 36px !important;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
     object-fit: cover;
-    max-width: 36px !important;
-    min-width: 36px !important;
+    border: 2px solid #ff6b00;
+    background: white;
 }
 
+/* Имя пользователя */
 .user-name {
     font-size: 14px;
-    font-weight: 500;
+    font-weight: 600;
     color: #333;
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
     white-space: nowrap;
+}
+
+/* Кнопка "Выйти" */
+.logout-btn {
+    background: transparent;
+    border: 1px solid #ddd;
+    color: #666;
+    padding: 6px 16px;
+    border-radius: 30px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.logout-btn:hover {
+    background: #ffebee;
+    border-color: #ff5252;
+    color: #ff1744;
+    transform: scale(1.02);
+}
+
+.logout-btn:active {
+    transform: scale(0.98);
+}
+
+/* Адаптив для мобильных */
+@media (max-width: 768px) {
+    .login-btn-header, .register-btn-header {
+        padding: 6px 14px;
+        font-size: 12px;
+    }
+    
+    .user-info {
+        padding: 4px 12px 4px 8px;
+        gap: 8px;
+    }
+    
+    .user-avatar {
+        width: 30px;
+        height: 30px;
+    }
+    
+    .user-name {
+        font-size: 12px;
+        max-width: 100px;
+    }
+    
+    .logout-btn {
+        padding: 4px 12px;
+        font-size: 11px;
+    }
 }
 
 .logout-btn {
