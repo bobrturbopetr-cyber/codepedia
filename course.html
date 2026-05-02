@@ -2,30 +2,34 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Курс — Codepedia Courses</title>
+    <title>Курс — Codepedia</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        .course-header { background: linear-gradient(135deg, #0f1228, #1a1f3a); padding: 40px; border-radius: 20px; margin-bottom: 30px; }
-        .course-header h1 { font-size: 32px; margin-bottom: 10px; }
+        body { background: #f5f7fb; }
+        .course-header { background: white; padding: 30px; border-radius: 20px; margin-bottom: 30px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .course-header h1 { color: #1e2a3a; margin-bottom: 10px; }
         .course-stats { display: flex; gap: 20px; margin-top: 15px; color: #ff6b00; }
-        .lessons-list { background: #0f1228; border-radius: 16px; overflow: hidden; }
-        .lesson-item { padding: 20px; border-bottom: 1px solid #1a1f3a; display: flex; align-items: center; gap: 15px; cursor: pointer; transition: background 0.2s; }
-        .lesson-item:hover { background: #1a1f3a; }
-        .lesson-status { width: 30px; text-align: center; }
-        .lesson-status.completed { color: #4caf50; font-size: 20px; }
-        .lesson-status.locked { color: #666; }
+        .lessons-list { background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .lesson-item { padding: 20px; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; gap: 15px; cursor: pointer; transition: background 0.2s; }
+        .lesson-item:hover { background: #f8fafc; }
+        .lesson-status { width: 30px; text-align: center; font-size: 20px; }
         .lesson-info { flex: 1; }
-        .lesson-title { font-size: 18px; font-weight: bold; margin-bottom: 5px; }
-        .lesson-desc { font-size: 13px; color: #a0a0a0; }
-        .start-btn { background: #ff6b00; color: white; border: none; padding: 8px 20px; border-radius: 8px; cursor: pointer; }
-        .start-btn:hover { background: #ff8533; }
-        .progress-preview { margin-bottom: 20px; background: #0f1228; border-radius: 12px; padding: 15px; }
+        .lesson-title { font-size: 18px; font-weight: 700; color: #1e2a3a; margin-bottom: 5px; }
+        .lesson-desc { font-size: 13px; color: #64748b; }
+        .start-btn { background: #ff6b00; color: white; border: none; padding: 8px 24px; border-radius: 40px; cursor: pointer; font-weight: 600; }
+        .start-btn:hover { background: #e05a00; }
+        .progress-preview { margin-bottom: 25px; background: #f1f5f9; border-radius: 16px; padding: 20px; }
+        .progress-bar { height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden; }
+        .progress-fill { height: 100%; background: #ff6b00; width: 0%; }
+        .level-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+        .level-beginner { background: #dcfce7; color: #15803d; }
+        .level-intermediate { background: #fed7aa; color: #9a3412; }
+        .level-advanced { background: #fee2e2; color: #b91c1c; }
     </style>
 </head>
 <body>
     <div class="header">
-        <div class="logo"><h1><span class="code-orange">Code</span><span class="pedia">pedia</span> <span style="font-size:14px">Courses</span></h1></div>
+        <div class="logo"><h1><span class="code-orange">Code</span><span class="pedia">pedia</span> Courses</h1></div>
         <div class="nav-links">
             <a href="index.html">🏠 Главная</a>
             <a href="courses.html">📚 Курсы</a>
@@ -34,119 +38,60 @@
         </div>
         <div id="authBlock"></div>
     </div>
-
-    <div class="container" style="padding: 30px;">
+    <div class="container" style="padding: 30px; max-width: 1000px; margin: 0 auto;">
         <div id="courseContent"></div>
     </div>
-
-    <div class="footer">
-        <p>Codepedia Courses — подготовка к ВСОШ | © 2024-2026</p>
-    </div>
-
+    <div class="footer"><p>Codepedia Courses — подготовка к ВСОШ</p></div>
     <script>
         const urlParams = new URLSearchParams(window.location.search);
         const courseId = urlParams.get('id');
-        let currentUser = null;
-        let currentSessionId = localStorage.getItem('sessionId');
-
-        async function fetchWithAuth(url, options = {}) {
-            const res = await fetch(url, { ...options, headers: { ...options.headers, 'X-Session-Id': currentSessionId } });
-            return res;
-        }
-
-        async function loadCourse() {
-            if (!courseId) { window.location.href = 'courses.html'; return; }
-            try {
-                const [courseRes, lessonsRes, progressRes] = await Promise.all([
-                    fetch(`/api/courses/${courseId}`),
-                    fetch(`/api/courses/${courseId}/lessons`),
-                    currentUser ? fetchWithAuth(`/api/user-progress?course_id=${courseId}`) : Promise.resolve({ ok: false, json: async () => ({}) })
-                ]);
-                
-                const course = await courseRes.json();
-                const lessons = await lessonsRes.json();
-                const progress = progressRes.ok ? await progressRes.json() : {};
-                
-                const completedCount = Object.values(progress).filter(c => c).length;
-                const percent = lessons.length ? (completedCount / lessons.length * 100) : 0;
-                
-                const levelText = { beginner: '🌱 Начинающий', intermediate: '📘 Средний', advanced: '🔥 Продвинутый' }[course.level];
-                const levelClass = { beginner: 'level-beginner', intermediate: 'level-intermediate', advanced: 'level-advanced' }[course.level];
-                
-                document.getElementById('courseContent').innerHTML = `
-                    <div class="course-header">
-                        <h1>${escapeHtml(course.title)}</h1>
-                        <p>${escapeHtml(course.description)}</p>
-                        <div class="course-stats">
-                            <span><span class="level-badge ${levelClass}">${levelText}</span></span>
-                            <span>📖 ${course.lessons_count} уроков</span>
-                            <span>⏱️ ${course.duration}</span>
-                        </div>
-                        <div class="progress-preview">
-                            <div class="progress-bar"><div class="progress-fill" style="width: ${percent}%"></div></div>
-                            <div style="font-size: 14px; margin-top: 8px;">✅ Пройдено ${completedCount} из ${course.lessons_count} уроков</div>
-                        </div>
-                    </div>
-                    <div class="lessons-list">
-                        ${lessons.map(lesson => {
-                            const isCompleted = progress[lesson.id];
-                            const isLocked = false;
-                            return `
-                                <div class="lesson-item" onclick="goToLesson(${lesson.id})">
-                                    <div class="lesson-status ${isCompleted ? 'completed' : (isLocked ? 'locked' : '')}">
-                                        ${isCompleted ? '✅' : (isLocked ? '🔒' : '📘')}
-                                    </div>
-                                    <div class="lesson-info">
-                                        <div class="lesson-title">${lesson.lesson_number}. ${escapeHtml(lesson.title)}</div>
-                                        <div class="lesson-desc">Урок ${lesson.lesson_number} из ${course.lessons_count}</div>
-                                    </div>
-                                    <button class="start-btn">${isCompleted ? 'Повторить' : 'Начать'}</button>
-                                </div>
-                            `;
-                        }).join('')}
-                    </div>
-                `;
-            } catch(e) {
-                document.getElementById('courseContent').innerHTML = '<div class="loading">Ошибка загрузки курса</div>';
-            }
-        }
-
-        function goToLesson(lessonId) {
-            window.location.href = `lesson.html?course_id=${courseId}&lesson_id=${lessonId}`;
-        }
-
-        function escapeHtml(text) { const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
-
+        let currentUser = null, currentSessionId = localStorage.getItem('sessionId');
+        async function fetchWithAuth(url, options = {}) { return fetch(url, { ...options, headers: { ...options.headers, 'X-Session-Id': currentSessionId } }); }
         async function loadUser() {
             if (!currentSessionId) return null;
-            try {
-                const res = await fetch('/api/me', { headers: { 'X-Session-Id': currentSessionId } });
+            try { const res = await fetch('/api/me', { headers: { 'X-Session-Id': currentSessionId } });
                 if (res.ok) { const data = await res.json(); currentUser = data.user; return currentUser; }
             } catch(e) {}
             return null;
         }
-
+        async function loadCourse() {
+            if (!courseId) { window.location.href = 'courses.html'; return; }
+            try {
+                const [courseRes, lessonsRes, progressRes] = await Promise.all([
+                    fetch(`/api/courses/${courseId}`), fetch(`/api/courses/${courseId}/lessons`),
+                    currentUser ? fetchWithAuth(`/api/user-progress?course_id=${courseId}`) : Promise.resolve({ ok: false, json: async () => ({}) })
+                ]);
+                const course = await courseRes.json(), lessons = await lessonsRes.json(), progress = progressRes.ok ? await progressRes.json() : {};
+                const completedCount = Object.values(progress).filter(c => c && (c.completed === true || c.completed === 1)).length;
+                const percent = lessons.length ? (completedCount / lessons.length * 100) : 0;
+                const levelText = { beginner: '🌱 Начинающий', intermediate: '📘 Средний', advanced: '🔥 Продвинутый' }[course.level];
+                const levelClass = { beginner: 'level-beginner', intermediate: 'level-intermediate', advanced: 'level-advanced' }[course.level];
+                document.getElementById('courseContent').innerHTML = `
+                    <div class="course-header">
+                        <div><span class="level-badge ${levelClass}">${levelText}</span></div>
+                        <h1>${escapeHtml(course.title)}</h1>
+                        <p>${escapeHtml(course.description)}</p>
+                        <div class="course-stats"><span>📖 ${course.lessons_count} уроков</span><span>⏱️ ${course.duration}</span></div>
+                        <div class="progress-preview"><div class="progress-bar"><div class="progress-fill" style="width: ${percent}%"></div></div><div style="font-size: 14px; margin-top: 8px;">✅ Пройдено ${completedCount} из ${course.lessons_count} уроков</div></div>
+                    </div>
+                    <div class="lessons-list">${lessons.map(lesson => {
+                        const isCompleted = progress[lesson.id] && (progress[lesson.id].completed === true || progress[lesson.id].completed === 1);
+                        return `<div class="lesson-item" onclick="goToLesson(${lesson.id})">
+                            <div class="lesson-status">${isCompleted ? '✅' : '📘'}</div>
+                            <div class="lesson-info"><div class="lesson-title">${lesson.lesson_number}. ${escapeHtml(lesson.title)}</div><div class="lesson-desc">Урок ${lesson.lesson_number} из ${course.lessons_count}</div></div>
+                            <button class="start-btn">${isCompleted ? 'Повторить' : 'Начать'}</button>
+                        </div>`;
+                    }).join('')}</div>`;
+            } catch(e) { document.getElementById('courseContent').innerHTML = '<div class="loading">Ошибка загрузки курса</div>'; }
+        }
+        function goToLesson(lessonId) { window.location.href = `lesson.html?course_id=${courseId}&lesson_id=${lessonId}`; }
+        function escapeHtml(t) { const div = document.createElement('div'); div.textContent = t; return div.innerHTML; }
         function updateUI() {
             const authBlock = document.getElementById('authBlock');
-            if (currentUser) {
-                authBlock.innerHTML = `<div class="user-info" style="display: flex; align-items: center; gap: 12px;"><img class="user-avatar" src="https://api.dicebear.com/7.x/initials/svg?seed=${currentUser.name || currentUser.email}" width="36" height="36" style="border-radius: 50%;"><span class="user-name">${currentUser.name || currentUser.email}</span><button class="logout-btn" onclick="logout()">Выйти</button></div>`;
-            } else {
-                authBlock.innerHTML = `<div class="auth-buttons"><button class="login-btn-header" onclick="window.location.href='index.html'">Вход</button><button class="register-btn-header" onclick="window.location.href='index.html'">Регистрация</button></div>`;
-            }
+            authBlock.innerHTML = currentUser ? `<div class="user-info">${currentUser.name || currentUser.email}<button onclick="logout()">Выйти</button></div>` : `<div class="auth-buttons"><button onclick="location.href='index.html'">Вход</button><button onclick="location.href='index.html'">Регистрация</button></div>`;
         }
-
-        async function logout() {
-            if (currentSessionId) await fetch('/api/logout', { method: 'POST', headers: { 'X-Session-Id': currentSessionId } });
-            localStorage.removeItem('sessionId');
-            localStorage.removeItem('user');
-            window.location.href = 'index.html';
-        }
-
-        async function init() {
-            await loadUser();
-            updateUI();
-            await loadCourse();
-        }
+        async function logout() { if (currentSessionId) await fetch('/api/logout', { method: 'POST', headers: { 'X-Session-Id': currentSessionId } }); localStorage.clear(); window.location.href = 'index.html'; }
+        async function init() { await loadUser(); updateUI(); await loadCourse(); }
         init();
     </script>
 </body>
