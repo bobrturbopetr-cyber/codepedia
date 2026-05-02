@@ -84,6 +84,63 @@
         .difficulty-hard { background: #d32f2f; color: white; }
         .article-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 22px; margin: 25px 0 35px 0; }
         .loading { text-align: center; padding: 40px; color: #666; }
+
+        /* Блоки каналов */
+        .channels-block {
+            display: flex;
+            gap: 20px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+        .channel-card {
+            flex: 1;
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+            border: 1px solid #e0e0e0;
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .channel-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            border-color: #ff6b00;
+        }
+        .channel-icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+        .channel-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        .channel-desc {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 15px;
+        }
+        .channel-btn {
+            display: inline-block;
+            background: #ff6b00;
+            color: white;
+            text-decoration: none;
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+        .channel-btn:hover {
+            background: #ff8533;
+            text-decoration: none;
+        }
+        .channel-btn.telegram {
+            background: #26A5E4;
+        }
+        .channel-btn.telegram:hover {
+            background: #1f8bc1;
+        }
         
         @media (max-width: 768px) { .main-grid { flex-direction: column; } .sidebar { width: 100%; } .auth-buttons { margin-top: 10px; } }
     </style>
@@ -165,6 +222,22 @@
                 </div>
 
                 <p><strong>Codepedia</strong> — свободная энциклопедия о программировании, созданная <strong>Петром Машковым</strong>. Здесь собраны знания о языках, алгоритмах, концепциях и инструментах, чтобы сделать их доступными для всех.</p>
+
+                <!-- ========== БЛОК КАНАЛОВ (МАКС КОДЕПЕДИЯ + TELEGRAM) ========== -->
+                <div class="channels-block">
+                    <div class="channel-card">
+                        <div class="channel-icon">🚀</div>
+                        <div class="channel-title">Макс Кодепедия</div>
+                        <div class="channel-desc">Закрытый клуб единомышленников. Обсуждаем код, делимся опытом и помогаем друг другу расти.</div>
+                        <a href="https://max.ru/join/6qQtW8DQLvPQs9SVwRb5M6VAhcDT30nqMO7e4X-A2-U" class="channel-btn" target="_blank" rel="noopener noreferrer">Присоединиться →</a>
+                    </div>
+                    <div class="channel-card">
+                        <div class="channel-icon">💬</div>
+                        <div class="channel-title">Telegram-канал</div>
+                        <div class="channel-desc">Новости Codepedia, анонсы статей, полезные материалы и живое общение.</div>
+                        <a href="https://t.me/devcodepedia" class="channel-btn telegram" target="_blank" rel="noopener noreferrer">Подписаться →</a>
+                    </div>
+                </div>
 
                 <div id="articlesContainer">
                     <div class="loading">Загрузка статей...</div>
