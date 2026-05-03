@@ -416,7 +416,9 @@
         }
         
         function loginWithYandex() {
-            alert('Функция входа через Яндекс будет добавлена позже. Пока используйте email.');
+            const clientId = '0cdd1dc659314700959ff3dd61177031';  // ← сюда вставляете ID
+            const redirectUri = `${window.location.origin}/api/yandex-callback`;
+            window.location.href = `https://oauth.yandex.ru/authorize?response_type=code&client_id=${clientId}&redirect_uri=${redirectUri}`;
         }
         
         async function updateUI() {
