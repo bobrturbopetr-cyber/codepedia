@@ -330,6 +330,26 @@ export default {
             return new Response(JSON.stringify(projects.results), { headers: corsHeaders });
         }
 
+        // ========== ПОЛУЧИТЬ ТОЛЬКО СВОИ ПРОЕКТЫ ==========
+        if (path === '/api/projects/my' && request.method === 'GET') {
+            const sessionId = request.headers.get('X-Session-Id');
+            if (!sessionId) {
+                return new Response(JSON.stringify({ error: 'Не авторизован' }), { headers: corsHeaders, status: 401 });
+            }
+            const session = await env.DB.prepare(
+                "SELECT user_id FROM sessions WHERE id = ? AND expires_at > CURRENT_TIMESTAMP"
+            ).bind(sessionId).first();
+            if (!session) {
+                return new Response(JSON.stringify({ error: 'Сессия истекла' }), { headers: corsHeaders, status: 401 });
+            }
+            
+            const projects = await env.DB.prepare(
+                "SELECT id, slug, title, description, views, created_at FROM projects WHERE user_id = ? AND published = 1 ORDER BY created_at DESC"
+            ).bind(session.user_id).all();
+            
+            return new Response(JSON.stringify(projects.results), { headers: corsHeaders });
+        }
+
         if (path.match(/^\/api\/projects\/[^\/]+$/) && request.method === 'GET') {
             const slug = path.split('/').pop();
             const project = await env.DB.prepare(
@@ -354,7 +374,6 @@ export default {
                 const existing = await env.DB.prepare("SELECT id FROM projects WHERE slug = ?").bind(slug).first();
                 if (existing) return new Response(JSON.stringify({ error: 'Проект с таким адресом уже существует' }), { headers: corsHeaders, status: 409 });
                 
-                // Создаём начальные файлы
                 const files = {
                     'index.html': html,
                     'style.css': css || '',
