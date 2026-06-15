@@ -322,7 +322,7 @@ export default {
             return new Response(JSON.stringify({ success: true }), { headers: corsHeaders });
         }
 
-        // ========== ХОСТИНГ ПРОЕКТОВ ==========
+        // ========== ХОСТИНГ ПРОЕКТОВ (API) ==========
         if (path === '/api/projects' && request.method === 'GET') {
             const projects = await env.DB.prepare(
                 "SELECT id, slug, title, description, author_name, author_avatar, views, created_at FROM projects WHERE published = 1 ORDER BY created_at DESC"
@@ -335,45 +335,172 @@ export default {
             const project = await env.DB.prepare(
                 "SELECT * FROM projects WHERE slug = ? AND published = 1"
             ).bind(slug).first();
-            if (!project) {
-                return new Response(JSON.stringify({ error: 'Проект не найден' }), { headers: corsHeaders, status: 404 });
-            }
-            await env.DB.prepare("UPDATE projects SET views = views + 1 WHERE slug = ?").bind(slug).run();
+            if (!project) return new Response(JSON.stringify({ error: 'Проект не найден' }), { headers: corsHeaders, status: 404 });
             return new Response(JSON.stringify(project), { headers: corsHeaders });
         }
 
         if (path === '/api/projects' && request.method === 'POST') {
             const sessionId = request.headers.get('X-Session-Id');
-            if (!sessionId) {
-                return new Response(JSON.stringify({ error: 'Необходимо войти' }), { headers: corsHeaders, status: 401 });
-            }
+            if (!sessionId) return new Response(JSON.stringify({ error: 'Необходимо войти' }), { headers: corsHeaders, status: 401 });
             const session = await env.DB.prepare(
                 "SELECT user_id FROM sessions WHERE id = ? AND expires_at > CURRENT_TIMESTAMP"
             ).bind(sessionId).first();
-            if (!session) {
-                return new Response(JSON.stringify({ error: 'Сессия истекла' }), { headers: corsHeaders, status: 401 });
-            }
+            if (!session) return new Response(JSON.stringify({ error: 'Сессия истекла' }), { headers: corsHeaders, status: 401 });
             const user = await env.DB.prepare("SELECT id, name, avatar FROM users WHERE id = ?").bind(session.user_id).first();
-            if (!user) {
-                return new Response(JSON.stringify({ error: 'Пользователь не найден' }), { headers: corsHeaders, status: 401 });
-            }
+            if (!user) return new Response(JSON.stringify({ error: 'Пользователь не найден' }), { headers: corsHeaders, status: 401 });
             try {
                 const { slug, title, description, html, css, js } = await request.json();
-                if (!slug || !title || !html) {
-                    return new Response(JSON.stringify({ error: 'Заполните обязательные поля' }), { headers: corsHeaders, status: 400 });
-                }
+                if (!slug || !title || !html) return new Response(JSON.stringify({ error: 'Заполните обязательные поля' }), { headers: corsHeaders, status: 400 });
                 const existing = await env.DB.prepare("SELECT id FROM projects WHERE slug = ?").bind(slug).first();
-                if (existing) {
-                    return new Response(JSON.stringify({ error: 'Проект с таким адресом уже существует' }), { headers: corsHeaders, status: 409 });
-                }
+                if (existing) return new Response(JSON.stringify({ error: 'Проект с таким адресом уже существует' }), { headers: corsHeaders, status: 409 });
+                
+                // Создаём начальные файлы
+                const files = {
+                    'index.html': html,
+                    'style.css': css || '',
+                    'script.js': js || ''
+                };
+                
                 await env.DB.prepare(
-                    `INSERT INTO projects (user_id, slug, title, description, html, css, js, author_name, author_avatar) 
-                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
-                ).bind(user.id, slug, title, description || '', html, css || '', js || '', user.name, user.avatar).run();
+                    `INSERT INTO projects (user_id, slug, title, description, files, author_name, author_avatar) 
+                     VALUES (?, ?, ?, ?, ?, ?, ?)`
+                ).bind(user.id, slug, title, description || '', JSON.stringify(files), user.name, user.avatar).run();
                 return new Response(JSON.stringify({ success: true, slug }), { headers: corsHeaders });
             } catch (err) {
                 return new Response(JSON.stringify({ error: err.message }), { headers: corsHeaders, status: 500 });
             }
+        }
+
+        // ========== РАБОТА С ФАЙЛАМИ ПРОЕКТА ==========
+        if (path.match(/^\/api\/projects\/[^\/]+\/files$/) && request.method === 'GET') {
+            const slug = path.split('/')[3];
+            const project = await env.DB.prepare("SELECT files FROM projects WHERE slug = ?").bind(slug).first();
+            if (!project) return new Response(JSON.stringify({ error: 'Проект не найден' }), { headers: corsHeaders, status: 404 });
+            let files = {};
+            try { files = JSON.parse(project.files || '{}'); } catch(e) {}
+            return new Response(JSON.stringify(files), { headers: corsHeaders });
+        }
+
+        if (path.match(/^\/api\/projects\/[^\/]+\/files$/) && request.method === 'PUT') {
+            const sessionId = request.headers.get('X-Session-Id');
+            if (!sessionId) return new Response(JSON.stringify({ error: 'Не авторизован' }), { headers: corsHeaders, status: 401 });
+            const session = await env.DB.prepare("SELECT user_id FROM sessions WHERE id = ? AND expires_at > CURRENT_TIMESTAMP").bind(sessionId).first();
+            if (!session) return new Response(JSON.stringify({ error: 'Сессия истекла' }), { headers: corsHeaders, status: 401 });
+            
+            const slug = path.split('/')[3];
+            const project = await env.DB.prepare("SELECT user_id, files FROM projects WHERE slug = ?").bind(slug).first();
+            if (!project) return new Response(JSON.stringify({ error: 'Проект не найден' }), { headers: corsHeaders, status: 404 });
+            if (project.user_id !== session.user_id) return new Response(JSON.stringify({ error: 'Нет прав' }), { headers: corsHeaders, status: 403 });
+            
+            const { path: filePath, content } = await request.json();
+            let files = {};
+            try { files = JSON.parse(project.files || '{}'); } catch(e) {}
+            files[filePath] = content;
+            
+            await env.DB.prepare("UPDATE projects SET files = ?, updated_at = CURRENT_TIMESTAMP WHERE slug = ?")
+                .bind(JSON.stringify(files), slug).run();
+            return new Response(JSON.stringify({ success: true }), { headers: corsHeaders });
+        }
+
+        if (path.match(/^\/api\/projects\/[^\/]+\/files$/) && request.method === 'DELETE') {
+            const sessionId = request.headers.get('X-Session-Id');
+            if (!sessionId) return new Response(JSON.stringify({ error: 'Не авторизован' }), { headers: corsHeaders, status: 401 });
+            const session = await env.DB.prepare("SELECT user_id FROM sessions WHERE id = ? AND expires_at > CURRENT_TIMESTAMP").bind(sessionId).first();
+            if (!session) return new Response(JSON.stringify({ error: 'Сессия истекла' }), { headers: corsHeaders, status: 401 });
+            
+            const slug = path.split('/')[3];
+            const project = await env.DB.prepare("SELECT user_id, files FROM projects WHERE slug = ?").bind(slug).first();
+            if (!project) return new Response(JSON.stringify({ error: 'Проект не найден' }), { headers: corsHeaders, status: 404 });
+            if (project.user_id !== session.user_id) return new Response(JSON.stringify({ error: 'Нет прав' }), { headers: corsHeaders, status: 403 });
+            
+            const { path: filePath } = await request.json();
+            let files = {};
+            try { files = JSON.parse(project.files || '{}'); } catch(e) {}
+            delete files[filePath];
+            
+            await env.DB.prepare("UPDATE projects SET files = ?, updated_at = CURRENT_TIMESTAMP WHERE slug = ?")
+                .bind(JSON.stringify(files), slug).run();
+            return new Response(JSON.stringify({ success: true }), { headers: corsHeaders });
+        }
+
+        if (path.match(/^\/api\/projects\/[^\/]+\/files\/rename$/) && request.method === 'POST') {
+            const sessionId = request.headers.get('X-Session-Id');
+            if (!sessionId) return new Response(JSON.stringify({ error: 'Не авторизован' }), { headers: corsHeaders, status: 401 });
+            const session = await env.DB.prepare("SELECT user_id FROM sessions WHERE id = ? AND expires_at > CURRENT_TIMESTAMP").bind(sessionId).first();
+            if (!session) return new Response(JSON.stringify({ error: 'Сессия истекла' }), { headers: corsHeaders, status: 401 });
+            
+            const slug = path.split('/')[3];
+            const project = await env.DB.prepare("SELECT user_id, files FROM projects WHERE slug = ?").bind(slug).first();
+            if (!project) return new Response(JSON.stringify({ error: 'Проект не найден' }), { headers: corsHeaders, status: 404 });
+            if (project.user_id !== session.user_id) return new Response(JSON.stringify({ error: 'Нет прав' }), { headers: corsHeaders, status: 403 });
+            
+            const { oldPath, newPath } = await request.json();
+            let files = {};
+            try { files = JSON.parse(project.files || '{}'); } catch(e) {}
+            if (files[oldPath] !== undefined) {
+                files[newPath] = files[oldPath];
+                delete files[oldPath];
+                await env.DB.prepare("UPDATE projects SET files = ?, updated_at = CURRENT_TIMESTAMP WHERE slug = ?")
+                    .bind(JSON.stringify(files), slug).run();
+            }
+            return new Response(JSON.stringify({ success: true }), { headers: corsHeaders });
+        }
+
+        // ========== ОТДАЧА ПРОЕКТОВ ЧЕРЕЗ /site/ ==========
+        if (path.startsWith('/site/') && request.method === 'GET') {
+            const slug = path.replace('/site/', '').split('/')[0];
+            let filePath = path.replace(`/site/${slug}`, '');
+            if (!filePath || filePath === '/') filePath = '/index.html';
+            if (filePath.startsWith('/')) filePath = filePath.substring(1);
+            
+            const project = await env.DB.prepare(
+                "SELECT id, slug, title, files FROM projects WHERE slug = ? AND published = 1"
+            ).bind(slug).first();
+            
+            if (!project) {
+                return new Response(`<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><title>Проект не найден</title></head>
+<body style="font-family: sans-serif; text-align: center; padding: 50px;">
+<h1>❌ Проект не найден</h1>
+<p>Проект "${slug}" не существует</p>
+<a href="/hosting.html" style="color: #ff6b00;">← Вернуться к хостингу</a>
+</body>
+</html>`, { status: 404, headers: { 'Content-Type': 'text/html' } });
+            }
+            
+            let files = {};
+            try { files = JSON.parse(project.files || '{}'); } catch(e) {}
+            
+            let content = files[filePath];
+            let contentType = 'text/html';
+            if (filePath.endsWith('.css')) contentType = 'text/css';
+            else if (filePath.endsWith('.js')) contentType = 'application/javascript';
+            else if (filePath.endsWith('.json')) contentType = 'application/json';
+            else if (filePath.endsWith('.png')) contentType = 'image/png';
+            else if (filePath.endsWith('.jpg') || filePath.endsWith('.jpeg')) contentType = 'image/jpeg';
+            
+            if (content) {
+                await env.DB.prepare("UPDATE projects SET views = views + 1 WHERE slug = ?").bind(slug).run();
+                return new Response(content, { headers: { 'Content-Type': contentType } });
+            }
+            
+            if (files['index.html']) {
+                await env.DB.prepare("UPDATE projects SET views = views + 1 WHERE slug = ?").bind(slug).run();
+                return new Response(files['index.html'], { headers: { 'Content-Type': 'text/html' } });
+            }
+            
+            return new Response(`<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><title>${project.title}</title></head>
+<body style="font-family: sans-serif; text-align: center; padding: 50px;">
+<h1>🚀 ${project.title}</h1>
+<p>Сайт создан на Codepedia Hosting</p>
+<p>Файл ${filePath} не найден</p>
+<hr>
+<a href="/hosting.html" style="color: #ff6b00;">Все проекты</a>
+</body>
+</html>`, { headers: { 'Content-Type': 'text/html' } });
         }
 
         // ========== СТАТИЧЕСКИЕ ФАЙЛЫ ==========
@@ -388,9 +515,8 @@ export default {
             '/tutor.html': 'tutor.html',
             '/hosting.html': 'hosting.html',
             '/create-site.html': 'create-site.html',
-            '/site-preview.html': 'site-preview.html',
+            '/site-editor.html': 'site-editor.html',
             '/style.css': 'style.css',
-            '/script.js': 'script.js',
             '/privacy.html': 'privacy.html'
         };
         
@@ -400,7 +526,7 @@ export default {
                 if (asset.status === 200) return asset;
             } catch(e) {}
             if (staticMap[path] === 'style.css') {
-                return new Response(`body { font-family: sans-serif; background: #f5f7fb; margin: 0; padding: 20px; } .header { background: white; padding: 16px 24px; }`, {
+                return new Response(`body { font-family: sans-serif; background: #f5f7fb; margin: 0; } .header { background: white; padding: 16px 24px; }`, {
                     headers: { 'Content-Type': 'text/css' }
                 });
             }
