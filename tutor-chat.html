@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Репетитор — Codepedia</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif; color: #e0e0e0; height: 100vh; display: flex; flex-direction: column; }
+        
+        .header { background: rgba(15, 18, 40, 0.95); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255, 107, 0, 0.3); padding: 16px 32px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; }
+        .logo h1 { font-size: 28px; }
+        .code-orange { color: #ff6b00; }
+        .pedia { color: #4a90e2; }
+        .nav-links a { color: #e0e0e0; text-decoration: none; margin-left: 24px; }
+        
+        .chat-container { display: flex; flex: 1; max-width: 1400px; margin: 0 auto; width: 100%; padding: 20px; gap: 30px; flex-wrap: wrap; }
+        .chat-messages { flex: 2; background: rgba(255,255,255,0.05); border-radius: 24px; display: flex; flex-direction: column; height: calc(100vh - 100px); }
+        .messages-list { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+        .message { display: flex; }
+        .message.user { justify-content: flex-end; }
+        .message.tutor { justify-content: flex-start; }
+        .message-bubble { max-width: 70%; padding: 12px 18px; border-radius: 20px; }
+        .message.user .message-bubble { background: #ff6b00; color: white; border-bottom-right-radius: 4px; }
+        .message.tutor .message-bubble { background: rgba(255,255,255,0.1); color: white; border-bottom-left-radius: 4px; }
+        .message-time { font-size: 10px; color: #888; margin-top: 5px; margin-left: 12px; }
+        .chat-input-area { padding: 20px; border-top: 1px solid rgba(255,255,255,0.1); display: flex; gap: 12px; }
+        .chat-input { flex: 1; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 40px; padding: 12px 20px; color: white; font-size: 14px; outline: none; }
+        .chat-input:focus { border-color: #ff6b00; }
+        .send-btn { background: #ff6b00; border: none; padding: 12px 28px; border-radius: 40px; color: white; cursor: pointer; font-weight: 600; }
+        
+        .info-card { flex: 1; background: rgba(255,255,255,0.05); border-radius: 24px; padding: 24px; height: fit-content; }
+        .info-card h3 { margin-bottom: 16px; color: #ff6b00; }
+        .info-item { margin-bottom: 12px; font-size: 14px; line-height: 1.5; }
+        .tutor-avatar { width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, #ff6b00, #4a90e2); display: flex; align-items: center; justify-content: center; font-size: 40px; margin-bottom: 16px; }
+        
+        .user-info { display: flex; align-items: center; gap: 12px; background: rgba(255,255,255,0.1); padding: 6px 16px 6px 10px; border-radius: 50px; }
+        .auth-buttons { display: flex; gap: 12px; }
+        .login-btn-header, .register-btn-header { padding: 8px 20px; border-radius: 30px; cursor: pointer; }
+        .login-btn-header { background: transparent; border: 1px solid #4a90e2; color: #4a90e2; }
+        .register-btn-header { background: #ff6b00; border: none; color: white; }
+        
+        .typing { font-size: 12px; color: #888; padding: 8px 20px; }
+        
+        @media (max-width: 900px) { .chat-container { flex-direction: column; } .chat-messages { height: 500px; } }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo"><h1><span class="code-orange">Code</span><span class="pedia">pedia</span> Tutor</h1></div>
+        <div class="nav-links">
+            <a href="index.html">🏠 Главная</a>
+            <a href="courses.html">📚 Курсы</a>
+            <a href="tutor-chat.html" class="active">💬 Репетитор</a>
+        </div>
+        <div id="authBlock"></div>
+    </div>
+
+    <div class="chat-container" id="chatContainer">
+        <div id="loginRequired" style="text-align:center; padding:80px; background:rgba(255,255,255,0.05); border-radius:24px; width:100%;">
+            <h2>🔐 Требуется авторизация</h2>
+            <p style="margin:20px 0;">Войдите в аккаунт, чтобы общаться с репетитором</p>
+            <button class="login-btn-header" onclick="window.location.href='index.html'">Войти</button>
+        </div>
+    </div>
+
+    <script>
+        let currentUser = null, currentSessionId = localStorage.getItem('sessionId');
+        let messages = [], typingTimeout = null;
+        
+        async function fetchWithAuth(url, options = {}) {
+            return fetch(url, { ...options, headers: { ...options.headers, 'X-Session-Id': currentSessionId } });
+        }
+        
+        async function loadMessages() {
+            try {
+                const res = await fetchWithAuth('/api/tutor-messages');
+                if (res.ok) {
+                    messages = await res.json();
+                    renderMessages();
+                }
+            } catch(e) { console.error(e); }
+        }
+        
+        function renderMessages() {
+            const container = document.getElementById('messagesList');
+            if (!container) return;
+            container.innerHTML = messages.map(msg => `
+                <div class="message ${msg.direction === 'to_user' ? 'tutor' : 'user'}">
+                    <div>
+                        <div class="message-bubble">${escapeHtml(msg.message)}</div>
+                        <div class="message-time">${new Date(msg.created_at).toLocaleString()}</div>
+                    </div>
+                </div>
+            `).join('');
+            container.scrollTop = container.scrollHeight;
+        }
+        
+        async function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const text = input.value.trim();
+            if (!text) return;
+            input.value = '';
+            try {
+                const res = await fetchWithAuth('/api/tutor-messages', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: text, direction: 'to_tutor' })
+                });
+                if (res.ok) {
+                    messages.push({ message: text, direction: 'to_tutor', created_at: new Date().toISOString() });
+                    renderMessages();
+                    simulateTutorResponse(text);
+                }
+            } catch(e) { alert('Ошибка отправки'); input.value = text; }
+        }
+        
+        function simulateTutorResponse(userQuestion) {
+            const typingDiv = document.getElementById('typing');
+            if (typingDiv) typingDiv.style.display = 'block';
+            setTimeout(async () => {
+                let response = "Спасибо за вопрос! Я проверю ваше решение и отвечу в ближайшее время. Если у вас есть конкретная задача, пришлите код, и я помогу разобраться.";
+                if (userQuestion.toLowerCase().includes('сортировк')) response = "📚 Алгоритмы сортировки: есть пузырьковая O(n²), быстрая O(n log n) и сортировка слиянием. Для олимпиад чаще используют std::sort в C++ или sorted() в Python.";
+                else if (userQuestion.toLowerCase().includes('дп') || userQuestion.toLowerCase().includes('динамическ')) response = "🧠 Динамическое программирование — метод решения задач путём разбиения на подзадачи. Классика: задача о лестнице, о рюкзаке, НВП.";
+                else if (userQuestion.toLowerCase().includes('граф')) response = "📊 Работа с графами: BFS (поиск в ширину) и DFS (поиск в глубину). Алгоритм Дейкстры для поиска кратчайших путей.";
+                else if (userQuestion.toLowerCase().includes('бинпоиск')) response = "🔍 Бинарный поиск работает на отсортированном массиве за O(log n). Делим отрезок пополам и ищем.";
+                
+                const res = await fetchWithAuth('/api/tutor-messages', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: response, direction: 'to_user' })
+                });
+                if (res.ok) {
+                    messages.push({ message: response, direction: 'to_user', created_at: new Date().toISOString() });
+                    renderMessages();
+                }
+                if (typingDiv) typingDiv.style.display = 'none';
+            }, 1500);
+        }
+        
+        function escapeHtml(t) { const div = document.createElement('div'); div.textContent = t; return div.innerHTML; }
+        
+        async function loadUser() {
+            if (!currentSessionId) return;
+            try {
+                const res = await fetch('/api/me', { headers: { 'X-Session-Id': currentSessionId } });
+                if (res.ok) currentUser = (await res.json()).user;
+            } catch(e) {}
+        }
+        
+        function updateUI() {
+            const authBlock = document.getElementById('authBlock');
+            const container = document.getElementById('chatContainer');
+            if (currentUser) {
+                authBlock.innerHTML = `<div class="user-info"><img class="user-avatar" src="${currentUser.avatar || ''}"><span>${currentUser.name || currentUser.email}</span><button onclick="logout()" style="background:none; border:1px solid #ff5252; color:#ff5252; padding:4px 12px; border-radius:20px;">Выйти</button></div>`;
+                container.innerHTML = `
+                    <div class="chat-messages">
+                        <div class="messages-list" id="messagesList"></div>
+                        <div id="typing" class="typing" style="display:none;">👨‍🏫 Репетитор печатает...</div>
+                        <div class="chat-input-area">
+                            <input type="text" id="messageInput" class="chat-input" placeholder="Задайте вопрос репетитору...">
+                            <button class="send-btn" onclick="sendMessage()">📤 Отправить</button>
+                        </div>
+                    </div>
+                    <div class="info-card">
+                        <div class="tutor-avatar">👨‍🏫</div>
+                        <h3>Ваш репетитор</h3>
+                        <div class="info-item"><strong>Имя:</strong> Алексей Владимирович</div>
+                        <div class="info-item"><strong>Экспертиза:</strong> ВСОШ, ICPC, олимпиадное программирование</div>
+                        <div class="info-item"><strong>Часы ответов:</strong> Пн-Пт 10:00-20:00 МСК</div>
+                        <div class="info-item"><strong>Ответ в течение:</strong> 24 часов</div>
+                        <div style="margin-top:20px; padding-top:15px; border-top:1px solid rgba(255,255,255,0.1);">
+                            <div class="info-item">📧 <strong>Прямая связь:</strong> tutor@codepedia.space</div>
+                        </div>
+                    </div>
+                `;
+                loadMessages();
+                setInterval(loadMessages, 30000);
+            } else {
+                authBlock.innerHTML = `<div class="auth-buttons"><button class="login-btn-header" onclick="window.location.href='index.html'">Вход</button><button class="register-btn-header" onclick="window.location.href='index.html'">Регистрация</button></div>`;
+                container.innerHTML = `<div id="loginRequired" style="text-align:center; padding:80px; background:rgba(255,255,255,0.05); border-radius:24px; width:100%;"><h2>🔐 Требуется авторизация</h2><p style="margin:20px 0;">Войдите в аккаунт, чтобы общаться с репетитором</p><button class="login-btn-header" onclick="window.location.href='index.html'">Войти</button></div>`;
+            }
+        }
+        
+        async function logout() { if (currentSessionId) await fetch('/api/logout', { method: 'POST', headers: { 'X-Session-Id': currentSessionId } }); localStorage.clear(); window.location.href = 'index.html'; }
+        
+        loadUser().then(updateUI);
+    </script>
+</body>
+</html>
