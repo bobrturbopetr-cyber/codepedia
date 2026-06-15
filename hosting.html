@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Хостинг проектов — Codepedia</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .hosting-header {
+            background: linear-gradient(135deg, #1e2a3a 0%, #0f1722 100%);
+            padding: 50px 30px;
+            border-radius: 20px;
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
+        }
+        .hosting-header h1 { font-size: 36px; margin-bottom: 10px; }
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+        .project-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+        }
+        .project-card:hover { transform: translateY(-4px); box-shadow: 0 12px 28px rgba(0,0,0,0.15); }
+        .project-preview {
+            height: 160px;
+            background: #f0f2f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .project-info { padding: 20px; }
+        .project-title { font-size: 20px; font-weight: 700; margin-bottom: 8px; color: #1e2a3a; }
+        .project-desc { font-size: 13px; color: #64748b; margin-bottom: 15px; line-height: 1.5; }
+        .project-meta { font-size: 12px; color: #ff6b00; display: flex; gap: 15px; }
+        .btn-view { background: #ff6b00; color: white; border: none; padding: 8px 20px; border-radius: 30px; cursor: pointer; margin-top: 15px; width: 100%; font-weight: 600; }
+        .create-btn {
+            display: inline-block;
+            background: #ff6b00;
+            color: white;
+            padding: 12px 28px;
+            border-radius: 40px;
+            text-decoration: none;
+            font-weight: 600;
+            margin-top: 20px;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 60px;
+            background: #f8fafc;
+            border-radius: 20px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo"><h1><span class="code-orange">Code</span><span class="pedia">pedia</span> <span style="font-size:14px">Hosting</span></h1></div>
+        <div class="nav-links">
+            <a href="index.html">🏠 Главная</a>
+            <a href="courses.html">📚 Курсы</a>
+            <a href="hosting.html" class="active">🚀 Хостинг</a>
+            <a href="create-site.html">➕ Создать сайт</a>
+        </div>
+        <div id="authBlock"></div>
+    </div>
+
+    <div class="container" style="padding: 30px; max-width: 1300px; margin: 0 auto;">
+        <div class="hosting-header">
+            <h1>🚀 Codepedia Hosting</h1>
+            <p>Создавайте и публикуйте свои сайты на поддомене *.codepedia.space</p>
+            <a href="create-site.html" class="create-btn">✨ Создать свой сайт</a>
+        </div>
+        
+        <div id="projectsContainer">
+            <div class="loading">Загрузка проектов...</div>
+        </div>
+    </div>
+
+    <div class="footer"><p>Codepedia Hosting — бесплатный хостинг для ваших проектов | © 2024-2026</p></div>
+
+    <script>
+        let currentUser = null;
+        let currentSessionId = localStorage.getItem('sessionId');
+        let allProjects = [];
+
+        async function fetchWithAuth(url, options = {}) {
+            const res = await fetch(url, { ...options, headers: { ...options.headers, 'X-Session-Id': currentSessionId } });
+            return res;
+        }
+
+        async function loadUser() {
+            if (!currentSessionId) return null;
+            try {
+                const res = await fetch('/api/me', { headers: { 'X-Session-Id': currentSessionId } });
+                if (res.ok) { const data = await res.json(); currentUser = data.user; return currentUser; }
+            } catch(e) {}
+            return null;
+        }
+
+        async function loadProjects() {
+            try {
+                const res = await fetch('/api/projects');
+                if (res.ok) {
+                    allProjects = await res.json();
+                    renderProjects();
+                }
+            } catch(e) {
+                document.getElementById('projectsContainer').innerHTML = '<div class="empty-state">❌ Ошибка загрузки проектов</div>';
+            }
+        }
+
+        function renderProjects() {
+            const container = document.getElementById('projectsContainer');
+            if (!allProjects.length) {
+                container.innerHTML = `<div class="empty-state">
+                    <div style="font-size: 48px; margin-bottom: 15px;">📭</div>
+                    <h3>Пока нет проектов</h3>
+                    <p>Станьте первым, кто опубликует свой сайт!</p>
+                    <a href="create-site.html" class="create-btn">✨ Создать сайт</a>
+                </div>`;
+                return;
+            }
+            
+            container.innerHTML = `<div class="projects-grid">${allProjects.map(p => `
+                <div class="project-card">
+                    <div class="project-preview">${p.preview_icon || '🌐'}</div>
+                    <div class="project-info">
+                        <div class="project-title">${escapeHtml(p.title)}</div>
+                        <div class="project-desc">${escapeHtml(p.description || 'Без описания')}</div>
+                        <div class="project-meta">
+                            <span>👤 ${escapeHtml(p.author_name || 'Аноним')}</span>
+                            <span>📅 ${p.created_at?.split('T')[0] || '2025'}</span>
+                            <span>👁️ ${p.views || 0}</span>
+                        </div>
+                        <button class="btn-view" onclick="window.location.href='/site-preview.html?slug=${p.slug}'">🔍 Смотреть</button>
+                    </div>
+                </div>
+            `).join('')}</div>`;
+        }
+
+        function escapeHtml(text) { const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
+
+        function updateUI() {
+            const authBlock = document.getElementById('authBlock');
+            if (currentUser) {
+                authBlock.innerHTML = `<div class="user-info" style="display: flex; align-items: center; gap: 12px;"><img class="user-avatar" src="${currentUser.avatar || `https://api.dicebear.com/7.x/initials/svg?seed=${currentUser.name}`}" width="36" height="36" style="border-radius: 50%;"><span class="user-name">${currentUser.name || currentUser.email}</span><button class="logout-btn" onclick="logout()">Выйти</button></div>`;
+            } else {
+                authBlock.innerHTML = `<div class="auth-buttons"><button class="login-btn-header" onclick="window.location.href='index.html'">Вход</button><button class="register-btn-header" onclick="window.location.href='index.html'">Регистрация</button></div>`;
+            }
+        }
+
+        async function logout() {
+            if (currentSessionId) await fetch('/api/logout', { method: 'POST', headers: { 'X-Session-Id': currentSessionId } });
+            localStorage.clear();
+            window.location.href = 'index.html';
+        }
+
+        async function init() { await loadUser(); updateUI(); await loadProjects(); }
+        init();
+    </script>
+</body>
+</html>
