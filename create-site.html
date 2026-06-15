@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Просмотр сайта — Codepedia Hosting</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body { margin: 0; padding: 0; background: #f5f7fb; }
+        .header { background: white; padding: 12px 24px; border-bottom: 1px solid #e0e0e0; display: flex; justify-content: space-between; align-items: center; }
+        .iframe-container { height: calc(100vh - 60px); }
+        iframe { width: 100%; height: 100%; border: none; }
+        .loading { text-align: center; padding: 50px; font-size: 18px; color: #666; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo"><h1><span class="code-orange">Code</span><span class="pedia">pedia</span> Hosting</h1></div>
+        <div class="nav-links">
+            <a href="hosting.html">🚀 Все проекты</a>
+            <a href="create-site.html">➕ Создать</a>
+        </div>
+        <div id="authBlock"></div>
+    </div>
+    <div class="iframe-container" id="container">
+        <div class="loading">Загрузка сайта...</div>
+    </div>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const slug = urlParams.get('slug');
+        let currentUser = null, currentSessionId = localStorage.getItem('sessionId');
+        
+        async function loadSite() {
+            if (!slug) {
+                document.getElementById('container').innerHTML = '<div class="loading">❌ Не указан проект</div>';
+                return;
+            }
+            try {
+                const res = await fetch(`/api/projects/${slug}`);
+                if (!res.ok) throw new Error('Проект не найден');
+                const project = await res.json();
+                const fullHtml = `<!DOCTYPE html><html><head><style>${project.css || ''}</style></head><body>${project.html || ''}<script>${project.js || ''}<\/script></body></html>`;
+                const iframe = document.createElement('iframe');
+                iframe.sandbox = 'allow-same-origin allow-scripts allow-popups allow-forms';
+                document.getElementById('container').innerHTML = '';
+                document.getElementById('container').appendChild(iframe);
+                const blob = new Blob([fullHtml], { type: 'text/html' });
+                iframe.src = URL.createObjectURL(blob);
+                document.title = `${project.title} — Codepedia Hosting`;
+            } catch(e) {
+                document.getElementById('container').innerHTML = '<div class="loading">❌ Проект не найден или был удалён</div>';
+            }
+        }
+        
+        function updateUI() {
+            const authBlock = document.getElementById('authBlock');
+            if (currentUser) {
+                authBlock.innerHTML = `<div class="user-info"><img class="user-avatar" src="${currentUser.avatar || ''}" width="32" height="32" style="border-radius: 50%;"><span class="user-name">${currentUser.name || currentUser.email}</span><button class="logout-btn" onclick="logout()">Выйти</button></div>`;
+            } else {
+                authBlock.innerHTML = `<div class="auth-buttons"><button class="login-btn-header" onclick="window.location.href='index.html'">Вход</button></div>`;
+            }
+        }
+        
+        async function loadUser() {
+            if (!currentSessionId) return;
+            try {
+                const res = await fetch('/api/me', { headers: { 'X-Session-Id': currentSessionId } });
+                if (res.ok) { const data = await res.json(); currentUser = data.user; updateUI(); }
+            } catch(e) {}
+        }
+        
+        async function logout() {
+            if (currentSessionId) await fetch('/api/logout', { method: 'POST', headers: { 'X-Session-Id': currentSessionId } });
+            localStorage.clear();
+            window.location.href = 'index.html';
+        }
+        
+        loadUser();
+        loadSite();
+    </script>
+</body>
+</html>
