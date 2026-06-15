@@ -389,6 +389,36 @@ export default {
                 return new Response(JSON.stringify({ error: err.message }), { headers: corsHeaders, status: 500 });
             }
         }
+        // ========== УДАЛИТЬ ПРОЕКТ ==========
+        if (path.match(/^\/api\/projects\/[^\/]+$/) && request.method === 'DELETE') {
+            const sessionId = request.headers.get('X-Session-Id');
+            if (!sessionId) {
+                return new Response(JSON.stringify({ error: 'Не авторизован' }), { headers: corsHeaders, status: 401 });
+            }
+            const session = await env.DB.prepare(
+                "SELECT user_id FROM sessions WHERE id = ? AND expires_at > CURRENT_TIMESTAMP"
+            ).bind(sessionId).first();
+            if (!session) {
+                return new Response(JSON.stringify({ error: 'Сессия истекла' }), { headers: corsHeaders, status: 401 });
+            }
+            
+            const slug = path.split('/').pop();
+            const project = await env.DB.prepare(
+                "SELECT user_id FROM projects WHERE slug = ?"
+            ).bind(slug).first();
+            
+            if (!project) {
+                return new Response(JSON.stringify({ error: 'Проект не найден' }), { headers: corsHeaders, status: 404 });
+            }
+            
+            if (project.user_id !== session.user_id) {
+                return new Response(JSON.stringify({ error: 'Нет прав на удаление' }), { headers: corsHeaders, status: 403 });
+            }
+            
+            await env.DB.prepare("DELETE FROM projects WHERE slug = ?").bind(slug).run();
+            
+            return new Response(JSON.stringify({ success: true }), { headers: corsHeaders });
+        }
 
         // ========== РАБОТА С ФАЙЛАМИ ПРОЕКТА ==========
         if (path.match(/^\/api\/projects\/[^\/]+\/files$/) && request.method === 'GET') {
