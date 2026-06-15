@@ -15,7 +15,87 @@ export default {
             return new Response(null, { headers: corsHeaders });
         }
 
-        // ---------------------- 1. АВТОРИЗАЦИЯ ----------------------
+        // ========== ЯНДЕКС OAuth CALLBACK ==========
+        if (path === '/api/yandex-callback' && request.method === 'GET') {
+            const url = new URL(request.url);
+            const code = url.searchParams.get('code');
+            
+            if (!code) {
+                return new Response('Ошибка: код не получен', { status: 400 });
+            }
+            
+            try {
+                const tokenRes = await fetch('https://oauth.yandex.ru/token', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams({
+                        grant_type: 'authorization_code',
+                        code: code,
+                        client_id: '0cdd1dc659314700959ff3dd61177031',
+                        client_secret: '89a0c059ec3248958fee5f3e9e26c2f4'
+                    })
+                });
+                
+                const tokenData = await tokenRes.json();
+                const accessToken = tokenData.access_token;
+                
+                const userRes = await fetch('https://login.yandex.ru/info', {
+                    headers: { 'Authorization': `OAuth ${accessToken}` }
+                });
+                const yandexUser = await userRes.json();
+                
+                const email = yandexUser.default_email;
+                const name = yandexUser.real_name || yandexUser.display_name || email.split('@')[0];
+                const avatar = yandexUser.default_avatar_id 
+                    ? `https://avatars.yandex.net/get-yapic/${yandexUser.default_avatar_id}/islands-200` 
+                    : `https://api.dicebear.com/7.x/initials/svg?seed=${name}`;
+                
+                let user = await env.DB.prepare("SELECT * FROM users WHERE email = ?").bind(email).first();
+                
+                if (!user) {
+                    const result = await env.DB.prepare(
+                        "INSERT INTO users (email, name, avatar, yandex_id, role) VALUES (?, ?, ?, ?, 'user')"
+                    ).bind(email, name, avatar, yandexUser.id).run();
+                    user = { id: result.meta.last_row_id, email, name, avatar };
+                } else {
+                    await env.DB.prepare(
+                        "UPDATE users SET name = ?, avatar = ?, yandex_id = ? WHERE id = ?"
+                    ).bind(name, avatar, yandexUser.id, user.id).run();
+                    user.name = name;
+                    user.avatar = avatar;
+                }
+                
+                const sessionId = crypto.randomUUID();
+                const expiresAt = new Date();
+                expiresAt.setDate(expiresAt.getDate() + 30);
+                
+                await env.DB.prepare(
+                    "INSERT INTO sessions (id, user_id, expires_at) VALUES (?, ?, ?)"
+                ).bind(sessionId, user.id, expiresAt.toISOString()).run();
+                
+                return new Response(`<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><title>Вход через Яндекс</title></head>
+<body>
+<script>
+    localStorage.setItem('sessionId', '${sessionId}');
+    localStorage.setItem('user', JSON.stringify({
+        id: ${user.id},
+        email: '${user.email}',
+        name: '${user.name.replace(/'/g, "\\'")}',
+        avatar: '${user.avatar}'
+    }));
+    window.location.href = '/';
+</script>
+</body>
+</html>`, { headers: { 'Content-Type': 'text/html' } });
+                
+            } catch (err) {
+                return new Response(`Ошибка: ${err.message}`, { status: 500 });
+            }
+        }
+
+        // ========== АВТОРИЗАЦИЯ (email/пароль) ==========
         if (path === '/api/register' && request.method === 'POST') {
             try {
                 const { email, password, name } = await request.json();
@@ -58,7 +138,7 @@ export default {
                 return new Response(JSON.stringify({
                     success: true,
                     sessionId: sessionId,
-                    user: { id: user.id, email: user.email, name: user.name, role: user.role }
+                    user: { id: user.id, email: user.email, name: user.name, role: user.role, avatar: user.avatar }
                 }), { headers: corsHeaders });
             } catch (err) {
                 return new Response(JSON.stringify({ error: err.message }), { headers: corsHeaders, status: 500 });
@@ -73,7 +153,7 @@ export default {
             ).bind(sessionId).first();
             if (!session) return new Response(JSON.stringify({ error: 'Сессия истекла' }), { headers: corsHeaders, status: 401 });
             const user = await env.DB.prepare(
-                "SELECT id, email, name, role FROM users WHERE id = ?"
+                "SELECT id, email, name, role, avatar FROM users WHERE id = ?"
             ).bind(session.user_id).first();
             return new Response(JSON.stringify({ user }), { headers: corsHeaders });
         }
@@ -86,7 +166,7 @@ export default {
             return new Response(JSON.stringify({ success: true }), { headers: corsHeaders });
         }
 
-        // ---------------------- 2. СТАТЬИ ----------------------
+        // ========== СТАТЬИ ==========
         if (path === '/api/articles' && request.method === 'GET') {
             const articles = await env.DB.prepare(
                 "SELECT id, title, slug, category, difficulty, excerpt, author_name, date, views FROM articles WHERE status = 'published' OR status IS NULL ORDER BY date DESC"
@@ -129,7 +209,7 @@ export default {
             }
         }
 
-        // ---------------------- 3. КУРСЫ, УРОКИ, ПРОГРЕСС ----------------------
+        // ========== КУРСЫ, УРОКИ, ПРОГРЕСС ==========
         if (path === '/api/courses' && request.method === 'GET') {
             const courses = await env.DB.prepare("SELECT * FROM courses ORDER BY id").all();
             return new Response(JSON.stringify(courses.results), { headers: corsHeaders });
@@ -155,7 +235,6 @@ export default {
             return new Response(JSON.stringify(lesson), { headers: corsHeaders });
         }
 
-        // Прогресс пользователя (все уроки)
         if (path === '/api/user-progress' && request.method === 'GET') {
             const sessionId = request.headers.get('X-Session-Id');
             if (!sessionId) return new Response(JSON.stringify({ error: 'Не авторизован' }), { headers: corsHeaders, status: 401 });
@@ -171,7 +250,6 @@ export default {
             return new Response(JSON.stringify(result), { headers: corsHeaders });
         }
 
-        // Прогресс по конкретному уроку
         if (path.match(/^\/api\/user-progress\/\d+$/) && request.method === 'GET') {
             const lessonId = parseInt(path.split('/').pop());
             const sessionId = request.headers.get('X-Session-Id');
@@ -186,7 +264,6 @@ export default {
             return new Response(JSON.stringify({ completed: prog ? (prog.completed === 1) : false, solution: prog ? prog.solution : '' }), { headers: corsHeaders });
         }
 
-        // Сохранение прогресса
         if (path === '/api/user-progress' && request.method === 'POST') {
             const sessionId = request.headers.get('X-Session-Id');
             if (!sessionId) return new Response(JSON.stringify({ error: 'Не авторизован' }), { headers: corsHeaders, status: 401 });
@@ -204,7 +281,6 @@ export default {
             return new Response(JSON.stringify({ success: true }), { headers: corsHeaders });
         }
 
-        // Проверка кода (имитация компиляции)
         if (path === '/api/check-solution' && request.method === 'POST') {
             const { code, language } = await request.json();
             let correct = false;
@@ -218,7 +294,7 @@ export default {
             return new Response(JSON.stringify({ correct, message }), { headers: corsHeaders });
         }
 
-        // ---------------------- 4. ЧАТ С РЕПЕТИТОРОМ ----------------------
+        // ========== ЧАТ С РЕПЕТИТОРОМ ==========
         if (path === '/api/tutor-messages' && request.method === 'GET') {
             const sessionId = request.headers.get('X-Session-Id');
             if (!sessionId) return new Response(JSON.stringify({ error: 'Не авторизован' }), { headers: corsHeaders, status: 401 });
@@ -246,7 +322,61 @@ export default {
             return new Response(JSON.stringify({ success: true }), { headers: corsHeaders });
         }
 
-        // ---------------------- 5. СТАТИЧЕСКИЕ ФАЙЛЫ ----------------------
+        // ========== ХОСТИНГ ПРОЕКТОВ ==========
+        if (path === '/api/projects' && request.method === 'GET') {
+            const projects = await env.DB.prepare(
+                "SELECT id, slug, title, description, author_name, author_avatar, views, created_at FROM projects WHERE published = 1 ORDER BY created_at DESC"
+            ).all();
+            return new Response(JSON.stringify(projects.results), { headers: corsHeaders });
+        }
+
+        if (path.match(/^\/api\/projects\/[^\/]+$/) && request.method === 'GET') {
+            const slug = path.split('/').pop();
+            const project = await env.DB.prepare(
+                "SELECT * FROM projects WHERE slug = ? AND published = 1"
+            ).bind(slug).first();
+            if (!project) {
+                return new Response(JSON.stringify({ error: 'Проект не найден' }), { headers: corsHeaders, status: 404 });
+            }
+            await env.DB.prepare("UPDATE projects SET views = views + 1 WHERE slug = ?").bind(slug).run();
+            return new Response(JSON.stringify(project), { headers: corsHeaders });
+        }
+
+        if (path === '/api/projects' && request.method === 'POST') {
+            const sessionId = request.headers.get('X-Session-Id');
+            if (!sessionId) {
+                return new Response(JSON.stringify({ error: 'Необходимо войти' }), { headers: corsHeaders, status: 401 });
+            }
+            const session = await env.DB.prepare(
+                "SELECT user_id FROM sessions WHERE id = ? AND expires_at > CURRENT_TIMESTAMP"
+            ).bind(sessionId).first();
+            if (!session) {
+                return new Response(JSON.stringify({ error: 'Сессия истекла' }), { headers: corsHeaders, status: 401 });
+            }
+            const user = await env.DB.prepare("SELECT id, name, avatar FROM users WHERE id = ?").bind(session.user_id).first();
+            if (!user) {
+                return new Response(JSON.stringify({ error: 'Пользователь не найден' }), { headers: corsHeaders, status: 401 });
+            }
+            try {
+                const { slug, title, description, html, css, js } = await request.json();
+                if (!slug || !title || !html) {
+                    return new Response(JSON.stringify({ error: 'Заполните обязательные поля' }), { headers: corsHeaders, status: 400 });
+                }
+                const existing = await env.DB.prepare("SELECT id FROM projects WHERE slug = ?").bind(slug).first();
+                if (existing) {
+                    return new Response(JSON.stringify({ error: 'Проект с таким адресом уже существует' }), { headers: corsHeaders, status: 409 });
+                }
+                await env.DB.prepare(
+                    `INSERT INTO projects (user_id, slug, title, description, html, css, js, author_name, author_avatar) 
+                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
+                ).bind(user.id, slug, title, description || '', html, css || '', js || '', user.name, user.avatar).run();
+                return new Response(JSON.stringify({ success: true, slug }), { headers: corsHeaders });
+            } catch (err) {
+                return new Response(JSON.stringify({ error: err.message }), { headers: corsHeaders, status: 500 });
+            }
+        }
+
+        // ========== СТАТИЧЕСКИЕ ФАЙЛЫ ==========
         const staticMap = {
             '/': 'index.html',
             '/index.html': 'index.html',
@@ -256,29 +386,31 @@ export default {
             '/lesson.html': 'lesson.html',
             '/progress.html': 'progress.html',
             '/tutor.html': 'tutor.html',
+            '/hosting.html': 'hosting.html',
+            '/create-site.html': 'create-site.html',
+            '/site-preview.html': 'site-preview.html',
             '/style.css': 'style.css',
             '/script.js': 'script.js',
             '/privacy.html': 'privacy.html'
         };
+        
         if (staticMap[path]) {
             try {
                 const asset = await env.ASSETS.fetch(new Request(`https://fake-host/${staticMap[path]}`));
                 if (asset.status === 200) return asset;
             } catch(e) {}
-            // Заглушка для style.css
             if (staticMap[path] === 'style.css') {
                 return new Response(`body { font-family: sans-serif; background: #f5f7fb; margin: 0; padding: 20px; } .header { background: white; padding: 16px 24px; }`, {
                     headers: { 'Content-Type': 'text/css' }
                 });
             }
-            // Заглушка для HTML
-            return new Response(`<!DOCTYPE html><html><head><title>Codepedia</title><meta charset="UTF-8"></head><body><h1>Codepedia</h1><p>Деплой прошёл успешно. Статические файлы будут добавлены позже.</p><a href="/api/courses">Курсы</a> | <a href="/api/articles">Статьи</a></body></html>`, {
+            return new Response(`<!DOCTYPE html><html><head><title>Codepedia</title><meta charset="UTF-8"></head><body><h1>Codepedia</h1><p>Деплой прошёл успешно.</p></body></html>`, {
                 headers: { 'Content-Type': 'text/html' }
             });
         }
 
         if (path.startsWith('/articles/')) {
-            return new Response(`<!DOCTYPE html><html><head><title>Статья Codepedia</title><meta charset="UTF-8"></head><body><h1>Статья</h1><p>Содержимое статьи загружается через API. Вернитесь <a href="/">на главную</a>.</p></body></html>`, {
+            return new Response(`<!DOCTYPE html><html><head><title>Статья Codepedia</title><meta charset="UTF-8"></head><body><h1>Статья</h1><p><a href="/">На главную</a></p></body></html>`, {
                 headers: { 'Content-Type': 'text/html' }
             });
         }
