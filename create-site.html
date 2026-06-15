@@ -3,70 +3,221 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Просмотр сайта — Codepedia Hosting</title>
+    <title>Создать сайт — Codepedia Hosting</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        body { margin: 0; padding: 0; background: #f5f7fb; }
-        .header { background: white; padding: 12px 24px; border-bottom: 1px solid #e0e0e0; display: flex; justify-content: space-between; align-items: center; }
-        .iframe-container { height: calc(100vh - 60px); }
-        iframe { width: 100%; height: 100%; border: none; }
-        .loading { text-align: center; padding: 50px; font-size: 18px; color: #666; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif; }
+        
+        .header { background: rgba(15, 18, 40, 0.95); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255, 107, 0, 0.3); padding: 16px 32px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; }
+        .logo h1 { font-size: 28px; }
+        .code-orange { color: #ff6b00; }
+        .pedia { color: #4a90e2; }
+        .nav-links a { color: #e0e0e0; text-decoration: none; margin-left: 24px; }
+        .nav-links a:hover, .nav-links a.active { color: #ff6b00; }
+        
+        .create-container { max-width: 1200px; margin: 0 auto; padding: 40px 30px; }
+        .create-header { text-align: center; margin-bottom: 40px; }
+        .create-header h1 { font-size: 42px; background: linear-gradient(135deg, #ff6b00, #4a90e2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 10px; }
+        .create-header p { color: #a0a0a0; }
+        
+        .form-card { background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); border-radius: 24px; padding: 30px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 30px; }
+        .form-group { margin-bottom: 24px; }
+        .form-group label { display: block; font-weight: 600; margin-bottom: 8px; color: #e0e0e0; }
+        .form-group input, .form-group textarea { width: 100%; padding: 14px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; color: white; font-size: 14px; transition: border-color 0.2s; }
+        .form-group input:focus, .form-group textarea:focus { outline: none; border-color: #ff6b00; }
+        .form-group textarea { min-height: 200px; font-family: monospace; }
+        
+        .slug-preview { background: rgba(0,0,0,0.3); padding: 12px; border-radius: 12px; font-family: monospace; margin-top: 8px; color: #4a90e2; }
+        
+        .preview-block { background: rgba(255,255,255,0.03); border-radius: 24px; padding: 20px; margin-top: 20px; }
+        .preview-iframe { width: 100%; height: 400px; border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; background: white; }
+        
+        .btn-save { background: linear-gradient(135deg, #ff6b00, #ff8533); color: white; padding: 14px 32px; border-radius: 40px; border: none; cursor: pointer; font-size: 16px; font-weight: 600; transition: transform 0.2s; margin-top: 20px; }
+        .btn-save:hover { transform: translateY(-2px); }
+        
+        .message { margin-top: 20px; padding: 14px; border-radius: 12px; display: none; }
+        .message.success { background: rgba(46, 125, 50, 0.2); border: 1px solid #2e7d32; color: #81c784; display: block; }
+        .message.error { background: rgba(198, 40, 40, 0.2); border: 1px solid #c62828; color: #ef9a9a; display: block; }
+        .message.info { background: rgba(2, 136, 209, 0.2); border: 1px solid #0288d1; color: #81d4fa; display: block; }
+        
+        .user-info { display: flex; align-items: center; gap: 12px; background: rgba(255,255,255,0.1); padding: 6px 16px 6px 10px; border-radius: 50px; }
+        .user-avatar { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; border: 2px solid #ff6b00; }
+        .auth-buttons { display: flex; gap: 12px; }
+        .login-btn-header, .register-btn-header { padding: 8px 20px; border-radius: 30px; cursor: pointer; }
+        .login-btn-header { background: transparent; border: 1px solid #4a90e2; color: #4a90e2; }
+        .register-btn-header { background: #ff6b00; border: none; color: white; }
+        
+        @media (max-width: 768px) { .create-container { padding: 20px; } .create-header h1 { font-size: 28px; } }
     </style>
 </head>
 <body>
     <div class="header">
         <div class="logo"><h1><span class="code-orange">Code</span><span class="pedia">pedia</span> Hosting</h1></div>
         <div class="nav-links">
-            <a href="hosting.html">🚀 Все проекты</a>
-            <a href="create-site.html">➕ Создать</a>
+            <a href="index.html">🏠 Главная</a>
+            <a href="hosting.html">🚀 Хостинг</a>
+            <a href="create-site.html" class="active">➕ Создать</a>
         </div>
         <div id="authBlock"></div>
     </div>
-    <div class="iframe-container" id="container">
-        <div class="loading">Загрузка сайта...</div>
-    </div>
-    <script>
-        const urlParams = new URLSearchParams(window.location.search);
-        const slug = urlParams.get('slug');
-        let currentUser = null, currentSessionId = localStorage.getItem('sessionId');
+
+    <div class="create-container">
+        <div class="create-header">
+            <h1>✨ Создать новый сайт</h1>
+            <p>Ваш сайт будет доступен по адресу: <strong id="urlPreview">ваш-проект.codepedia.space</strong></p>
+        </div>
         
-        async function loadSite() {
+        <div class="form-card">
+            <div class="form-group">
+                <label>🔗 Адрес проекта (slug)</label>
+                <input type="text" id="slug" placeholder="мой-сайт" oninput="updatePreview()">
+                <div class="slug-preview">→ <span id="fullUrl">ваш-проект.codepedia.space</span></div>
+            </div>
+            
+            <div class="form-group">
+                <label>📝 Название сайта</label>
+                <input type="text" id="title" placeholder="Мой крутой сайт">
+            </div>
+            
+            <div class="form-group">
+                <label>📄 Описание</label>
+                <textarea id="description" rows="2" placeholder="Что это за проект? (необязательно)"></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label>🎨 HTML код</label>
+                <textarea id="html" rows="8" placeholder="<h1>Привет, мир!</h1>"></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label>🎨 CSS код (необязательно)</label>
+                <textarea id="css" rows="5" placeholder="body { font-family: sans-serif; background: #f0f0f0; }"></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label>⚡ JavaScript код (необязательно)</label>
+                <textarea id="js" rows="5" placeholder="console.log('Hello Codepedia!');"></textarea>
+            </div>
+            
+            <div class="preview-block">
+                <h3 style="margin-bottom: 15px; color: #e0e0e0;">👁️ Предпросмотр</h3>
+                <iframe id="preview" class="preview-iframe" sandbox="allow-same-origin allow-scripts allow-popups allow-forms"></iframe>
+            </div>
+            
+            <button class="btn-save" onclick="publishSite()">🚀 Опубликовать сайт</button>
+            <div id="message" class="message"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentUser = null;
+        let currentSessionId = localStorage.getItem('sessionId');
+
+        function updatePreview() {
+            const slug = document.getElementById('slug').value || 'ваш-проект';
+            const cleanSlug = slug.toLowerCase().replace(/[^a-z0-9-]/g, '-');
+            document.getElementById('fullUrl').textContent = `${cleanSlug}.codepedia.space`;
+            document.getElementById('urlPreview').textContent = `${cleanSlug}.codepedia.space`;
+            
+            const html = document.getElementById('html').value || '<div style="padding:20px; text-align:center;">✨ Ваш сайт будет здесь</div>';
+            const css = document.getElementById('css').value || '';
+            const js = document.getElementById('js').value || '';
+            
+            const previewDoc = `<!DOCTYPE html><html><head><style>${css}</style></head><body>${html}<script>${js}<\/script></body></html>`;
+            const previewFrame = document.getElementById('preview');
+            const blob = new Blob([previewDoc], { type: 'text/html' });
+            URL.revokeObjectURL(previewFrame.src);
+            previewFrame.src = URL.createObjectURL(blob);
+        }
+
+        document.getElementById('slug').addEventListener('input', function() {
+            this.value = this.value.toLowerCase().replace(/[^a-z0-9-]/g, '-');
+        });
+        document.getElementById('html').addEventListener('input', updatePreview);
+        document.getElementById('css').addEventListener('input', updatePreview);
+        document.getElementById('js').addEventListener('input', updatePreview);
+
+        async function publishSite() {
+            let slug = document.getElementById('slug').value.trim();
+            const title = document.getElementById('title').value.trim();
+            const description = document.getElementById('description').value.trim();
+            const html = document.getElementById('html').value;
+            const css = document.getElementById('css').value;
+            const js = document.getElementById('js').value;
+            const msgDiv = document.getElementById('message');
+            
+            // Валидация
             if (!slug) {
-                document.getElementById('container').innerHTML = '<div class="loading">❌ Не указан проект</div>';
+                showMessage('❌ Укажите адрес проекта (slug)', 'error');
                 return;
             }
+            if (!title) {
+                showMessage('❌ Укажите название сайта', 'error');
+                return;
+            }
+            if (!html) {
+                showMessage('❌ Добавьте HTML код вашего сайта', 'error');
+                return;
+            }
+            
+            if (!/^[a-z0-9-]+$/.test(slug)) {
+                showMessage('❌ Адрес может содержать только латиницу, цифры и дефисы', 'error');
+                return;
+            }
+            
+            if (!currentSessionId) {
+                showMessage('❌ Необходимо войти в аккаунт', 'error');
+                setTimeout(() => { window.location.href = 'index.html'; }, 2000);
+                return;
+            }
+            
+            showMessage('⏳ Публикация...', 'info');
+            
             try {
-                const res = await fetch(`/api/projects/${slug}`);
-                if (!res.ok) throw new Error('Проект не найден');
-                const project = await res.json();
-                const fullHtml = `<!DOCTYPE html><html><head><style>${project.css || ''}</style></head><body>${project.html || ''}<script>${project.js || ''}<\/script></body></html>`;
-                const iframe = document.createElement('iframe');
-                iframe.sandbox = 'allow-same-origin allow-scripts allow-popups allow-forms';
-                document.getElementById('container').innerHTML = '';
-                document.getElementById('container').appendChild(iframe);
-                const blob = new Blob([fullHtml], { type: 'text/html' });
-                iframe.src = URL.createObjectURL(blob);
-                document.title = `${project.title} — Codepedia Hosting`;
+                const res = await fetch('/api/projects', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-Session-Id': currentSessionId },
+                    body: JSON.stringify({ slug, title, description, html, css, js })
+                });
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    showMessage(`✅ Сайт "${title}" опубликован! Доступен по адресу: <strong>${slug}.codepedia.space</strong>`, 'success');
+                    setTimeout(() => { window.location.href = `/site-preview.html?slug=${slug}`; }, 2000);
+                } else {
+                    showMessage(`❌ ${data.error || 'Ошибка публикации'}`, 'error');
+                }
             } catch(e) {
-                document.getElementById('container').innerHTML = '<div class="loading">❌ Проект не найден или был удалён</div>';
+                showMessage('❌ Ошибка соединения с сервером', 'error');
+            }
+        }
+        
+        function showMessage(text, type) {
+            const msgDiv = document.getElementById('message');
+            msgDiv.innerHTML = text;
+            msgDiv.className = `message ${type}`;
+            setTimeout(() => { msgDiv.className = 'message'; }, 5000);
+        }
+
+        async function loadUser() {
+            if (!currentSessionId) return;
+            try {
+                const res = await fetch('/api/me', { headers: { 'X-Session-Id': currentSessionId } });
+                if (res.ok) { const data = await res.json(); currentUser = data.user; }
+            } catch(e) {}
+            if (!currentUser) {
+                showMessage('⚠️ Для создания сайта необходимо войти в аккаунт', 'error');
+                setTimeout(() => { window.location.href = 'index.html'; }, 3000);
             }
         }
         
         function updateUI() {
             const authBlock = document.getElementById('authBlock');
             if (currentUser) {
-                authBlock.innerHTML = `<div class="user-info"><img class="user-avatar" src="${currentUser.avatar || ''}" width="32" height="32" style="border-radius: 50%;"><span class="user-name">${currentUser.name || currentUser.email}</span><button class="logout-btn" onclick="logout()">Выйти</button></div>`;
+                authBlock.innerHTML = `<div class="user-info"><img class="user-avatar" src="${currentUser.avatar || `https://api.dicebear.com/7.x/initials/svg?seed=${currentUser.name}`}" width="36" height="36"><span class="user-name">${currentUser.name || currentUser.email}</span><button class="logout-btn" onclick="logout()">Выйти</button></div>`;
             } else {
-                authBlock.innerHTML = `<div class="auth-buttons"><button class="login-btn-header" onclick="window.location.href='index.html'">Вход</button></div>`;
+                authBlock.innerHTML = `<div class="auth-buttons"><button class="login-btn-header" onclick="window.location.href='index.html'">Вход</button><button class="register-btn-header" onclick="window.location.href='index.html'">Регистрация</button></div>`;
             }
-        }
-        
-        async function loadUser() {
-            if (!currentSessionId) return;
-            try {
-                const res = await fetch('/api/me', { headers: { 'X-Session-Id': currentSessionId } });
-                if (res.ok) { const data = await res.json(); currentUser = data.user; updateUI(); }
-            } catch(e) {}
         }
         
         async function logout() {
@@ -75,8 +226,9 @@
             window.location.href = 'index.html';
         }
         
+        updatePreview();
         loadUser();
-        loadSite();
+        updateUI();
     </script>
 </body>
 </html>
