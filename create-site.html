@@ -64,6 +64,7 @@
                 <label>🔗 Адрес проекта (slug)</label>
                 <input type="text" id="slug" placeholder="мой-сайт" oninput="updatePreview()">
                 <div class="slug-preview">→ <span id="fullUrl">codepedia.space/site/ваш-проект</span></div>
+                <small style="color: #888;">Только латиница, цифры и дефисы</small>
             </div>
             <div class="form-group">
                 <label>📝 Название сайта</label>
@@ -71,7 +72,7 @@
             </div>
             <div class="form-group">
                 <label>📄 Описание</label>
-                <textarea id="description" rows="2" placeholder="Что это за проект?"></textarea>
+                <textarea id="description" rows="2" placeholder="Что это за проект? (необязательно)"></textarea>
             </div>
             <div class="form-group">
                 <label>🎨 HTML код (обязательно)</label>
@@ -96,13 +97,20 @@
 
         function updatePreview() {
             let slug = document.getElementById('slug').value || 'ваш-проект';
-            slug = slug.toLowerCase().replace(/[^a-z0-9-]/g, '-');
+            if (!slug || slug === '') slug = 'ваш-проект';
             document.getElementById('fullUrl').textContent = `codepedia.space/site/${slug}`;
             document.getElementById('urlPreview').textContent = `codepedia.space/site/${slug}`;
         }
 
-        document.getElementById('slug').addEventListener('input', function() {
-            this.value = this.value.toLowerCase().replace(/[^a-z0-9-]/g, '-');
+        // ВАЛИДАЦИЯ SLUG: только латиница, цифры, дефисы (без замены на дефисы!)
+        document.getElementById('slug').addEventListener('input', function(e) {
+            // Разрешаем только: a-z, 0-9, и дефис
+            let cleaned = this.value.toLowerCase().replace(/[^a-z0-9-]/g, '');
+            // Убираем повторяющиеся дефисы
+            cleaned = cleaned.replace(/-+/g, '-');
+            // Убираем дефис в начале и конце
+            cleaned = cleaned.replace(/^-|-$/g, '');
+            this.value = cleaned;
             updatePreview();
         });
 
@@ -114,14 +122,8 @@
         }
 
         async function publishSite() {
-            // Проверяем авторизацию
-            if (!currentSessionId) {
-                showMessage('❌ Необходимо войти в аккаунт', 'error');
-                setTimeout(() => { window.location.href = 'index.html'; }, 2000);
-                return;
-            }
-            
-            if (!currentUser) {
+            // Проверка авторизации
+            if (!currentSessionId || !currentUser) {
                 showMessage('❌ Необходимо войти в аккаунт', 'error');
                 setTimeout(() => { window.location.href = 'index.html'; }, 2000);
                 return;
@@ -134,11 +136,14 @@
             const css = document.getElementById('css').value;
             const js = document.getElementById('js').value;
             
-            // Валидация полей
+            // Валидация
             if (!slug) { showMessage('❌ Укажите адрес проекта (slug)', 'error'); return; }
             if (!title) { showMessage('❌ Укажите название сайта', 'error'); return; }
             if (!html) { showMessage('❌ Добавьте HTML код вашего сайта', 'error'); return; }
-            if (!/^[a-z0-9-]+$/.test(slug)) { showMessage('❌ Адрес может содержать только латиницу, цифры и дефисы', 'error'); return; }
+            if (!/^[a-z0-9-]+$/.test(slug)) { 
+                showMessage('❌ Адрес может содержать только латиницу, цифры и дефисы', 'error'); 
+                return; 
+            }
             
             showMessage('⏳ Публикация...', 'info');
             
@@ -181,7 +186,6 @@
                 if (res.ok) { 
                     const data = await res.json(); 
                     currentUser = data.user; 
-                    console.log('User loaded:', currentUser);
                 } else {
                     localStorage.removeItem('sessionId');
                     localStorage.removeItem('user');
