@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Codepedia DevKit — инструменты для разработчиков</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif; color: #e0e0e0; }
+        
+        .header { background: rgba(15, 18, 40, 0.95); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255, 107, 0, 0.3); padding: 16px 32px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; }
+        .logo h1 { font-size: 28px; }
+        .code-orange { color: #ff6b00; }
+        .pedia { color: #4a90e2; }
+        .nav-links a { color: #e0e0e0; text-decoration: none; margin-left: 24px; }
+        .nav-links a:hover { color: #ff6b00; }
+        
+        .devkit-header { text-align: center; padding: 60px 20px 40px; }
+        .devkit-header h1 { font-size: 48px; margin-bottom: 16px; background: linear-gradient(135deg, #ff6b00, #4a90e2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .devkit-header p { font-size: 18px; color: #a0a0a0; margin-bottom: 30px; }
+        
+        .tools-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 25px; max-width: 1400px; margin: 0 auto; padding: 20px 30px; }
+        
+        .tool-card {
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 24px;
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .tool-card:hover { transform: translateY(-8px); border-color: #ff6b00; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+        .tool-icon { font-size: 48px; margin-bottom: 16px; }
+        .tool-title { font-size: 22px; font-weight: 700; margin-bottom: 8px; color: white; }
+        .tool-desc { font-size: 13px; color: #a0a0a0; line-height: 1.5; }
+        
+        .footer { text-align: center; padding: 30px; border-top: 1px solid rgba(255,255,255,0.1); margin-top: 40px; color: #666; font-size: 13px; }
+        
+        @media (max-width: 768px) { .tools-grid { grid-template-columns: 1fr; } .devkit-header h1 { font-size: 32px; } }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo"><h1><span class="code-orange">Code</span><span class="pedia">pedia</span> DevKit</h1></div>
+        <div class="nav-links">
+            <a href="index.html">🏠 Главная</a>
+            <a href="devkit.html" class="active">🛠️ DevKit</a>
+            <a href="hosting.html">🚀 Хостинг</a>
+        </div>
+        <div id="authBlock"></div>
+    </div>
+
+    <div class="devkit-header">
+        <h1>🛠️ Codepedia DevKit</h1>
+        <p>Профессиональные инструменты для разработчиков — всё в одном месте</p>
+    </div>
+
+    <div class="tools-grid">
+        <div class="tool-card" onclick="window.location.href='devkit-sandbox.html'">
+            <div class="tool-icon">🔧</div>
+            <div class="tool-title">API Sandbox</div>
+            <div class="tool-desc">Тестирование API-запросов: GET, POST, PUT, DELETE. Просмотр заголовков и тела ответа.</div>
+        </div>
+        <div class="tool-card" onclick="window.location.href='devkit-generator.html'">
+            <div class="tool-icon">⚡</div>
+            <div class="tool-title">Код-генератор</div>
+            <div class="tool-desc">Генерация кода для C++, Python, JavaScript, Go, Rust. Шаблоны для любых задач.</div>
+        </div>
+        <div class="tool-card" onclick="window.location.href='devkit-utils.html#json'">
+            <div class="tool-icon">📋</div>
+            <div class="tool-title">JSON Validator</div>
+            <div class="tool-desc">Проверка, форматирование и минификация JSON. Поиск ошибок в синтаксисе.</div>
+        </div>
+        <div class="tool-card" onclick="window.location.href='devkit-utils.html#jwt'">
+            <div class="tool-icon">🔐</div>
+            <div class="tool-title">JWT Decoder</div>
+            <div class="tool-desc">Декодирование JWT токенов. Просмотр заголовка, payload и подписи.</div>
+        </div>
+        <div class="tool-card" onclick="window.location.href='devkit-utils.html#base64'">
+            <div class="tool-icon">🔄</div>
+            <div class="tool-title">Base64 Encoder/Decoder</div>
+            <div class="tool-desc">Кодирование и декодирование текста в Base64 и обратно.</div>
+        </div>
+        <div class="tool-card" onclick="window.location.href='devkit-utils.html#hash'">
+            <div class="tool-icon">🔒</div>
+            <div class="tool-title">Хеш-генератор</div>
+            <div class="tool-desc">MD5, SHA-1, SHA-256, SHA-512. Хеширование текста и файлов.</div>
+        </div>
+        <div class="tool-card" onclick="window.location.href='devkit-utils.html#regex'">
+            <div class="tool-icon">📝</div>
+            <div class="tool-title">Regex Tester</div>
+            <div class="tool-desc">Проверка регулярных выражений. Подсветка совпадений и групп.</div>
+        </div>
+        <div class="tool-card" onclick="window.location.href='devkit-snippets.html'">
+            <div class="tool-icon">📚</div>
+            <div class="tool-title">Сниппеты кода</div>
+            <div class="tool-desc">Коллекция готовых решений: сортировки, графы, ДП, структуры данных.</div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>Codepedia DevKit — профессиональные инструменты для разработчиков | © 2024-2026</p>
+    </div>
+
+    <script>
+        let currentUser = null;
+        let currentSessionId = localStorage.getItem('sessionId');
+
+        async function loadUser() {
+            if (!currentSessionId) return;
+            try {
+                const res = await fetch('/api/me', { headers: { 'X-Session-Id': currentSessionId } });
+                if (res.ok) { const data = await res.json(); currentUser = data.user; }
+            } catch(e) {}
+        }
+
+        function updateUI() {
+            const authBlock = document.getElementById('authBlock');
+            if (currentUser) {
+                authBlock.innerHTML = `<div class="user-info"><img class="user-avatar" src="${currentUser.avatar || `https://api.dicebear.com/7.x/initials/svg?seed=${currentUser.name}`}"><span class="user-name">${currentUser.name || currentUser.email}</span><button class="logout-btn" onclick="logout()">Выйти</button></div>`;
+            } else {
+                authBlock.innerHTML = `<div class="auth-buttons"><button class="login-btn-header" onclick="window.location.href='index.html'">Вход</button><button class="register-btn-header" onclick="window.location.href='index.html'">Регистрация</button></div>`;
+            }
+        }
+
+        async function logout() {
+            if (currentSessionId) await fetch('/api/logout', { method: 'POST', headers: { 'X-Session-Id': currentSessionId } });
+            localStorage.clear();
+            window.location.href = 'index.html';
+        }
+
+        loadUser().then(updateUI);
+    </script>
+</body>
+</html>
