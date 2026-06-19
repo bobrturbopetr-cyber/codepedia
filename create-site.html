@@ -24,7 +24,7 @@
         .form-group label { display: block; font-weight: 600; margin-bottom: 8px; }
         .form-group input, .form-group textarea { width: 100%; padding: 14px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; color: white; font-size: 14px; }
         .form-group input:focus, .form-group textarea:focus { outline: none; border-color: #ff6b00; }
-        .slug-preview { background: rgba(0,0,0,0.3); padding: 12px; border-radius: 12px; font-family: monospace; margin-top: 8px; color: #4a90e2; }
+        .slug-preview { background: rgba(0,0,0,0.3); padding: 12px; border-radius: 12px; font-family: monospace; margin-top: 8px; color: #4a90e2; font-size: 18px; }
         .btn-save { background: linear-gradient(135deg, #ff6b00, #ff8533); color: white; padding: 14px 32px; border-radius: 40px; border: none; cursor: pointer; font-size: 16px; font-weight: 600; margin-top: 20px; width: 100%; }
         .btn-save:hover { transform: translateY(-2px); }
         .message { margin-top: 20px; padding: 14px; border-radius: 12px; display: none; }
@@ -47,7 +47,7 @@
         <div class="logo"><h1><span class="code-orange">Code</span><span class="pedia">pedia</span> Hosting</h1></div>
         <div class="nav-links">
             <a href="index.html">🏠 Главная</a>
-            <a href="hosting.html">🚀 Хостинг</a>
+            <a href="hosting.html">🚀 Мои проекты</a>
             <a href="create-site.html" class="active">➕ Создать</a>
         </div>
         <div id="authBlock"></div>
@@ -56,14 +56,14 @@
     <div class="create-container">
         <div class="create-header">
             <h1>✨ Создать новый сайт</h1>
-            <p>Ваш сайт будет доступен по адресу: <strong id="urlPreview">codepedia.space/site/ваш-проект</strong></p>
+            <p>Ваш сайт будет доступен по адресу: <strong id="urlPreview">название.codepedia.space</strong></p>
         </div>
         
         <div class="form-card">
             <div class="form-group">
                 <label>🔗 Адрес проекта (slug)</label>
                 <input type="text" id="slug" placeholder="мой-сайт" oninput="updatePreview()">
-                <div class="slug-preview">→ <span id="fullUrl">codepedia.space/site/ваш-проект</span></div>
+                <div class="slug-preview">→ <span id="fullUrl">название.codepedia.space</span></div>
                 <small style="color: #888;">Только латиница, цифры и дефисы</small>
             </div>
             <div class="form-group">
@@ -96,21 +96,14 @@
         let currentSessionId = localStorage.getItem('sessionId');
 
         function updatePreview() {
-            let slug = document.getElementById('slug').value || 'ваш-проект';
-            if (!slug || slug === '') slug = 'ваш-проект';
-            document.getElementById('fullUrl').textContent = `codepedia.space/site/${slug}`;
-            document.getElementById('urlPreview').textContent = `codepedia.space/site/${slug}`;
+            let slug = document.getElementById('slug').value || 'название';
+            slug = slug.toLowerCase().replace(/[^a-z0-9-]/g, '-');
+            document.getElementById('fullUrl').textContent = `${slug}.codepedia.space`;
+            document.getElementById('urlPreview').textContent = `${slug}.codepedia.space`;
         }
 
-        // ВАЛИДАЦИЯ SLUG: только латиница, цифры, дефисы (без замены на дефисы!)
-        document.getElementById('slug').addEventListener('input', function(e) {
-            // Разрешаем только: a-z, 0-9, и дефис
-            let cleaned = this.value.toLowerCase().replace(/[^a-z0-9-]/g, '');
-            // Убираем повторяющиеся дефисы
-            cleaned = cleaned.replace(/-+/g, '-');
-            // Убираем дефис в начале и конце
-            cleaned = cleaned.replace(/^-|-$/g, '');
-            this.value = cleaned;
+        document.getElementById('slug').addEventListener('input', function() {
+            this.value = this.value.toLowerCase().replace(/[^a-z0-9-]/g, '-');
             updatePreview();
         });
 
@@ -122,7 +115,6 @@
         }
 
         async function publishSite() {
-            // Проверка авторизации
             if (!currentSessionId || !currentUser) {
                 showMessage('❌ Необходимо войти в аккаунт', 'error');
                 setTimeout(() => { window.location.href = 'index.html'; }, 2000);
@@ -136,14 +128,10 @@
             const css = document.getElementById('css').value;
             const js = document.getElementById('js').value;
             
-            // Валидация
-            if (!slug) { showMessage('❌ Укажите адрес проекта (slug)', 'error'); return; }
+            if (!slug) { showMessage('❌ Укажите адрес проекта', 'error'); return; }
             if (!title) { showMessage('❌ Укажите название сайта', 'error'); return; }
-            if (!html) { showMessage('❌ Добавьте HTML код вашего сайта', 'error'); return; }
-            if (!/^[a-z0-9-]+$/.test(slug)) { 
-                showMessage('❌ Адрес может содержать только латиницу, цифры и дефисы', 'error'); 
-                return; 
-            }
+            if (!html) { showMessage('❌ Добавьте HTML код', 'error'); return; }
+            if (!/^[a-z0-9-]+$/.test(slug)) { showMessage('❌ Только латиница, цифры, дефисы', 'error'); return; }
             
             showMessage('⏳ Публикация...', 'info');
             
@@ -160,8 +148,8 @@
                 const data = await res.json();
                 
                 if (res.ok && data.success) {
-                    showMessage(`✅ Сайт "${title}" опубликован! Доступен по адресу: <strong>codepedia.space/site/${slug}</strong>`, 'success');
-                    setTimeout(() => { window.location.href = `/site-editor.html?slug=${slug}`; }, 2000);
+                    showMessage(`✅ Сайт "${title}" опубликован! Доступен по адресу: <strong>${slug}.codepedia.space</strong>`, 'success');
+                    setTimeout(() => { window.location.href = `https://${slug}.codepedia.space`; }, 2000);
                 } else {
                     showMessage(`❌ ${data.error || 'Ошибка публикации'}`, 'error');
                 }
@@ -173,7 +161,7 @@
 
         async function loadUser() {
             if (!currentSessionId) {
-                showMessage('⚠️ Для создания сайта необходимо войти в аккаунт', 'error');
+                showMessage('⚠️ Войдите в аккаунт', 'error');
                 setTimeout(() => { window.location.href = 'index.html'; }, 3000);
                 return;
             }
@@ -218,7 +206,6 @@
             window.location.href = 'index.html';
         }
         
-        // Инициализация
         loadUser().then(() => {
             updateUI();
             updatePreview();
