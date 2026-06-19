@@ -31,16 +31,32 @@
             overflow: hidden;
             border: 1px solid rgba(255,255,255,0.1);
             transition: all 0.3s ease;
-            cursor: pointer;
+            position: relative;
         }
         .project-card:hover { transform: translateY(-8px); border-color: #ff6b00; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
         .project-preview { height: 160px; background: linear-gradient(135deg, #1a1f3a, #0f1228); display: flex; align-items: center; justify-content: center; font-size: 48px; border-bottom: 1px solid rgba(255,255,255,0.1); }
         .project-info { padding: 20px; }
-        .project-title { font-size: 20px; font-weight: 700; margin-bottom: 8px; color: white; }
+        .project-title { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+        .project-title a { color: white; text-decoration: none; transition: color 0.2s; }
+        .project-title a:hover { color: #ff6b00; text-decoration: underline; }
         .project-desc { font-size: 13px; color: #a0a0a0; margin-bottom: 15px; }
         .project-meta { display: flex; gap: 20px; font-size: 12px; color: #ff6b00; margin-bottom: 15px; }
-        .btn-view { background: rgba(255, 107, 0, 0.2); border: 1px solid #ff6b00; color: #ff6b00; padding: 8px 20px; border-radius: 30px; cursor: pointer; width: 100%; font-weight: 600; transition: all 0.2s; }
+        .project-actions { display: flex; gap: 10px; }
+        .btn-view { background: rgba(255, 107, 0, 0.2); border: 1px solid #ff6b00; color: #ff6b00; padding: 8px 20px; border-radius: 30px; cursor: pointer; font-weight: 600; transition: all 0.2s; text-align: center; display: inline-block; text-decoration: none; flex: 1; }
         .btn-view:hover { background: #ff6b00; color: white; }
+        .btn-delete { background: rgba(255, 82, 82, 0.2); border: 1px solid #ff5252; color: #ff5252; padding: 8px 20px; border-radius: 30px; cursor: pointer; font-weight: 600; transition: all 0.2s; text-align: center; display: inline-block; text-decoration: none; flex: 1; }
+        .btn-delete:hover { background: #ff5252; color: white; }
+        .url-badge {
+            display: inline-block;
+            background: rgba(74, 144, 226, 0.2);
+            border: 1px solid #4a90e2;
+            color: #4a90e2;
+            padding: 2px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-family: monospace;
+            margin-top: 8px;
+        }
         
         .empty-state { text-align: center; padding: 60px; background: rgba(255,255,255,0.03); border-radius: 20px; }
         .loading { text-align: center; padding: 50px; color: #a0a0a0; }
@@ -54,6 +70,15 @@
         .login-btn-header, .register-btn-header { padding: 8px 20px; border-radius: 30px; cursor: pointer; font-weight: 500; }
         .login-btn-header { background: transparent; border: 1px solid #4a90e2; color: #4a90e2; }
         .register-btn-header { background: #ff6b00; border: none; color: white; }
+        
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000; justify-content: center; align-items: center; }
+        .modal.active { display: flex; }
+        .modal-content { background: #2d2d3a; padding: 24px; border-radius: 16px; width: 400px; text-align: center; }
+        .modal-content h3 { margin-bottom: 16px; }
+        .modal-buttons { display: flex; gap: 12px; justify-content: center; }
+        .modal-buttons button { padding: 10px 24px; border-radius: 8px; cursor: pointer; font-weight: 600; }
+        .modal-buttons .confirm { background: #ff5252; border: none; color: white; }
+        .modal-buttons .cancel { background: #3d3d4a; border: none; color: white; }
         
         @media (max-width: 768px) { .projects-grid { grid-template-columns: 1fr; } .hosting-header h1 { font-size: 32px; } }
     </style>
@@ -71,7 +96,7 @@
 
     <div class="hosting-header">
         <h1>🚀 Мои проекты</h1>
-        <p>Ваши сайты, созданные на Codepedia Hosting</p>
+        <p>Ваши сайты доступны по адресу: <strong>название.codepedia.space</strong></p>
         <a href="create-site.html" class="create-btn">✨ Создать новый сайт</a>
     </div>
 
@@ -81,10 +106,24 @@
 
     <div class="footer"><p>Codepedia Hosting — бесплатный хостинг для ваших проектов | © 2024-2026</p></div>
 
+    <!-- Модальное окно подтверждения удаления -->
+    <div id="deleteModal" class="modal">
+        <div class="modal-content">
+            <h3>🗑️ Удалить проект?</h3>
+            <p id="deleteProjectName"></p>
+            <p style="font-size: 12px;">Это действие нельзя отменить. Все файлы будут удалены.</p>
+            <div class="modal-buttons">
+                <button class="confirm" onclick="confirmDelete()">Да, удалить</button>
+                <button class="cancel" onclick="closeDeleteModal()">Отмена</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         let currentUser = null;
         let currentSessionId = localStorage.getItem('sessionId');
         let myProjects = [];
+        let projectToDelete = null;
 
         async function loadUser() {
             if (!currentSessionId) {
@@ -108,7 +147,6 @@
             if (!currentUser) return;
             
             try {
-                // Запрашиваем ТОЛЬКО проекты текущего пользователя
                 const res = await fetch(`/api/projects/my`, { 
                     headers: { 'X-Session-Id': currentSessionId } 
                 });
@@ -136,18 +174,59 @@
             }
             
             container.innerHTML = `<div class="projects-grid">${myProjects.map(p => `
-                <div class="project-card" onclick="window.location.href='/site-editor.html?slug=${p.slug}'">
+                <div class="project-card">
                     <div class="project-preview">${p.preview_icon || '🌐'}</div>
                     <div class="project-info">
-                        <div class="project-title">${escapeHtml(p.title)}</div>
+                        <div class="project-title">
+                            <a href="https://${p.slug}.codepedia.space" target="_blank">${escapeHtml(p.title)}</a>
+                        </div>
                         <div class="project-desc">${escapeHtml(p.description || 'Без описания')}</div>
-                        <div class="project-meta">
+                        <div class="url-badge">${p.slug}.codepedia.space</div>
+                        <div class="project-meta" style="margin-top: 12px;">
                             <span>📅 ${p.created_at?.split('T')[0] || '2025'}</span>
                             <span>👁️ ${p.views || 0} просмотров</span>
                         </div>
-                        <button class="btn-view">✏️ Редактировать →</button>
+                        <div class="project-actions">
+                            <a href="https://${p.slug}.codepedia.space" target="_blank" class="btn-view">🌐 Открыть</a>
+                            <a href="/site-editor.html?slug=${p.slug}" class="btn-view">✏️ Редактировать</a>
+                            <button class="btn-delete" onclick="showDeleteModal('${p.slug}', '${escapeHtml(p.title).replace(/'/g, "\\'")}')">🗑️</button>
+                        </div>
                     </div>
                 </div>`).join('')}</div>`;
+        }
+
+        function showDeleteModal(slug, title) {
+            projectToDelete = slug;
+            document.getElementById('deleteProjectName').innerHTML = `<strong>${title}</strong>`;
+            document.getElementById('deleteModal').classList.add('active');
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').classList.remove('active');
+            projectToDelete = null;
+        }
+
+        async function confirmDelete() {
+            if (!projectToDelete) return;
+            
+            try {
+                const res = await fetch(`/api/projects/${projectToDelete}`, {
+                    method: 'DELETE',
+                    headers: { 'X-Session-Id': currentSessionId }
+                });
+                
+                if (res.ok) {
+                    closeDeleteModal();
+                    await loadMyProjects();
+                } else {
+                    const data = await res.json();
+                    alert('Ошибка: ' + (data.error || 'Не удалось удалить проект'));
+                    closeDeleteModal();
+                }
+            } catch(e) {
+                alert('Ошибка соединения');
+                closeDeleteModal();
+            }
         }
 
         function escapeHtml(t) { const div = document.createElement('div'); div.textContent = t; return div.innerHTML; }
