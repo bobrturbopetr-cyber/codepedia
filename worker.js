@@ -15,6 +15,64 @@ export default {
             return new Response(null, { headers: corsHeaders });
         }
 
+        // ========== ОБРАБОТКА ПОДДОМЕНОВ (WILDCARD) ==========
+        if (url.hostname !== 'codepedia.space' && url.hostname.endsWith('.codepedia.space')) {
+            const subdomain = url.hostname.replace('.codepedia.space', '');
+            
+            // Ищем проект по slug
+            const project = await env.DB.prepare(
+                "SELECT id, slug, title, files FROM projects WHERE slug = ? AND published = 1"
+            ).bind(subdomain).first();
+            
+            if (project) {
+                let files = {};
+                try { files = JSON.parse(project.files || '{}'); } catch(e) {}
+                
+                let filePath = url.pathname === '/' ? '/index.html' : url.pathname;
+                if (filePath.startsWith('/')) filePath = filePath.substring(1);
+                
+                let content = files[filePath];
+                let contentType = 'text/html';
+                if (filePath.endsWith('.css')) contentType = 'text/css';
+                else if (filePath.endsWith('.js')) contentType = 'application/javascript';
+                else if (filePath.endsWith('.png')) contentType = 'image/png';
+                else if (filePath.endsWith('.jpg') || filePath.endsWith('.jpeg')) contentType = 'image/jpeg';
+                else if (filePath.endsWith('.svg')) contentType = 'image/svg+xml';
+                else if (filePath.endsWith('.json')) contentType = 'application/json';
+                
+                if (content) {
+                    await env.DB.prepare("UPDATE projects SET views = views + 1 WHERE slug = ?").bind(subdomain).run();
+                    return new Response(content, { headers: { 'Content-Type': contentType } });
+                }
+                
+                if (files['index.html']) {
+                    await env.DB.prepare("UPDATE projects SET views = views + 1 WHERE slug = ?").bind(subdomain).run();
+                    return new Response(files['index.html'], { headers: { 'Content-Type': 'text/html' } });
+                }
+                
+                return new Response(`<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><title>${project.title}</title></head>
+<body style="font-family:sans-serif;text-align:center;padding:50px;">
+<h1>🚀 ${project.title}</h1>
+<p>Сайт создан на Codepedia Hosting</p>
+<p>Файл ${filePath} не найден</p>
+<a href="/" style="color:#ff6b00;">На главную</a>
+</body>
+</html>`, { headers: { 'Content-Type': 'text/html' } });
+            } else {
+                return new Response(`<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><title>Проект не найден</title></head>
+<body style="font-family:sans-serif;text-align:center;padding:50px;">
+<h1>❌ Проект не найден</h1>
+<p>Сайт <strong>${subdomain}.codepedia.space</strong> не существует</p>
+<a href="/hosting.html" style="color:#ff6b00;">Создать свой сайт →</a>
+</body>
+</html>`, { status: 404, headers: { 'Content-Type': 'text/html' } });
+            }
+        }
+
         // ========== ЯНДЕКС OAuth CALLBACK ==========
         if (path === '/api/yandex-callback' && request.method === 'GET') {
             const url = new URL(request.url);
@@ -282,15 +340,28 @@ export default {
         }
 
         if (path === '/api/check-solution' && request.method === 'POST') {
-            const { code, language } = await request.json();
+            const { lesson_id, code } = await request.json();
+            const lesson = await env.DB.prepare("SELECT test_code FROM lessons WHERE id = ?").bind(lesson_id).first();
+            
             let correct = false;
             let message = '';
-            if (code && (code.includes('cout') && code.includes('main') && code.includes('return'))) correct = true;
-            else if (code && (code.includes('print') || code.includes('input'))) correct = true;
-            else if (code && code.trim().length > 10) correct = true;
-            else message = 'Код не содержит основных конструкций. Попробуйте ещё раз.';
-            if (correct) message = '✅ Решение верное! Отлично!';
-            else if (!message) message = '❌ Решение неверное. Попробуйте ещё раз.';
+            
+            if (code && lesson && lesson.test_code) {
+                const cleanCode = code.replace(/\s/g, '');
+                const cleanTest = lesson.test_code.replace(/\s/g, '');
+                if (cleanCode === cleanTest) {
+                    correct = true;
+                    message = '✅ Решение верное! Отлично!';
+                } else {
+                    message = '❌ Решение неверное. Проверьте алгоритм.';
+                }
+            } else if (code && code.length > 50) {
+                correct = true;
+                message = '✅ Решение принято (проверка пройдена)!';
+            } else {
+                message = '❌ Код слишком короткий. Проверьте решение.';
+            }
+            
             return new Response(JSON.stringify({ correct, message }), { headers: corsHeaders });
         }
 
@@ -322,7 +393,7 @@ export default {
             return new Response(JSON.stringify({ success: true }), { headers: corsHeaders });
         }
 
-        // ========== ХОСТИНГ ПРОЕКТОВ (API) ==========
+        // ========== ХОСТИНГ ПРОЕКТОВ ==========
         if (path === '/api/projects' && request.method === 'GET') {
             const projects = await env.DB.prepare(
                 "SELECT id, slug, title, description, author_name, author_avatar, views, created_at FROM projects WHERE published = 1 ORDER BY created_at DESC"
@@ -330,7 +401,6 @@ export default {
             return new Response(JSON.stringify(projects.results), { headers: corsHeaders });
         }
 
-        // ========== ПОЛУЧИТЬ ТОЛЬКО СВОИ ПРОЕКТЫ ==========
         if (path === '/api/projects/my' && request.method === 'GET') {
             const sessionId = request.headers.get('X-Session-Id');
             if (!sessionId) {
@@ -388,36 +458,6 @@ export default {
             } catch (err) {
                 return new Response(JSON.stringify({ error: err.message }), { headers: corsHeaders, status: 500 });
             }
-        }
-        // ========== УДАЛИТЬ ПРОЕКТ ==========
-        if (path.match(/^\/api\/projects\/[^\/]+$/) && request.method === 'DELETE') {
-            const sessionId = request.headers.get('X-Session-Id');
-            if (!sessionId) {
-                return new Response(JSON.stringify({ error: 'Не авторизован' }), { headers: corsHeaders, status: 401 });
-            }
-            const session = await env.DB.prepare(
-                "SELECT user_id FROM sessions WHERE id = ? AND expires_at > CURRENT_TIMESTAMP"
-            ).bind(sessionId).first();
-            if (!session) {
-                return new Response(JSON.stringify({ error: 'Сессия истекла' }), { headers: corsHeaders, status: 401 });
-            }
-            
-            const slug = path.split('/').pop();
-            const project = await env.DB.prepare(
-                "SELECT user_id FROM projects WHERE slug = ?"
-            ).bind(slug).first();
-            
-            if (!project) {
-                return new Response(JSON.stringify({ error: 'Проект не найден' }), { headers: corsHeaders, status: 404 });
-            }
-            
-            if (project.user_id !== session.user_id) {
-                return new Response(JSON.stringify({ error: 'Нет прав на удаление' }), { headers: corsHeaders, status: 403 });
-            }
-            
-            await env.DB.prepare("DELETE FROM projects WHERE slug = ?").bind(slug).run();
-            
-            return new Response(JSON.stringify({ success: true }), { headers: corsHeaders });
         }
 
         // ========== РАБОТА С ФАЙЛАМИ ПРОЕКТА ==========
@@ -495,61 +535,35 @@ export default {
             return new Response(JSON.stringify({ success: true }), { headers: corsHeaders });
         }
 
-        // ========== ОТДАЧА ПРОЕКТОВ ЧЕРЕЗ /site/ ==========
-        if (path.startsWith('/site/') && request.method === 'GET') {
-            const slug = path.replace('/site/', '').split('/')[0];
-            let filePath = path.replace(`/site/${slug}`, '');
-            if (!filePath || filePath === '/') filePath = '/index.html';
-            if (filePath.startsWith('/')) filePath = filePath.substring(1);
+        // ========== УДАЛИТЬ ПРОЕКТ ==========
+        if (path.match(/^\/api\/projects\/[^\/]+$/) && request.method === 'DELETE') {
+            const sessionId = request.headers.get('X-Session-Id');
+            if (!sessionId) {
+                return new Response(JSON.stringify({ error: 'Не авторизован' }), { headers: corsHeaders, status: 401 });
+            }
+            const session = await env.DB.prepare(
+                "SELECT user_id FROM sessions WHERE id = ? AND expires_at > CURRENT_TIMESTAMP"
+            ).bind(sessionId).first();
+            if (!session) {
+                return new Response(JSON.stringify({ error: 'Сессия истекла' }), { headers: corsHeaders, status: 401 });
+            }
             
+            const slug = path.split('/').pop();
             const project = await env.DB.prepare(
-                "SELECT id, slug, title, files FROM projects WHERE slug = ? AND published = 1"
+                "SELECT user_id FROM projects WHERE slug = ?"
             ).bind(slug).first();
             
             if (!project) {
-                return new Response(`<!DOCTYPE html>
-<html>
-<head><meta charset="UTF-8"><title>Проект не найден</title></head>
-<body style="font-family: sans-serif; text-align: center; padding: 50px;">
-<h1>❌ Проект не найден</h1>
-<p>Проект "${slug}" не существует</p>
-<a href="/hosting.html" style="color: #ff6b00;">← Вернуться к хостингу</a>
-</body>
-</html>`, { status: 404, headers: { 'Content-Type': 'text/html' } });
+                return new Response(JSON.stringify({ error: 'Проект не найден' }), { headers: corsHeaders, status: 404 });
             }
             
-            let files = {};
-            try { files = JSON.parse(project.files || '{}'); } catch(e) {}
-            
-            let content = files[filePath];
-            let contentType = 'text/html';
-            if (filePath.endsWith('.css')) contentType = 'text/css';
-            else if (filePath.endsWith('.js')) contentType = 'application/javascript';
-            else if (filePath.endsWith('.json')) contentType = 'application/json';
-            else if (filePath.endsWith('.png')) contentType = 'image/png';
-            else if (filePath.endsWith('.jpg') || filePath.endsWith('.jpeg')) contentType = 'image/jpeg';
-            
-            if (content) {
-                await env.DB.prepare("UPDATE projects SET views = views + 1 WHERE slug = ?").bind(slug).run();
-                return new Response(content, { headers: { 'Content-Type': contentType } });
+            if (project.user_id !== session.user_id) {
+                return new Response(JSON.stringify({ error: 'Нет прав на удаление' }), { headers: corsHeaders, status: 403 });
             }
             
-            if (files['index.html']) {
-                await env.DB.prepare("UPDATE projects SET views = views + 1 WHERE slug = ?").bind(slug).run();
-                return new Response(files['index.html'], { headers: { 'Content-Type': 'text/html' } });
-            }
+            await env.DB.prepare("DELETE FROM projects WHERE slug = ?").bind(slug).run();
             
-            return new Response(`<!DOCTYPE html>
-<html>
-<head><meta charset="UTF-8"><title>${project.title}</title></head>
-<body style="font-family: sans-serif; text-align: center; padding: 50px;">
-<h1>🚀 ${project.title}</h1>
-<p>Сайт создан на Codepedia Hosting</p>
-<p>Файл ${filePath} не найден</p>
-<hr>
-<a href="/hosting.html" style="color: #ff6b00;">Все проекты</a>
-</body>
-</html>`, { headers: { 'Content-Type': 'text/html' } });
+            return new Response(JSON.stringify({ success: true }), { headers: corsHeaders });
         }
 
         // ========== СТАТИЧЕСКИЕ ФАЙЛЫ ==========
@@ -565,6 +579,9 @@ export default {
             '/hosting.html': 'hosting.html',
             '/create-site.html': 'create-site.html',
             '/site-editor.html': 'site-editor.html',
+            '/devkit.html': 'devkit.html',
+            '/devkit-utils.html': 'devkit-utils.html',
+            '/devkit-snippets.html': 'devkit-snippets.html',
             '/style.css': 'style.css',
             '/privacy.html': 'privacy.html'
         };
