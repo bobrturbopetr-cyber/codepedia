@@ -19,38 +19,38 @@ export default {
         if (url.hostname !== 'codepedia.space' && url.hostname.endsWith('.codepedia.space')) {
             const subdomain = url.hostname.replace('.codepedia.space', '');
             
-            try {
-                const project = await env.DB.prepare(
-                    "SELECT id, slug, title, files FROM projects WHERE slug = ? AND published = 1"
-                ).bind(subdomain).first();
-
-                if (project) {
-                    let files = {};
-                    try { files = JSON.parse(project.files || '{}'); } catch(e) {}
-
-                    let filePath = url.pathname === '/' ? '/index.html' : url.pathname;
-                    if (filePath.startsWith('/')) filePath = filePath.substring(1);
-
-                    let content = files[filePath];
-                    let contentType = 'text/html';
-                    if (filePath.endsWith('.css')) contentType = 'text/css';
-                    else if (filePath.endsWith('.js')) contentType = 'application/javascript';
-                    else if (filePath.endsWith('.png')) contentType = 'image/png';
-                    else if (filePath.endsWith('.jpg') || filePath.endsWith('.jpeg')) contentType = 'image/jpeg';
-                    else if (filePath.endsWith('.svg')) contentType = 'image/svg+xml';
-                    else if (filePath.endsWith('.json')) contentType = 'application/json';
-
-                    if (content) {
-                        ctx.waitUntil(env.DB.prepare("UPDATE projects SET views = views + 1 WHERE slug = ?").bind(subdomain).run());
-                        return new Response(content, { headers: { 'Content-Type': contentType } });
-                    }
-
-                    if (files['index.html']) {
-                        ctx.waitUntil(env.DB.prepare("UPDATE projects SET views = views + 1 WHERE slug = ?").bind(subdomain).run());
-                        return new Response(files['index.html'], { headers: { 'Content-Type': 'text/html' } });
-                    }
-
-                    return new Response(`<!DOCTYPE html>
+            // Ищем проект по slug
+            const project = await env.DB.prepare(
+                "SELECT id, slug, title, files FROM projects WHERE slug = ? AND published = 1"
+            ).bind(subdomain).first();
+            
+            if (project) {
+                let files = {};
+                try { files = JSON.parse(project.files || '{}'); } catch(e) {}
+                
+                let filePath = url.pathname === '/' ? '/index.html' : url.pathname;
+                if (filePath.startsWith('/')) filePath = filePath.substring(1);
+                
+                let content = files[filePath];
+                let contentType = 'text/html';
+                if (filePath.endsWith('.css')) contentType = 'text/css';
+                else if (filePath.endsWith('.js')) contentType = 'application/javascript';
+                else if (filePath.endsWith('.png')) contentType = 'image/png';
+                else if (filePath.endsWith('.jpg') || filePath.endsWith('.jpeg')) contentType = 'image/jpeg';
+                else if (filePath.endsWith('.svg')) contentType = 'image/svg+xml';
+                else if (filePath.endsWith('.json')) contentType = 'application/json';
+                
+                if (content) {
+                    await env.DB.prepare("UPDATE projects SET views = views + 1 WHERE slug = ?").bind(subdomain).run();
+                    return new Response(content, { headers: { 'Content-Type': contentType } });
+                }
+                
+                if (files['index.html']) {
+                    await env.DB.prepare("UPDATE projects SET views = views + 1 WHERE slug = ?").bind(subdomain).run();
+                    return new Response(files['index.html'], { headers: { 'Content-Type': 'text/html' } });
+                }
+                
+                return new Response(`<!DOCTYPE html>
 <html>
 <head><meta charset="UTF-8"><title>${project.title}</title></head>
 <body style="font-family:sans-serif;text-align:center;padding:50px;">
@@ -60,22 +60,16 @@ export default {
 <a href="/" style="color:#ff6b00;">На главную</a>
 </body>
 </html>`, { headers: { 'Content-Type': 'text/html' } });
-                }
-
-                // Проект не найден — возвращаем страницу с ошибкой (НЕ РЕДИРЕКТ!)
+            } else {
                 return new Response(`<!DOCTYPE html>
 <html>
 <head><meta charset="UTF-8"><title>Проект не найден</title></head>
 <body style="font-family:sans-serif;text-align:center;padding:50px;">
 <h1>❌ Проект не найден</h1>
 <p>Сайт <strong>${subdomain}.codepedia.space</strong> не существует</p>
-<p>Вы можете <a href="/create-site.html" style="color:#ff6b00;">создать свой сайт</a> с таким адресом</p>
-<a href="/" style="color:#ff6b00;">← На главную</a>
+<a href="/hosting.html" style="color:#ff6b00;">Создать свой сайт →</a>
 </body>
 </html>`, { status: 404, headers: { 'Content-Type': 'text/html' } });
-
-            } catch (error) {
-                return new Response(`<h1>⚠️ Ошибка базы данных</h1><p>${error.message}</p>`, { status: 500 });
             }
         }
 
