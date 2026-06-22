@@ -1,10 +1,10 @@
 name = "codepedia"
 main = "worker.js"
-compatibility_date = "2024-04-01"
+compatibility_date = "2024-06-22"
 
-[assets]
-directory = "./"
-binding = "ASSETS"
+[[routes]]
+pattern = "*.codepedia.space/*"
+zone_id = "b92fe6de8e9f5492b9d581b597bb2854"
 
 [[d1_databases]]
 binding = "DB"
