@@ -1,128 +1,112 @@
 // ========== ВСТРОЕННЫЕ HTML-СТРАНИЦЫ ==========
-const MAIN_PAGE = `<!DOCTYPE html>
+const WIKI_PAGE = `<!DOCTYPE html>
 <html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Codepedia — Энциклопедия программирования</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif; background: #0a0e27; color: #e0e0e0; }
-        .header { background: rgba(15, 18, 40, 0.95); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255, 107, 0, 0.3); padding: 16px 32px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; }
-        .logo h1 { font-size: 28px; }
-        .code-orange { color: #ff6b00; }
-        .pedia { color: #4a90e2; }
-        .nav-links a { color: #e0e0e0; text-decoration: none; margin-left: 24px; }
-        .nav-links a:hover { color: #ff6b00; }
-        .container { max-width: 1400px; margin: 0 auto; padding: 30px; }
-        .hero { text-align: center; padding: 60px 20px; }
-        .hero h1 { font-size: 48px; margin-bottom: 16px; background: linear-gradient(135deg, #ff6b00, #4a90e2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .hero p { font-size: 18px; color: #a0a0a0; }
-        .features-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; margin: 30px 0; }
-        .feature-card { background: rgba(255,255,255,0.05); border-radius: 16px; padding: 24px; text-align: center; border: 1px solid rgba(255,255,255,0.1); transition: transform 0.2s; }
-        .feature-card:hover { transform: translateY(-4px); border-color: #ff6b00; }
-        .feature-icon { font-size: 40px; margin-bottom: 12px; }
-        .feature-title { font-size: 18px; font-weight: 600; margin-bottom: 8px; }
-        .feature-desc { font-size: 13px; color: #a0a0a0; }
-        .btn { display: inline-block; background: #ff6b00; color: white; padding: 12px 28px; border-radius: 40px; text-decoration: none; font-weight: 600; margin-top: 12px; transition: background 0.2s; }
-        .btn:hover { background: #ff8533; }
-        .footer { text-align: center; padding: 30px; border-top: 1px solid rgba(255,255,255,0.1); margin-top: 40px; color: #666; font-size: 13px; }
-        .stats { display: flex; gap: 40px; justify-content: center; margin: 20px 0; }
-        .stat { text-align: center; }
-        .stat-number { font-size: 32px; font-weight: 700; color: #ff6b00; }
-        .stat-label { font-size: 13px; color: #a0a0a0; }
-        @media (max-width: 768px) { .hero h1 { font-size: 32px; } .nav-links { margin-top: 10px; } }
-    </style>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Codepedia Wiki — Энциклопедия программирования</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Roboto',sans-serif;background:#0a0e27;color:#e0e0e0}
+.header{background:rgba(15,18,40,0.95);backdrop-filter:blur(10px);border-bottom:1px solid rgba(255,107,0,0.3);padding:16px 32px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap}
+.logo h1{font-size:28px}
+.code-orange{color:#ff6b00}
+.pedia{color:#4a90e2}
+.nav-links a{color:#e0e0e0;text-decoration:none;margin-left:24px}
+.nav-links a:hover{color:#ff6b00}
+.container{max-width:1400px;margin:0 auto;padding:30px}
+.hero{text-align:center;padding:60px 20px}
+.hero h1{font-size:48px;margin-bottom:16px;background:linear-gradient(135deg,#ff6b00,#4a90e2);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero p{font-size:18px;color:#a0a0a0}
+.features-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px;margin:30px 0}
+.feature-card{background:rgba(255,255,255,0.05);border-radius:16px;padding:24px;text-align:center;border:1px solid rgba(255,255,255,0.1);transition:transform 0.2s}
+.feature-card:hover{transform:translateY(-4px);border-color:#ff6b00}
+.feature-icon{font-size:40px;margin-bottom:12px}
+.feature-title{font-size:18px;font-weight:600;margin-bottom:8px}
+.feature-desc{font-size:13px;color:#a0a0a0}
+.btn{display:inline-block;background:#ff6b00;color:#fff;padding:12px 28px;border-radius:40px;text-decoration:none;font-weight:600;margin-top:12px}
+.btn:hover{background:#ff8533}
+.footer{text-align:center;padding:30px;border-top:1px solid rgba(255,255,255,0.1);margin-top:40px;color:#666;font-size:13px}
+.stats{display:flex;gap:40px;justify-content:center;margin:20px 0}
+.stat{text-align:center}
+.stat-number{font-size:32px;font-weight:700;color:#ff6b00}
+.stat-label{font-size:13px;color:#a0a0a0}
+@media (max-width:768px){.hero h1{font-size:32px}.nav-links{margin-top:10px}}
+</style>
 </head>
 <body>
-    <div class="header">
-        <div class="logo"><h1><span class="code-orange">Code</span><span class="pedia">pedia</span></h1></div>
-        <div class="nav-links">
-            <a href="/">Главная</a>
-            <a href="/hosting.html">🚀 Хостинг</a>
-            <a href="/create-site.html">➕ Создать сайт</a>
-            <a href="/courses.html">📚 Курсы</a>
-            <a href="/devkit.html">⚡ DevKit</a>
-        </div>
-    </div>
-    <div class="container">
-        <div class="hero">
-            <h1>📚 Codepedia</h1>
-            <p>Свободная энциклопедия программирования — создано Петром Машковым</p>
-            <div class="stats">
-                <div class="stat"><div class="stat-number">15+</div><div class="stat-label">статей</div></div>
-                <div class="stat"><div class="stat-number">4</div><div class="stat-label">инструмента</div></div>
-                <div class="stat"><div class="stat-number">∞</div><div class="stat-label">свободных знаний</div></div>
-            </div>
-            <a href="/hosting.html" class="btn">🚀 Попробовать хостинг</a>
-        </div>
-        <div class="features-grid">
-            <div class="feature-card"><div class="feature-icon">📖</div><div class="feature-title">Энциклопедия</div><div class="feature-desc">Статьи по языкам, алгоритмам и инструментам</div></div>
-            <div class="feature-card"><div class="feature-icon">🎓</div><div class="feature-title">Курсы</div><div class="feature-desc">Подготовка к ВСОШ и олимпиадам</div></div>
-            <div class="feature-card"><div class="feature-icon">🚀</div><div class="feature-title">Хостинг</div><div class="feature-desc">Бесплатный хостинг для ваших проектов</div></div>
-            <div class="feature-card"><div class="feature-icon">⚡</div><div class="feature-title">DevKit</div><div class="feature-desc">Инструменты для разработчиков</div></div>
-        </div>
-    </div>
-    <div class="footer"><p>Codepedia — свободная энциклопедия программирования | © 2024-2026</p></div>
-</body>
-</html>`;
-
-const HOSTING_PAGE = `<!DOCTYPE html>
-<html lang="ru"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Мои проекты — Codepedia</title>
-<style>*{margin:0;padding:0;box-sizing:border-box}body{background:#0a0e27;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Roboto',sans-serif;color:#e0e0e0}.header{background:rgba(15,18,40,0.95);border-bottom:1px solid rgba(255,107,0,0.3);padding:16px 32px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap}.logo h1{font-size:28px}.code-orange{color:#ff6b00}.pedia{color:#4a90e2}.nav-links a{color:#e0e0e0;text-decoration:none;margin-left:24px}.nav-links a:hover{color:#ff6b00}.container{max-width:1400px;margin:0 auto;padding:30px}.btn{background:#ff6b00;color:#fff;padding:12px 28px;border-radius:40px;text-decoration:none;font-weight:600;display:inline-block}.btn:hover{background:#ff8533}.footer{text-align:center;padding:30px;border-top:1px solid rgba(255,255,255,0.1);margin-top:40px;color:#666}
-</style></head>
-<body>
-<div class="header"><div class="logo"><h1><span class="code-orange">Code</span><span class="pedia">pedia</span> Hosting</h1></div><div class="nav-links"><a href="/">🏠 Главная</a><a href="/hosting.html">🚀 Мои проекты</a><a href="/create-site.html">➕ Создать сайт</a></div></div>
-<div class="container"><h1>🚀 Мои проекты</h1><p style="margin-bottom:20px;color:#a0a0a0;">Здесь будут ваши проекты. Создайте первый!</p><a href="/create-site.html" class="btn">✨ Создать сайт</a></div>
-<div class="footer"><p>Codepedia Hosting | © 2024-2026</p></div>
-</body></html>`;
-
-const CREATE_SITE_PAGE = `<!DOCTYPE html>
-<html lang="ru"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Создать сайт — Codepedia</title>
-<style>*{margin:0;padding:0;box-sizing:border-box}body{background:#0a0e27;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Roboto',sans-serif;color:#e0e0e0}.header{background:rgba(15,18,40,0.95);border-bottom:1px solid rgba(255,107,0,0.3);padding:16px 32px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap}.logo h1{font-size:28px}.code-orange{color:#ff6b00}.pedia{color:#4a90e2}.nav-links a{color:#e0e0e0;text-decoration:none;margin-left:24px}.nav-links a:hover{color:#ff6b00}.container{max-width:1000px;margin:0 auto;padding:30px}.btn{background:#ff6b00;color:#fff;padding:12px 28px;border-radius:40px;border:none;cursor:pointer;font-weight:600;font-size:16px}.btn:hover{background:#ff8533}.form-group{margin-bottom:20px}.form-group label{display:block;font-weight:600;margin-bottom:8px}.form-group input,.form-group textarea{width:100%;padding:12px;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.1);border-radius:12px;color:#fff;font-size:14px}.footer{text-align:center;padding:30px;border-top:1px solid rgba(255,255,255,0.1);margin-top:40px;color:#666}
-</style></head>
-<body>
-<div class="header"><div class="logo"><h1><span class="code-orange">Code</span><span class="pedia">pedia</span> Hosting</h1></div><div class="nav-links"><a href="/">🏠 Главная</a><a href="/hosting.html">🚀 Мои проекты</a><a href="/create-site.html">➕ Создать</a></div></div>
-<div class="container"><h1>✨ Создать новый сайт</h1><p style="margin-bottom:20px;color:#a0a0a0;">Ваш сайт будет доступен по адресу: <strong style="color:#ff6b00;">название.codepedia.space</strong></p>
-<div class="form-group"><label>🔗 Адрес проекта (slug)</label><input type="text" id="slug" placeholder="мой-сайт"></div>
-<div class="form-group"><label>📝 Название сайта</label><input type="text" id="title" placeholder="Мой крутой сайт"></div>
-<div class="form-group"><label>📄 Описание</label><textarea id="description" rows="2" placeholder="Что это за проект?"></textarea></div>
-<div class="form-group"><label>🎨 HTML код</label><textarea id="html" rows="8" placeholder="<h1>Привет, мир!</h1>"></textarea></div>
-<div class="form-group"><label>🎨 CSS код</label><textarea id="css" rows="4" placeholder="body { font-family: sans-serif; }"></textarea></div>
-<div class="form-group"><label>⚡ JavaScript код</label><textarea id="js" rows="4" placeholder="console.log('Hello!');"></textarea></div>
-<button class="btn" onclick="alert('Форма будет работать после настройки API')">🚀 Опубликовать</button>
+<div class="header">
+<div class="logo"><h1><span class="code-orange">Code</span><span class="pedia">pedia</span> Wiki</h1></div>
+<div class="nav-links">
+<a href="https://wiki.codepedia.space">📖 Wiki</a>
+<a href="https://courses.codepedia.space">🎓 Курсы</a>
+<a href="https://hosting.codepedia.space">🚀 Хостинг</a>
+<a href="https://devkit.codepedia.space">⚡ DevKit</a>
+<a href="https://blog.codepedia.space">📝 Блог</a>
 </div>
-<div class="footer"><p>Codepedia Hosting | © 2024-2026</p></div>
+</div>
+<div class="container">
+<div class="hero">
+<h1>📚 Codepedia Wiki</h1>
+<p>Свободная энциклопедия программирования</p>
+<div class="stats"><div class="stat"><div class="stat-number">15+</div><div class="stat-label">статей</div></div><div class="stat"><div class="stat-number">6</div><div class="stat-label">разделов</div></div><div class="stat"><div class="stat-number">∞</div><div class="stat-label">свободных знаний</div></div></div>
+<a href="https://courses.codepedia.space" class="btn">🎓 Начать учиться</a>
+</div>
+<div class="features-grid">
+<div class="feature-card"><div class="feature-icon">📖</div><div class="feature-title">Энциклопедия</div><div class="feature-desc">Статьи по языкам, алгоритмам и инструментам</div></div>
+<div class="feature-card"><div class="feature-icon">🎓</div><div class="feature-title">Курсы</div><div class="feature-desc">Подготовка к ВСОШ и олимпиадам</div></div>
+<div class="feature-card"><div class="feature-icon">🚀</div><div class="feature-title">Хостинг</div><div class="feature-desc">Бесплатный хостинг для ваших проектов</div></div>
+<div class="feature-card"><div class="feature-icon">⚡</div><div class="feature-title">DevKit</div><div class="feature-desc">Инструменты для разработчиков</div></div>
+</div>
+</div>
+<div class="footer"><p>Codepedia Wiki — свободная энциклопедия программирования | © 2024-2026</p></div>
 </body></html>`;
 
-const COURSES_PAGE = `<!DOCTYPE html>
+const COURSES_SUBDOMAIN_PAGE = `<!DOCTYPE html>
 <html lang="ru"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Курсы — Codepedia</title>
-<style>*{margin:0;padding:0;box-sizing:border-box}body{background:#0a0e27;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Roboto',sans-serif;color:#e0e0e0}.header{background:rgba(15,18,40,0.95);border-bottom:1px solid rgba(255,107,0,0.3);padding:16px 32px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap}.logo h1{font-size:28px}.code-orange{color:#ff6b00}.pedia{color:#4a90e2}.nav-links a{color:#e0e0e0;text-decoration:none;margin-left:24px}.nav-links a:hover{color:#ff6b00}.container{max-width:1400px;margin:0 auto;padding:30px}.hero{text-align:center;padding:40px 20px}.hero h1{font-size:42px}.footer{text-align:center;padding:30px;border-top:1px solid rgba(255,255,255,0.1);margin-top:40px;color:#666}
+<style>*{margin:0;padding:0;box-sizing:border-box}body{background:#0a0e27;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Roboto',sans-serif;color:#e0e0e0}.header{background:rgba(15,18,40,0.95);border-bottom:1px solid rgba(255,107,0,0.3);padding:16px 32px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap}.logo h1{font-size:28px}.code-orange{color:#ff6b00}.pedia{color:#4a90e2}.nav-links a{color:#e0e0e0;text-decoration:none;margin-left:24px}.nav-links a:hover{color:#ff6b00}.container{max-width:1400px;margin:0 auto;padding:30px}.hero{text-align:center;padding:60px 20px}.hero h1{font-size:48px;margin-bottom:16px;background:linear-gradient(135deg,#ff6b00,#4a90e2);-webkit-background-clip:text;-webkit-text-fill-color:transparent}.hero p{font-size:18px;color:#a0a0a0}.btn{display:inline-block;background:#ff6b00;color:#fff;padding:12px 28px;border-radius:40px;text-decoration:none;font-weight:600;margin-top:12px}.btn:hover{background:#ff8533}.footer{text-align:center;padding:30px;border-top:1px solid rgba(255,255,255,0.1);margin-top:40px;color:#666}
 </style></head>
 <body>
-<div class="header"><div class="logo"><h1><span class="code-orange">Code</span><span class="pedia">pedia</span> Courses</h1></div><div class="nav-links"><a href="/">🏠 Главная</a><a href="/courses.html">📚 Курсы</a></div></div>
-<div class="container"><div class="hero"><h1>🎓 Курсы программирования</h1><p style="color:#a0a0a0;">Подготовка к ВСОШ и олимпиадам</p></div><p style="text-align:center;color:#a0a0a0;">Курсы будут доступны после настройки API.</p></div>
+<div class="header"><div class="logo"><h1><span class="code-orange">Code</span><span class="pedia">pedia</span> Courses</h1></div><div class="nav-links"><a href="https://wiki.codepedia.space">📖 Wiki</a><a href="https://courses.codepedia.space">🎓 Курсы</a><a href="https://hosting.codepedia.space">🚀 Хостинг</a><a href="https://devkit.codepedia.space">⚡ DevKit</a></div></div>
+<div class="container"><div class="hero"><h1>🎓 Codepedia Courses</h1><p>Подготовка к ВСОШ и олимпиадам по программированию</p><a href="https://courses.codepedia.space" class="btn">📖 Начать учиться</a></div></div>
 <div class="footer"><p>Codepedia Courses | © 2024-2026</p></div>
 </body></html>`;
 
-const DEVKIT_PAGE = `<!DOCTYPE html>
-<html lang="ru"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>DevKit — Codepedia</title>
-<style>*{margin:0;padding:0;box-sizing:border-box}body{background:#0a0e27;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Roboto',sans-serif;color:#e0e0e0}.header{background:rgba(15,18,40,0.95);border-bottom:1px solid rgba(255,107,0,0.3);padding:16px 32px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap}.logo h1{font-size:28px}.code-orange{color:#ff6b00}.pedia{color:#4a90e2}.nav-links a{color:#e0e0e0;text-decoration:none;margin-left:24px}.nav-links a:hover{color:#ff6b00}.container{max-width:1400px;margin:0 auto;padding:30px}.hero{text-align:center;padding:40px 20px}.hero h1{font-size:42px}.footer{text-align:center;padding:30px;border-top:1px solid rgba(255,255,255,0.1);margin-top:40px;color:#666}
+const HOSTING_SUBDOMAIN_PAGE = `<!DOCTYPE html>
+<html lang="ru"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Хостинг — Codepedia</title>
+<style>*{margin:0;padding:0;box-sizing:border-box}body{background:#0a0e27;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Roboto',sans-serif;color:#e0e0e0}.header{background:rgba(15,18,40,0.95);border-bottom:1px solid rgba(255,107,0,0.3);padding:16px 32px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap}.logo h1{font-size:28px}.code-orange{color:#ff6b00}.pedia{color:#4a90e2}.nav-links a{color:#e0e0e0;text-decoration:none;margin-left:24px}.nav-links a:hover{color:#ff6b00}.container{max-width:1400px;margin:0 auto;padding:30px}.hero{text-align:center;padding:60px 20px}.hero h1{font-size:48px;margin-bottom:16px;background:linear-gradient(135deg,#ff6b00,#4a90e2);-webkit-background-clip:text;-webkit-text-fill-color:transparent}.hero p{font-size:18px;color:#a0a0a0}.btn{display:inline-block;background:#ff6b00;color:#fff;padding:12px 28px;border-radius:40px;text-decoration:none;font-weight:600;margin-top:12px}.btn:hover{background:#ff8533}.footer{text-align:center;padding:30px;border-top:1px solid rgba(255,255,255,0.1);margin-top:40px;color:#666}
 </style></head>
 <body>
-<div class="header"><div class="logo"><h1><span class="code-orange">Code</span><span class="pedia">pedia</span> DevKit</h1></div><div class="nav-links"><a href="/">🏠 Главная</a><a href="/devkit.html">⚡ DevKit</a></div></div>
-<div class="container"><div class="hero"><h1>⚡ Codepedia DevKit</h1><p style="color:#a0a0a0;">Инструменты для разработчиков</p></div><p style="text-align:center;color:#a0a0a0;">DevKit будет доступен после настройки API.</p></div>
+<div class="header"><div class="logo"><h1><span class="code-orange">Code</span><span class="pedia">pedia</span> Hosting</h1></div><div class="nav-links"><a href="https://wiki.codepedia.space">📖 Wiki</a><a href="https://courses.codepedia.space">🎓 Курсы</a><a href="https://hosting.codepedia.space">🚀 Хостинг</a><a href="https://devkit.codepedia.space">⚡ DevKit</a></div></div>
+<div class="container"><div class="hero"><h1>🚀 Codepedia Hosting</h1><p>Бесплатный хостинг для ваших проектов</p><a href="https://hosting.codepedia.space" class="btn">✨ Создать сайт</a></div></div>
+<div class="footer"><p>Codepedia Hosting | © 2024-2026</p></div>
+</body></html>`;
+
+const DEVKIT_SUBDOMAIN_PAGE = `<!DOCTYPE html>
+<html lang="ru"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>DevKit — Codepedia</title>
+<style>*{margin:0;padding:0;box-sizing:border-box}body{background:#0a0e27;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Roboto',sans-serif;color:#e0e0e0}.header{background:rgba(15,18,40,0.95);border-bottom:1px solid rgba(255,107,0,0.3);padding:16px 32px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap}.logo h1{font-size:28px}.code-orange{color:#ff6b00}.pedia{color:#4a90e2}.nav-links a{color:#e0e0e0;text-decoration:none;margin-left:24px}.nav-links a:hover{color:#ff6b00}.container{max-width:1400px;margin:0 auto;padding:30px}.hero{text-align:center;padding:60px 20px}.hero h1{font-size:48px;margin-bottom:16px;background:linear-gradient(135deg,#ff6b00,#4a90e2);-webkit-background-clip:text;-webkit-text-fill-color:transparent}.hero p{font-size:18px;color:#a0a0a0}.btn{display:inline-block;background:#ff6b00;color:#fff;padding:12px 28px;border-radius:40px;text-decoration:none;font-weight:600;margin-top:12px}.btn:hover{background:#ff8533}.footer{text-align:center;padding:30px;border-top:1px solid rgba(255,255,255,0.1);margin-top:40px;color:#666}
+</style></head>
+<body>
+<div class="header"><div class="logo"><h1><span class="code-orange">Code</span><span class="pedia">pedia</span> DevKit</h1></div><div class="nav-links"><a href="https://wiki.codepedia.space">📖 Wiki</a><a href="https://courses.codepedia.space">🎓 Курсы</a><a href="https://hosting.codepedia.space">🚀 Хостинг</a><a href="https://devkit.codepedia.space">⚡ DevKit</a></div></div>
+<div class="container"><div class="hero"><h1>⚡ Codepedia DevKit</h1><p>Инструменты для разработчиков</p><a href="https://devkit.codepedia.space" class="btn">🔧 Открыть инструменты</a></div></div>
 <div class="footer"><p>Codepedia DevKit | © 2024-2026</p></div>
 </body></html>`;
 
-const SITE_EDITOR_PAGE = `<!DOCTYPE html>
-<html lang="ru"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Редактор — Codepedia</title>
-<style>*{margin:0;padding:0;box-sizing:border-box}body{background:#0a0e27;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Roboto',sans-serif;color:#e0e0e0}.header{background:rgba(15,18,40,0.95);border-bottom:1px solid rgba(255,107,0,0.3);padding:16px 32px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap}.logo h1{font-size:28px}.code-orange{color:#ff6b00}.pedia{color:#4a90e2}.nav-links a{color:#e0e0e0;text-decoration:none;margin-left:24px}.nav-links a:hover{color:#ff6b00}.container{max-width:1400px;margin:0 auto;padding:30px}.hero{text-align:center;padding:40px 20px}.hero h1{font-size:42px}.footer{text-align:center;padding:30px;border-top:1px solid rgba(255,255,255,0.1);margin-top:40px;color:#666}
+const BLOG_SUBDOMAIN_PAGE = `<!DOCTYPE html>
+<html lang="ru"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Блог — Codepedia</title>
+<style>*{margin:0;padding:0;box-sizing:border-box}body{background:#0a0e27;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Roboto',sans-serif;color:#e0e0e0}.header{background:rgba(15,18,40,0.95);border-bottom:1px solid rgba(255,107,0,0.3);padding:16px 32px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap}.logo h1{font-size:28px}.code-orange{color:#ff6b00}.pedia{color:#4a90e2}.nav-links a{color:#e0e0e0;text-decoration:none;margin-left:24px}.nav-links a:hover{color:#ff6b00}.container{max-width:1400px;margin:0 auto;padding:30px}.hero{text-align:center;padding:60px 20px}.hero h1{font-size:48px;margin-bottom:16px;background:linear-gradient(135deg,#ff6b00,#4a90e2);-webkit-background-clip:text;-webkit-text-fill-color:transparent}.hero p{font-size:18px;color:#a0a0a0}.btn{display:inline-block;background:#ff6b00;color:#fff;padding:12px 28px;border-radius:40px;text-decoration:none;font-weight:600;margin-top:12px}.btn:hover{background:#ff8533}.footer{text-align:center;padding:30px;border-top:1px solid rgba(255,255,255,0.1);margin-top:40px;color:#666}
 </style></head>
 <body>
-<div class="header"><div class="logo"><h1><span class="code-orange">Code</span><span class="pedia">pedia</span> Editor</h1></div><div class="nav-links"><a href="/">🏠 Главная</a><a href="/hosting.html">🚀 Мои проекты</a></div></div>
-<div class="container"><div class="hero"><h1>✏️ Редактор сайта</h1><p style="color:#a0a0a0;">Здесь вы можете редактировать файлы вашего проекта.</p></div><p style="text-align:center;color:#a0a0a0;">Редактор будет доступен после настройки API.</p></div>
-<div class="footer"><p>Codepedia Editor | © 2024-2026</p></div>
+<div class="header"><div class="logo"><h1><span class="code-orange">Code</span><span class="pedia">pedia</span> Blog</h1></div><div class="nav-links"><a href="https://wiki.codepedia.space">📖 Wiki</a><a href="https://courses.codepedia.space">🎓 Курсы</a><a href="https://hosting.codepedia.space">🚀 Хостинг</a><a href="https://devkit.codepedia.space">⚡ DevKit</a><a href="https://blog.codepedia.space">📝 Блог</a></div></div>
+<div class="container"><div class="hero"><h1>📝 Codepedia Blog</h1><p>Новости, статьи и анонсы Codepedia</p><a href="https://blog.codepedia.space" class="btn">📖 Читать блог</a></div></div>
+<div class="footer"><p>Codepedia Blog | © 2024-2026</p></div>
+</body></html>`;
+
+const API_SUBDOMAIN_PAGE = `<!DOCTYPE html>
+<html lang="ru"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>API — Codepedia</title>
+<style>*{margin:0;padding:0;box-sizing:border-box}body{background:#0a0e27;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Roboto',sans-serif;color:#e0e0e0}.header{background:rgba(15,18,40,0.95);border-bottom:1px solid rgba(255,107,0,0.3);padding:16px 32px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap}.logo h1{font-size:28px}.code-orange{color:#ff6b00}.pedia{color:#4a90e2}.nav-links a{color:#e0e0e0;text-decoration:none;margin-left:24px}.nav-links a:hover{color:#ff6b00}.container{max-width:1400px;margin:0 auto;padding:30px}.hero{text-align:center;padding:60px 20px}.hero h1{font-size:48px;margin-bottom:16px;background:linear-gradient(135deg,#ff6b00,#4a90e2);-webkit-background-clip:text;-webkit-text-fill-color:transparent}.hero p{font-size:18px;color:#a0a0a0}.btn{display:inline-block;background:#ff6b00;color:#fff;padding:12px 28px;border-radius:40px;text-decoration:none;font-weight:600;margin-top:12px}.btn:hover{background:#ff8533}.footer{text-align:center;padding:30px;border-top:1px solid rgba(255,255,255,0.1);margin-top:40px;color:#666}
+</style></head>
+<body>
+<div class="header"><div class="logo"><h1><span class="code-orange">Code</span><span class="pedia">pedia</span> API</h1></div><div class="nav-links"><a href="https://wiki.codepedia.space">📖 Wiki</a><a href="https://courses.codepedia.space">🎓 Курсы</a><a href="https://hosting.codepedia.space">🚀 Хостинг</a><a href="https://devkit.codepedia.space">⚡ DevKit</a></div></div>
+<div class="container"><div class="hero"><h1>🔌 Codepedia API</h1><p>Публичное API для разработчиков</p><a href="https://api.codepedia.space" class="btn">📖 Документация</a></div></div>
+<div class="footer"><p>Codepedia API | © 2024-2026</p></div>
 </body></html>`;
 
 // ========== ОСНОВНОЙ WORKER ==========
@@ -130,6 +114,7 @@ export default {
     async fetch(request, env, ctx) {
         const url = new URL(request.url);
         const path = url.pathname;
+        const hostname = url.hostname;
 
         const corsHeaders = {
             'Access-Control-Allow-Origin': '*',
@@ -142,9 +127,31 @@ export default {
             return new Response(null, { headers: corsHeaders });
         }
 
-        // ========== ПОДДОМЕНЫ ==========
-        if (url.hostname !== 'codepedia.space' && url.hostname.endsWith('.codepedia.space')) {
-            const subdomain = url.hostname.replace('.codepedia.space', '');
+        // ========== ОБРАБОТКА ПОДДОМЕНОВ ==========
+        if (hostname !== 'codepedia.space' && hostname.endsWith('.codepedia.space')) {
+            const subdomain = hostname.replace('.codepedia.space', '');
+
+            // ===== СТРАНИЦЫ ПОДДОМЕНОВ =====
+            if (subdomain === 'wiki') {
+                return new Response(WIKI_PAGE, { headers: { 'Content-Type': 'text/html' } });
+            }
+            if (subdomain === 'courses') {
+                return new Response(COURSES_SUBDOMAIN_PAGE, { headers: { 'Content-Type': 'text/html' } });
+            }
+            if (subdomain === 'hosting') {
+                return new Response(HOSTING_SUBDOMAIN_PAGE, { headers: { 'Content-Type': 'text/html' } });
+            }
+            if (subdomain === 'devkit') {
+                return new Response(DEVKIT_SUBDOMAIN_PAGE, { headers: { 'Content-Type': 'text/html' } });
+            }
+            if (subdomain === 'blog') {
+                return new Response(BLOG_SUBDOMAIN_PAGE, { headers: { 'Content-Type': 'text/html' } });
+            }
+            if (subdomain === 'api') {
+                return new Response(API_SUBDOMAIN_PAGE, { headers: { 'Content-Type': 'text/html' } });
+            }
+
+            // ===== ПРОЕКТЫ ПОЛЬЗОВАТЕЛЕЙ =====
             try {
                 const project = await env.DB.prepare(
                     "SELECT id, slug, title, files FROM projects WHERE slug = ? AND published = 1"
@@ -153,7 +160,7 @@ export default {
                 if (project) {
                     let files = {};
                     try { files = JSON.parse(project.files || '{}'); } catch(e) {}
-                    let filePath = url.pathname === '/' ? '/index.html' : url.pathname;
+                    let filePath = path === '/' ? '/index.html' : path;
                     if (filePath.startsWith('/')) filePath = filePath.substring(1);
                     let content = files[filePath];
                     let contentType = 'text/html';
@@ -170,24 +177,17 @@ export default {
                         ctx.waitUntil(env.DB.prepare("UPDATE projects SET views = views + 1 WHERE slug = ?").bind(subdomain).run());
                         return new Response(files['index.html'], { headers: { 'Content-Type': 'text/html' } });
                     }
-                    return new Response(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${project.title}</title></head><body style="font-family:sans-serif;text-align:center;padding:50px;background:#0a0e27;color:#e0e0e0;"><h1>🚀 ${project.title}</h1><p>Сайт создан на Codepedia Hosting</p><p>Файл ${filePath} не найден</p><a href="/" style="color:#ff6b00;">На главную</a></body></html>`, { headers: { 'Content-Type': 'text/html' } });
+                    return new Response(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${project.title}</title></head><body style="font-family:sans-serif;text-align:center;padding:50px;background:#0a0e27;color:#e0e0e0;"><h1>🚀 ${project.title}</h1><p>Сайт создан на Codepedia Hosting</p><p>Файл ${filePath} не найден</p><a href="https://wiki.codepedia.space" style="color:#ff6b00;">На главную</a></body></html>`, { headers: { 'Content-Type': 'text/html' } });
                 }
-                return new Response(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Проект не найден</title></head><body style="font-family:sans-serif;text-align:center;padding:50px;background:#0a0e27;color:#e0e0e0;"><h1>❌ Проект не найден</h1><p>Сайт <strong>${subdomain}.codepedia.space</strong> не существует</p><a href="/" style="color:#ff6b00;">← На главную</a></body></html>`, { status: 404, headers: { 'Content-Type': 'text/html' } });
+                return new Response(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Проект не найден</title></head><body style="font-family:sans-serif;text-align:center;padding:50px;background:#0a0e27;color:#e0e0e0;"><h1>❌ Проект не найден</h1><p>Сайт <strong>${subdomain}.codepedia.space</strong> не существует</p><a href="https://wiki.codepedia.space" style="color:#ff6b00;">← На главную</a></body></html>`, { status: 404, headers: { 'Content-Type': 'text/html' } });
             } catch (error) {
                 return new Response(`<h1>⚠️ Ошибка базы данных</h1><p>${error.message}</p>`, { status: 500 });
             }
         }
 
-        // ========== СТАТИЧЕСКИЕ СТРАНИЦЫ ==========
-        if (path === '/' || path === '/index.html') return new Response(MAIN_PAGE, { headers: { 'Content-Type': 'text/html' } });
-        if (path === '/hosting.html') return new Response(HOSTING_PAGE, { headers: { 'Content-Type': 'text/html' } });
-        if (path === '/create-site.html') return new Response(CREATE_SITE_PAGE, { headers: { 'Content-Type': 'text/html' } });
-        if (path === '/courses.html') return new Response(COURSES_PAGE, { headers: { 'Content-Type': 'text/html' } });
-        if (path === '/devkit.html') return new Response(DEVKIT_PAGE, { headers: { 'Content-Type': 'text/html' } });
-        if (path === '/site-editor.html') return new Response(SITE_EDITOR_PAGE, { headers: { 'Content-Type': 'text/html' } });
-        if (path === '/style.css') return new Response(`body { font-family: sans-serif; background: #0a0e27; color: #e0e0e0; }`, { headers: { 'Content-Type': 'text/css' } });
-
         // ========== API ==========
+
+        // ---- Яндекс OAuth ----
         if (path === '/api/yandex-callback' && request.method === 'GET') {
             const url = new URL(request.url);
             const code = url.searchParams.get('code');
@@ -225,11 +225,11 @@ export default {
                 const expiresAt = new Date();
                 expiresAt.setDate(expiresAt.getDate() + 30);
                 await env.DB.prepare("INSERT INTO sessions (id, user_id, expires_at) VALUES (?, ?, ?)").bind(sessionId, user.id, expiresAt.toISOString()).run();
-                return new Response(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Вход через Яндекс</title></head><body><script>localStorage.setItem('sessionId', '${sessionId}');localStorage.setItem('user', JSON.stringify({id: ${user.id},email: '${user.email}',name: '${user.name.replace(/'/g, "\\'")}',avatar: '${user.avatar}'}));window.location.href='/';</script></body></html>`, { headers: { 'Content-Type': 'text/html' } });
+                return new Response(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Вход через Яндекс</title></head><body><script>localStorage.setItem('sessionId', '${sessionId}');localStorage.setItem('user', JSON.stringify({id: ${user.id},email: '${user.email}',name: '${user.name.replace(/'/g, "\\'")}',avatar: '${user.avatar}'}));window.location.href='https://wiki.codepedia.space';</script></body></html>`, { headers: { 'Content-Type': 'text/html' } });
             } catch (err) { return new Response(`Ошибка: ${err.message}`, { status: 500 }); }
         }
 
-        // ========== РЕГИСТРАЦИЯ ==========
+        // ---- Регистрация ----
         if (path === '/api/register' && request.method === 'POST') {
             try {
                 const { email, password, name } = await request.json();
@@ -243,7 +243,7 @@ export default {
             } catch (err) { return new Response(JSON.stringify({ error: err.message }), { headers: corsHeaders, status: 500 }); }
         }
 
-        // ========== ЛОГИН ==========
+        // ---- Логин ----
         if (path === '/api/login' && request.method === 'POST') {
             try {
                 const { email, password } = await request.json();
@@ -260,7 +260,7 @@ export default {
             } catch (err) { return new Response(JSON.stringify({ error: err.message }), { headers: corsHeaders, status: 500 }); }
         }
 
-        // ========== МЕ ==========
+        // ---- Проверка сессии ----
         if (path === '/api/me' && request.method === 'GET') {
             const sessionId = request.headers.get('X-Session-Id');
             if (!sessionId) return new Response(JSON.stringify({ error: 'Не авторизован' }), { headers: corsHeaders, status: 401 });
@@ -270,14 +270,14 @@ export default {
             return new Response(JSON.stringify({ user }), { headers: corsHeaders });
         }
 
-        // ========== ЛОГАУТ ==========
+        // ---- Выход ----
         if (path === '/api/logout' && request.method === 'POST') {
             const sessionId = request.headers.get('X-Session-Id');
             if (sessionId) await env.DB.prepare("DELETE FROM sessions WHERE id = ?").bind(sessionId).run();
             return new Response(JSON.stringify({ success: true }), { headers: corsHeaders });
         }
 
-        // ========== СТАТЬИ ==========
+        // ---- Статьи ----
         if (path === '/api/articles' && request.method === 'GET') {
             const articles = await env.DB.prepare("SELECT id, title, slug, category, difficulty, excerpt, author_name, date, views FROM articles WHERE status = 'published' OR status IS NULL ORDER BY date DESC").all();
             return new Response(JSON.stringify(articles.results), { headers: corsHeaders });
@@ -307,7 +307,7 @@ export default {
             } catch (err) { return new Response(JSON.stringify({ error: err.message }), { headers: corsHeaders, status: 500 }); }
         }
 
-        // ========== КУРСЫ ==========
+        // ---- Курсы ----
         if (path === '/api/courses' && request.method === 'GET') {
             const courses = await env.DB.prepare("SELECT * FROM courses ORDER BY id").all();
             return new Response(JSON.stringify(courses.results), { headers: corsHeaders });
@@ -330,7 +330,7 @@ export default {
             return new Response(JSON.stringify(lesson), { headers: corsHeaders });
         }
 
-        // ========== ПРОГРЕСС ==========
+        // ---- Прогресс ----
         if (path === '/api/user-progress' && request.method === 'GET') {
             const sessionId = request.headers.get('X-Session-Id');
             if (!sessionId) return new Response(JSON.stringify({ error: 'Не авторизован' }), { headers: corsHeaders, status: 401 });
@@ -360,7 +360,7 @@ export default {
             return new Response(JSON.stringify({ success: true }), { headers: corsHeaders });
         }
 
-        // ========== ПРОВЕРКА КОДА ==========
+        // ---- Проверка кода ----
         if (path === '/api/check-solution' && request.method === 'POST') {
             const { lesson_id, code } = await request.json();
             const lesson = await env.DB.prepare("SELECT test_code FROM lessons WHERE id = ?").bind(lesson_id).first();
@@ -375,7 +375,7 @@ export default {
             return new Response(JSON.stringify({ correct, message }), { headers: corsHeaders });
         }
 
-        // ========== ЧАТ С РЕПЕТИТОРОМ ==========
+        // ---- Чат с репетитором ----
         if (path === '/api/tutor-messages' && request.method === 'GET') {
             const sessionId = request.headers.get('X-Session-Id');
             if (!sessionId) return new Response(JSON.stringify({ error: 'Не авторизован' }), { headers: corsHeaders, status: 401 });
@@ -394,7 +394,7 @@ export default {
             return new Response(JSON.stringify({ success: true }), { headers: corsHeaders });
         }
 
-        // ========== ХОСТИНГ ПРОЕКТОВ ==========
+        // ---- Проекты (хостинг) ----
         if (path === '/api/projects' && request.method === 'GET') {
             const projects = await env.DB.prepare("SELECT id, slug, title, description, author_name, author_avatar, views, created_at FROM projects WHERE published = 1 ORDER BY created_at DESC").all();
             return new Response(JSON.stringify(projects.results), { headers: corsHeaders });
@@ -431,7 +431,7 @@ export default {
             } catch (err) { return new Response(JSON.stringify({ error: err.message }), { headers: corsHeaders, status: 500 }); }
         }
 
-        // ========== РАБОТА С ФАЙЛАМИ ==========
+        // ---- Файлы проектов ----
         if (path.match(/^\/api\/projects\/[^\/]+\/files$/) && request.method === 'GET') {
             const slug = path.split('/')[3];
             const project = await env.DB.prepare("SELECT files FROM projects WHERE slug = ?").bind(slug).first();
@@ -492,7 +492,7 @@ export default {
             return new Response(JSON.stringify({ success: true }), { headers: corsHeaders });
         }
 
-        // ========== УДАЛИТЬ ПРОЕКТ ==========
+        // ---- Удалить проект ----
         if (path.match(/^\/api\/projects\/[^\/]+$/) && request.method === 'DELETE') {
             const sessionId = request.headers.get('X-Session-Id');
             if (!sessionId) return new Response(JSON.stringify({ error: 'Не авторизован' }), { headers: corsHeaders, status: 401 });
@@ -505,6 +505,14 @@ export default {
             await env.DB.prepare("DELETE FROM projects WHERE slug = ?").bind(slug).run();
             return new Response(JSON.stringify({ success: true }), { headers: corsHeaders });
         }
+
+        // ========== СТАТИЧЕСКИЕ СТРАНИЦЫ (codepedia.space) ==========
+        if (path === '/' || path === '/index.html') {
+            return new Response(WIKI_PAGE, { headers: { 'Content-Type': 'text/html' } });
+        }
+        if (path === '/courses.html') return new Response(COURSES_SUBDOMAIN_PAGE, { headers: { 'Content-Type': 'text/html' } });
+        if (path === '/hosting.html') return new Response(HOSTING_SUBDOMAIN_PAGE, { headers: { 'Content-Type': 'text/html' } });
+        if (path === '/devkit.html') return new Response(DEVKIT_SUBDOMAIN_PAGE, { headers: { 'Content-Type': 'text/html' } });
 
         return new Response('Not found', { status: 404, headers: corsHeaders });
     }
