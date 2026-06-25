@@ -1,5 +1,4 @@
-// ========== HTML-СТРАНИЦЫ С ПРАВИЛЬНЫМ ОТОБРАЖЕНИЕМ ДАННЫХ ==========
-
+// ========== ГЛАВНАЯ СТРАНИЦА ==========
 const MAIN_PAGE = `<!DOCTYPE html>
 <html lang="ru">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Codepedia — Экосистема для разработчиков</title>
@@ -163,11 +162,11 @@ authBlock.innerHTML='<button class="login" onclick="openLoginModal()">Вход</
 }
 updateUI();
 </script>
-<!-- Модалки -->
 <div id="loginModal" class="modal"><div class="modal-content" style="position:relative;"><span class="close" onclick="closeLoginModal()">&times;</span><h2>🔐 Вход</h2><div id="loginError" class="error"></div><input type="email" id="loginEmail" placeholder="Email"><input type="password" id="loginPassword" placeholder="Пароль"><button class="btn-primary" onclick="login()">Войти</button><div class="switch-link">Нет аккаунта? <a onclick="closeLoginModal();openRegisterModal()">Зарегистрируйтесь</a></div></div></div>
 <div id="registerModal" class="modal"><div class="modal-content" style="position:relative;"><span class="close" onclick="closeRegisterModal()">&times;</span><h2>📝 Регистрация</h2><div id="registerError" class="error"></div><div id="registerSuccess" class="success"></div><input type="email" id="regEmail" placeholder="Email"><input type="text" id="regName" placeholder="Имя"><input type="password" id="regPassword" placeholder="Пароль (мин. 6)"><input type="password" id="regPassword2" placeholder="Повторите пароль"><button class="btn-primary" onclick="register()">Зарегистрироваться</button><div class="switch-link">Уже есть аккаунт? <a onclick="closeRegisterModal();openLoginModal()">Войдите</a></div></div></div>
 </body></html>`;
 
+// ========== СТРАНИЦА WIKI ==========
 const WIKI_PAGE = `<!DOCTYPE html>
 <html lang="ru">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Wiki — Codepedia</title>
@@ -234,6 +233,7 @@ loadArticles();
 </script>
 </body></html>`;
 
+// ========== СТРАНИЦА КУРСОВ ==========
 const COURSES_PAGE = `<!DOCTYPE html>
 <html lang="ru">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Курсы — Codepedia</title>
@@ -300,6 +300,7 @@ loadCourses();
 </script>
 </body></html>`;
 
+// ========== СТРАНИЦА ХОСТИНГА ==========
 const HOSTING_PAGE = `<!DOCTYPE html>
 <html lang="ru">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Хостинг — Codepedia</title>
@@ -370,6 +371,7 @@ loadProjects();
 </script>
 </body></html>`;
 
+// ========== СТРАНИЦА ИГР ==========
 const GAMES_PAGE = `<!DOCTYPE html>
 <html lang="ru">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Игры — Codepedia</title>
@@ -440,6 +442,108 @@ loadGames();
 </script>
 </body></html>`;
 
+// ========== СТРАНИЦА СТАТЬИ ==========
+const ARTICLE_PAGE = `<!DOCTYPE html>
+<html lang="ru">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Статья — Codepedia</title>
+<style>body{background:#0a0e27;font-family:sans-serif;color:#e0e0e0;padding:20px}.header{display:flex;justify-content:space-between;padding:12px 24px;border-bottom:1px solid rgba(255,107,0,0.3)}.nav-links a{color:#e0e0e0;margin-left:20px;text-decoration:none}.container{max-width:800px;margin:0 auto;padding:20px}.back{color:#ff6b00;text-decoration:none}.content{background:rgba(255,255,255,0.05);border-radius:16px;padding:30px;margin-top:20px}.content h1{color:#ff6b00}.content p{color:#a0a0a0;line-height:1.6}.content pre{background:#1a1f3a;padding:15px;border-radius:10px;overflow-x:auto;margin:15px 0}.content code{font-family:monospace}.content ul,.content ol{margin:15px 0 15px 25px;color:#a0a0a0}.content table{border-collapse:collapse;width:100%;margin:15px 0}.content table th,.content table td{border:1px solid #333;padding:8px 12px;text-align:left}.content table th{background:#1a1f3a}.loading{text-align:center;padding:40px;color:#666}.meta{color:#666;font-size:13px;margin-top:10px}
+</style>
+</head>
+<body>
+<div class="header"><div class="logo"><h1><span style="color:#ff6b00">Code</span><span style="color:#4a90e2">pedia</span></h1></div>
+<div class="nav-links"><a href="https://wiki.codepedia.space">📖 Wiki</a></div></div>
+<div class="container">
+<a href="https://wiki.codepedia.space" class="back">← Назад</a>
+<div id="articleContent"><div class="loading">Загрузка статьи...</div></div>
+</div>
+<script>
+const urlParams=new URLSearchParams(window.location.search);
+const slug=urlParams.get('slug');
+async function loadArticle(){
+if(!slug){document.getElementById('articleContent').innerHTML='<p style="color:#ff5252;">Статья не указана</p>';return;}
+try{
+const res=await fetch('/api/articles/'+slug);
+if(!res.ok)throw new Error('Статья не найдена');
+const article=await res.json();
+document.getElementById('articleContent').innerHTML=\`
+<h1>\${article.title}</h1>
+<div class="meta">👤 \${article.author_name||'Аноним'} • 📅 \${article.date||'2024'} • 👁️ \${article.views||0}</div>
+<div style="margin-top:20px;">\${article.content||'<p>Нет содержимого</p>'}</div>
+\`;
+}catch(e){document.getElementById('articleContent').innerHTML='<p style="color:#ff5252;">❌ '+e.message+'</p>';}
+}
+loadArticle();
+</script>
+</body></html>`;
+
+// ========== СТРАНИЦА КУРСА ==========
+const COURSE_PAGE = `<!DOCTYPE html>
+<html lang="ru">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Курс — Codepedia</title>
+<style>body{background:#0a0e27;font-family:sans-serif;color:#e0e0e0;padding:20px}.header{display:flex;justify-content:space-between;padding:12px 24px;border-bottom:1px solid rgba(255,107,0,0.3)}.nav-links a{color:#e0e0e0;margin-left:20px;text-decoration:none}.container{max-width:800px;margin:0 auto;padding:20px}.back{color:#ff6b00;text-decoration:none}.content{background:rgba(255,255,255,0.05);border-radius:16px;padding:30px;margin-top:20px}.content h1{color:#4a90e2}.loading{text-align:center;padding:40px;color:#666}
+</style>
+</head>
+<body>
+<div class="header"><div class="logo"><h1><span style="color:#ff6b00">Code</span><span style="color:#4a90e2">pedia</span></h1></div>
+<div class="nav-links"><a href="https://courses.codepedia.space">🎓 Курсы</a></div></div>
+<div class="container">
+<a href="https://courses.codepedia.space" class="back">← Назад</a>
+<div id="courseContent"><div class="loading">Загрузка курса...</div></div>
+</div>
+<script>
+const urlParams=new URLSearchParams(window.location.search);
+const id=urlParams.get('id');
+async function loadCourse(){
+if(!id){document.getElementById('courseContent').innerHTML='<p style="color:#ff5252;">Курс не указан</p>';return;}
+try{
+const res=await fetch('/api/courses/'+id);
+if(!res.ok)throw new Error('Курс не найден');
+const course=await res.json();
+document.getElementById('courseContent').innerHTML=\`
+<h1>\${course.title}</h1>
+<p>\${course.description||'Без описания'}</p>
+<div style="color:#666;font-size:13px;margin-top:10px;">📖 \${course.lessons_count||0} уроков • ⏱️ \${course.duration||'—'} • \${course.level||'Начинающий'}</div>
+\`;
+}catch(e){document.getElementById('courseContent').innerHTML='<p style="color:#ff5252;">❌ '+e.message+'</p>';}
+}
+loadCourse();
+</script>
+</body></html>`;
+
+// ========== СТРАНИЦА ИГРЫ ==========
+const GAME_PAGE = `<!DOCTYPE html>
+<html lang="ru">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Игра — Codepedia</title>
+<style>body{background:#0a0e27;font-family:sans-serif;color:#e0e0e0;padding:20px}.header{display:flex;justify-content:space-between;padding:12px 24px;border-bottom:1px solid rgba(255,107,0,0.3)}.nav-links a{color:#e0e0e0;margin-left:20px;text-decoration:none}.container{max-width:800px;margin:0 auto;padding:20px}.back{color:#ff6b00;text-decoration:none}.content{background:rgba(255,255,255,0.05);border-radius:16px;padding:30px;margin-top:20px}.content h1{color:#ff6b00}.loading{text-align:center;padding:40px;color:#666}
+</style>
+</head>
+<body>
+<div class="header"><div class="logo"><h1><span style="color:#ff6b00">Code</span><span style="color:#4a90e2">pedia</span></h1></div>
+<div class="nav-links"><a href="https://games.codepedia.space">🎮 Игры</a></div></div>
+<div class="container">
+<a href="https://games.codepedia.space" class="back">← Назад</a>
+<div id="gameContent"><div class="loading">Загрузка игры...</div></div>
+</div>
+<script>
+const urlParams=new URLSearchParams(window.location.search);
+const id=urlParams.get('id');
+async function loadGame(){
+if(!id){document.getElementById('gameContent').innerHTML='<p style="color:#ff5252;">Игра не указана</p>';return;}
+try{
+const res=await fetch('/api/games/'+id);
+if(!res.ok)throw new Error('Игра не найдена');
+const game=await res.json();
+document.getElementById('gameContent').innerHTML=\`
+<h1>\${game.icon||'🎮'} \${game.title}</h1>
+<p>\${game.description||'Без описания'}</p>
+<div style="color:#666;font-size:13px;margin-top:10px;">👤 \${game.author_name||'Аноним'} • ⬇️ \${game.downloads||0}</div>
+\`;
+}catch(e){document.getElementById('gameContent').innerHTML='<p style="color:#ff5252;">❌ '+e.message+'</p>';}
+}
+loadGame();
+</script>
+</body></html>`;
+
 // ========== ОСНОВНОЙ WORKER ==========
 export default {
     async fetch(request, env, ctx) {
@@ -493,6 +597,11 @@ export default {
         if (path === '/' || path === '/index.html') {
             return new Response(MAIN_PAGE, { headers: { 'Content-Type': 'text/html' } });
         }
+
+        // ========== СТРАНИЦЫ ==========
+        if (path === '/article.html') return new Response(ARTICLE_PAGE, { headers: { 'Content-Type': 'text/html' } });
+        if (path === '/course.html') return new Response(COURSE_PAGE, { headers: { 'Content-Type': 'text/html' } });
+        if (path === '/game.html') return new Response(GAME_PAGE, { headers: { 'Content-Type': 'text/html' } });
 
         // ========== API ==========
         
@@ -561,28 +670,53 @@ export default {
             return new Response(JSON.stringify({ success: true }), { headers: corsHeaders });
         }
 
-        // ---- Статьи ----
+        // ---- Статьи (список) ----
         if (path === '/api/articles' && request.method === 'GET') {
             const articles = await env.DB.prepare("SELECT id, title, slug, excerpt, author_name, date, views FROM articles WHERE status = 'published' OR status IS NULL ORDER BY date DESC").all();
             return new Response(JSON.stringify(articles.results), { headers: corsHeaders });
         }
 
-        // ---- Курсы ----
+        // ---- Статья (по slug) ----
+        if (path.match(/^\/api\/articles\/[^\/]+$/) && request.method === 'GET') {
+            const slug = path.split('/').pop();
+            const article = await env.DB.prepare("SELECT * FROM articles WHERE slug = ?").bind(slug).first();
+            if (!article) return new Response(JSON.stringify({ error: 'Статья не найдена' }), { headers: corsHeaders, status: 404 });
+            await env.DB.prepare("UPDATE articles SET views = views + 1 WHERE slug = ?").bind(slug).run();
+            return new Response(JSON.stringify(article), { headers: corsHeaders });
+        }
+
+        // ---- Курсы (список) ----
         if (path === '/api/courses' && request.method === 'GET') {
             const courses = await env.DB.prepare("SELECT * FROM courses ORDER BY id").all();
             return new Response(JSON.stringify(courses.results), { headers: corsHeaders });
         }
 
-        // ---- Проекты ----
+        // ---- Курс (по id) ----
+        if (path.match(/^\/api\/courses\/\d+$/) && request.method === 'GET') {
+            const id = parseInt(path.split('/').pop());
+            const course = await env.DB.prepare("SELECT * FROM courses WHERE id = ?").bind(id).first();
+            if (!course) return new Response(JSON.stringify({ error: 'Курс не найден' }), { headers: corsHeaders, status: 404 });
+            return new Response(JSON.stringify(course), { headers: corsHeaders });
+        }
+
+        // ---- Проекты (список) ----
         if (path === '/api/projects' && request.method === 'GET') {
             const projects = await env.DB.prepare("SELECT id, slug, title, description, author_name, views, created_at FROM projects WHERE published = 1 ORDER BY created_at DESC").all();
             return new Response(JSON.stringify(projects.results), { headers: corsHeaders });
         }
 
-        // ---- Игры ----
+        // ---- Игры (список) ----
         if (path === '/api/games' && request.method === 'GET') {
             const games = await env.DB.prepare("SELECT id, title, slug, description, icon, tags, author_name, downloads, created_at FROM games ORDER BY created_at DESC").all();
             return new Response(JSON.stringify(games.results), { headers: corsHeaders });
+        }
+
+        // ---- Игра (по id) ----
+        if (path.match(/^\/api\/games\/\d+$/) && request.method === 'GET') {
+            const id = parseInt(path.split('/').pop());
+            const game = await env.DB.prepare("SELECT * FROM games WHERE id = ?").bind(id).first();
+            if (!game) return new Response(JSON.stringify({ error: 'Игра не найдена' }), { headers: corsHeaders, status: 404 });
+            return new Response(JSON.stringify(game), { headers: corsHeaders });
         }
 
         return new Response('Not found', { status: 404, headers: corsHeaders });
