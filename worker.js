@@ -446,7 +446,23 @@ loadGames();
 const ARTICLE_PAGE = `<!DOCTYPE html>
 <html lang="ru">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Статья — Codepedia</title>
-<style>body{background:#0a0e27;font-family:sans-serif;color:#e0e0e0;padding:20px}.header{display:flex;justify-content:space-between;padding:12px 24px;border-bottom:1px solid rgba(255,107,0,0.3)}.nav-links a{color:#e0e0e0;margin-left:20px;text-decoration:none}.container{max-width:800px;margin:0 auto;padding:20px}.back{color:#ff6b00;text-decoration:none}.content{background:rgba(255,255,255,0.05);border-radius:16px;padding:30px;margin-top:20px}.content h1{color:#ff6b00}.content p{color:#a0a0a0;line-height:1.6}.content pre{background:#1a1f3a;padding:15px;border-radius:10px;overflow-x:auto;margin:15px 0}.content code{font-family:monospace}.content ul,.content ol{margin:15px 0 15px 25px;color:#a0a0a0}.content table{border-collapse:collapse;width:100%;margin:15px 0}.content table th,.content table td{border:1px solid #333;padding:8px 12px;text-align:left}.content table th{background:#1a1f3a}.loading{text-align:center;padding:40px;color:#666}.meta{color:#666;font-size:13px;margin-top:10px}
+<style>
+body{background:#0a0e27;font-family:sans-serif;color:#e0e0e0;padding:20px}
+.header{display:flex;justify-content:space-between;padding:12px 24px;border-bottom:1px solid rgba(255,107,0,0.3)}
+.nav-links a{color:#e0e0e0;margin-left:20px;text-decoration:none}
+.container{max-width:800px;margin:0 auto;padding:20px}
+.back{color:#ff6b00;text-decoration:none}
+.content{background:rgba(255,255,255,0.05);border-radius:16px;padding:30px;margin-top:20px}
+.content h1{color:#ff6b00}
+.content p{color:#a0a0a0;line-height:1.6}
+.content pre{background:#1a1f3a;padding:15px;border-radius:10px;overflow-x:auto;margin:15px 0}
+.content code{font-family:monospace}
+.content ul,.content ol{margin:15px 0 15px 25px;color:#a0a0a0}
+.content table{border-collapse:collapse;width:100%;margin:15px 0}
+.content table th,.content table td{border:1px solid #333;padding:8px 12px;text-align:left}
+.content table th{background:#1a1f3a}
+.loading{text-align:center;padding:40px;color:#666}
+.meta{color:#666;font-size:13px;margin-top:10px}
 </style>
 </head>
 <body>
@@ -480,7 +496,15 @@ loadArticle();
 const COURSE_PAGE = `<!DOCTYPE html>
 <html lang="ru">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Курс — Codepedia</title>
-<style>body{background:#0a0e27;font-family:sans-serif;color:#e0e0e0;padding:20px}.header{display:flex;justify-content:space-between;padding:12px 24px;border-bottom:1px solid rgba(255,107,0,0.3)}.nav-links a{color:#e0e0e0;margin-left:20px;text-decoration:none}.container{max-width:800px;margin:0 auto;padding:20px}.back{color:#ff6b00;text-decoration:none}.content{background:rgba(255,255,255,0.05);border-radius:16px;padding:30px;margin-top:20px}.content h1{color:#4a90e2}.loading{text-align:center;padding:40px;color:#666}
+<style>
+body{background:#0a0e27;font-family:sans-serif;color:#e0e0e0;padding:20px}
+.header{display:flex;justify-content:space-between;padding:12px 24px;border-bottom:1px solid rgba(255,107,0,0.3)}
+.nav-links a{color:#e0e0e0;margin-left:20px;text-decoration:none}
+.container{max-width:800px;margin:0 auto;padding:20px}
+.back{color:#ff6b00;text-decoration:none}
+.content{background:rgba(255,255,255,0.05);border-radius:16px;padding:30px;margin-top:20px}
+.content h1{color:#4a90e2}
+.loading{text-align:center;padding:40px;color:#666}
 </style>
 </head>
 <body>
@@ -514,7 +538,15 @@ loadCourse();
 const GAME_PAGE = `<!DOCTYPE html>
 <html lang="ru">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Игра — Codepedia</title>
-<style>body{background:#0a0e27;font-family:sans-serif;color:#e0e0e0;padding:20px}.header{display:flex;justify-content:space-between;padding:12px 24px;border-bottom:1px solid rgba(255,107,0,0.3)}.nav-links a{color:#e0e0e0;margin-left:20px;text-decoration:none}.container{max-width:800px;margin:0 auto;padding:20px}.back{color:#ff6b00;text-decoration:none}.content{background:rgba(255,255,255,0.05);border-radius:16px;padding:30px;margin-top:20px}.content h1{color:#ff6b00}.loading{text-align:center;padding:40px;color:#666}
+<style>
+body{background:#0a0e27;font-family:sans-serif;color:#e0e0e0;padding:20px}
+.header{display:flex;justify-content:space-between;padding:12px 24px;border-bottom:1px solid rgba(255,107,0,0.3)}
+.nav-links a{color:#e0e0e0;margin-left:20px;text-decoration:none}
+.container{max-width:800px;margin:0 auto;padding:20px}
+.back{color:#ff6b00;text-decoration:none}
+.content{background:rgba(255,255,255,0.05);border-radius:16px;padding:30px;margin-top:20px}
+.content h1{color:#ff6b00}
+.loading{text-align:center;padding:40px;color:#666}
 </style>
 </head>
 <body>
