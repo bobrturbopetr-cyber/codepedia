@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Обсуждения — CodePedia</title>
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <span class="code">Code</span><span class="pedia">Pedia</span>
+            </div>
+            <nav class="nav">
+                <a href="/"><i class="fas fa-home"></i> Главная</a>
+                <a href="/wiki.html"><i class="fas fa-book"></i> Вики</a>
+                <a href="/hosting.html"><i class="fas fa-server"></i> Хостинг</a>
+                <a href="/games.html"><i class="fas fa-gamepad"></i> Игры</a>
+                <a href="/chat.html" class="active"><i class="fas fa-comments"></i> Обсуждения</a>
+            </nav>
+            <div class="user-actions">
+                <span class="user-status online"><i class="fas fa-circle"></i> Онлайн</span>
+            </div>
+        </div>
+    </header>
+
+    <section class="page-header">
+        <div class="container">
+            <h1><i class="fas fa-comments" style="color: #6c5ce7;"></i> Обсуждения и чаты</h1>
+            <p>Личные сообщения и групповые обсуждения с участниками</p>
+        </div>
+    </section>
+
+    <section class="chat-layout">
+        <div class="container">
+            <div class="chat-sidebar">
+                <div class="chat-search">
+                    <input type="text" placeholder="Поиск чатов..." id="chatSearch" oninput="filterChats()">
+                </div>
+                <div class="chat-list" id="chatList">
+                    <div class="chat-item active" onclick="openChat('general')">
+                        <div class="chat-avatar"><i class="fas fa-users"></i></div>
+                        <div class="chat-info">
+                            <span class="chat-name"># Общий чат</span>
+                            <span class="chat-preview">Добро пожаловать!</span>
+                        </div>
+                        <span class="chat-time">Сейчас</span>
+                    </div>
+                    <div class="chat-item" onclick="openChat('project1')">
+                        <div class="chat-avatar"><i class="fas fa-folder"></i></div>
+                        <div class="chat-info">
+                            <span class="chat-name">Проект: WebDev</span>
+                            <span class="chat-preview">Кто может помочь?</span>
+                        </div>
+                        <span class="chat-time">11:20</span>
+                    </div>
+                    <div class="chat-item" onclick="openChat('private')">
+                        <div class="chat-avatar"><i class="fas fa-user"></i></div>
+                        <div class="chat-info">
+                            <span class="chat-name">Алексей Петров</span>
+                            <span class="chat-preview">Спасибо за помощь!</span>
+                        </div>
+                        <span class="chat-time">10:05</span>
+                    </div>
+                    <div class="chat-item" onclick="openChat('gaming')">
+                        <div class="chat-avatar"><i class="fas fa-gamepad"></i></div>
+                        <div class="chat-info">
+                            <span class="chat-name">Игровой чат</span>
+                            <span class="chat-preview">Кто в доту?</span>
+                        </div>
+                        <span class="chat-time">09:15</span>
+                    </div>
+                </div>
+                <button class="btn btn-primary" style="width:100%;margin-top:10px;" onclick="createGroupChat()">
+                    <i class="fas fa-plus"></i> Создать групповой чат
+                </button>
+            </div>
+
+            <div class="chat-main" id="chatMain">
+                <div class="chat-header">
+                    <h3 id="currentChatName"># Общий чат</h3>
+                    <div class="chat-header-actions">
+                        <button class="btn btn-sm btn-outline"><i class="fas fa-user-plus"></i> Пригласить</button>
+                        <button class="btn btn-sm btn-outline"><i class="fas fa-ellipsis-v"></i></button>
+                    </div>
+                </div>
+                <div class="chat-messages" id="chatMessages">
+                    <!-- Загружается из API -->
+                </div>
+                <div class="chat-input">
+                    <input type="text" id="messageInput" placeholder="Введите сообщение..." onkeypress="sendMessage(event)">
+                    <button class="btn btn-primary" onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
+                    <button class="btn btn-outline"><i class="fas fa-smile"></i></button>
+                    <button class="btn btn-outline"><i class="fas fa-paperclip"></i></button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <p>© 2026 <span class="code">Code</span><span class="pedia">Pedia</span> — Обсуждения</p>
+            <p><small>Общайтесь с сообществом в реальном времени</small></p>
+        </div>
+    </footer>
+
+    <script src="/script.js"></script>
+</body>
+</html>
