@@ -32,6 +32,10 @@ routes = [
 bucket = "./public"
 entry-point = "src/index.js"
 
+[assets]
+directory = "./public"
+binding = "ASSETS"
+
 # Логирование
 [observability]
 logs = { enable = true }
