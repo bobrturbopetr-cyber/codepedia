@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Хостинг — CodePedia</title>
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <span class="code">Code</span><span class="pedia">Pedia</span>
+            </div>
+            <nav class="nav">
+                <a href="/"><i class="fas fa-home"></i> Главная</a>
+                <a href="/wiki.html"><i class="fas fa-book"></i> Вики</a>
+                <a href="/hosting.html" class="active"><i class="fas fa-server"></i> Хостинг</a>
+                <a href="/games.html"><i class="fas fa-gamepad"></i> Игры</a>
+                <a href="/chat.html"><i class="fas fa-comments"></i> Обсуждения</a>
+            </nav>
+            <div class="user-actions">
+                <span class="user-status online"><i class="fas fa-circle"></i> Онлайн</span>
+            </div>
+        </div>
+    </header>
+
+    <section class="page-header">
+        <div class="container">
+            <h1><i class="fas fa-server" style="color: #2b6fbf;"></i> Хостинг и файловый менеджер</h1>
+            <p>Управляйте своими проектами и файлами на поддоменах <strong>*.codepedia.space</strong></p>
+        </div>
+    </section>
+
+    <section class="hosting-controls">
+        <div class="container">
+            <div class="hosting-tabs">
+                <button class="tab-btn active" onclick="switchTab('projects')"><i class="fas fa-folder"></i> Проекты</button>
+                <button class="tab-btn" onclick="switchTab('files')"><i class="fas fa-file"></i> Файлы</button>
+                <button class="tab-btn" onclick="switchTab('domains')"><i class="fas fa-globe"></i> Домены</button>
+            </div>
+            <div class="hosting-actions">
+                <button class="btn btn-success" onclick="openCreateProject()"><i class="fas fa-plus"></i> Создать проект</button>
+                <button class="btn btn-primary" onclick="document.getElementById('fileUpload').click()"><i class="fas fa-upload"></i> Загрузить файл</button>
+                <input type="file" id="fileUpload" style="display:none" multiple onchange="uploadFiles(event)">
+            </div>
+        </div>
+    </section>
+
+    <!-- Вкладка: Проекты -->
+    <section class="hosting-content" id="projectsTab">
+        <div class="container">
+            <div class="projects-grid" id="projectsGrid">
+                <!-- Загружается из API -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Вкладка: Файлы -->
+    <section class="hosting-content" id="filesTab" style="display:none;">
+        <div class="container">
+            <div class="file-manager">
+                <div class="file-path">
+                    <i class="fas fa-folder-open"></i>
+                    <span id="currentPath">/</span>
+                </div>
+                <div class="file-list" id="fileList">
+                    <!-- Загружается из API -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Вкладка: Домены -->
+    <section class="hosting-content" id="domainsTab" style="display:none;">
+        <div class="container">
+            <div class="domains-list" id="domainsList">
+                <div class="domain-item">
+                    <i class="fas fa-check-circle" style="color: #00b894;"></i>
+                    <span><strong>мойпроект.codepedia.space</strong> — Активен</span>
+                    <button class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
+                </div>
+                <div class="domain-item">
+                    <i class="fas fa-clock" style="color: #fdcb6e;"></i>
+                    <span><strong>тест.codepedia.space</strong> — Ожидает настройки</span>
+                    <button class="btn btn-primary btn-sm"><i class="fas fa-sync"></i> Настроить</button>
+                </div>
+            </div>
+            <div class="domain-add">
+                <input type="text" id="newDomain" placeholder="subdomain">
+                <span>.codepedia.space</span>
+                <button class="btn btn-success" onclick="addDomain()"><i class="fas fa-plus"></i> Добавить</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Модальное окно создания проекта -->
+    <div class="modal" id="createProjectModal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('createProjectModal')">&times;</span>
+            <h2><i class="fas fa-folder-plus" style="color:#2b6fbf;"></i> Создать проект</h2>
+            <form onsubmit="createProject(event)">
+                <div class="form-group">
+                    <label>Название проекта:</label>
+                    <input type="text" id="projectName" placeholder="Мой проект" required>
+                </div>
+                <div class="form-group">
+                    <label>Поддомен:</label>
+                    <div class="domain-input">
+                        <input type="text" id="projectSubdomain" placeholder="мойпроект" required pattern="[a-z0-9-]+">
+                        <span>.codepedia.space</span>
+                    </div>
+                    <small style="color:#636e72;">Только латиница, цифры и дефис</small>
+                </div>
+                <div class="form-group">
+                    <label>Описание:</label>
+                    <textarea id="projectDesc" rows="3" placeholder="Описание проекта"></textarea>
+                </div>
+                <button type="submit" class="btn btn-success"><i class="fas fa-check"></i> Создать</button>
+            </form>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <p>© 2026 <span class="code">Code</span><span class="pedia">Pedia</span> — Хостинг</p>
+            <p><small>Все проекты доступны по поддоменам .codepedia.space</small></p>
+        </div>
+    </footer>
+
+    <script src="/script.js"></script>
+</body>
+</html>
