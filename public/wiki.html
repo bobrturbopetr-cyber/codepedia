@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IT Wiki — CodePedia</title>
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <span class="code">Code</span><span class="pedia">Pedia</span>
+            </div>
+            <nav class="nav">
+                <a href="/"><i class="fas fa-home"></i> Главная</a>
+                <a href="/wiki.html" class="active"><i class="fas fa-book"></i> Вики</a>
+                <a href="/hosting.html"><i class="fas fa-server"></i> Хостинг</a>
+                <a href="/games.html"><i class="fas fa-gamepad"></i> Игры</a>
+                <a href="/chat.html"><i class="fas fa-comments"></i> Обсуждения</a>
+            </nav>
+            <div class="user-actions">
+                <button class="btn btn-primary" onclick="openCreateWiki()"><i class="fas fa-plus"></i> Создать вики</button>
+            </div>
+        </div>
+    </header>
+
+    <section class="page-header">
+        <div class="container">
+            <h1><i class="fas fa-book" style="color: #e07c2c;"></i> IT Вики</h1>
+            <p>Создайте свой поддомен <strong>название.codepedia.space</strong> и наполняйте статьями</p>
+        </div>
+    </section>
+
+    <section class="wiki-controls">
+        <div class="container">
+            <div class="search-bar">
+                <input type="text" id="wikiSearch" placeholder="Поиск вики..." oninput="filterWikis()">
+                <button class="btn btn-primary"><i class="fas fa-search"></i></button>
+            </div>
+            <div class="wiki-actions">
+                <button class="btn btn-success" onclick="openCreateWiki()"><i class="fas fa-plus"></i> Создать вики</button>
+                <button class="btn btn-outline" onclick="openCreateArticle()"><i class="fas fa-file-alt"></i> Новая статья</button>
+            </div>
+        </div>
+    </section>
+
+    <section class="wiki-list">
+        <div class="container">
+            <div class="wiki-grid" id="wikiGrid">
+                <!-- Загружается из API -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Модальное окно создания вики -->
+    <div class="modal" id="createWikiModal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('createWikiModal')">&times;</span>
+            <h2>Создать новую вики</h2>
+            <form id="createWikiForm" onsubmit="createWiki(event)">
+                <div class="form-group">
+                    <label>Название вики:</label>
+                    <input type="text" id="wikiName" placeholder="Например: JavaScript" required>
+                </div>
+                <div class="form-group">
+                    <label>Поддомен:</label>
+                    <div class="domain-input">
+                        <input type="text" id="wikiSubdomain" placeholder="javascript" required>
+                        <span>.codepedia.space</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Описание:</label>
+                    <textarea id="wikiDesc" rows="3" placeholder="Краткое описание вики"></textarea>
+                </div>
+                <button type="submit" class="btn btn-success"><i class="fas fa-check"></i> Создать</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Модальное окно создания статьи -->
+    <div class="modal" id="createArticleModal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('createArticleModal')">&times;</span>
+            <h2>Новая статья</h2>
+            <form id="createArticleForm" onsubmit="createArticle(event)">
+                <div class="form-group">
+                    <label>Выберите вики:</label>
+                    <select id="articleWiki" required></select>
+                </div>
+                <div class="form-group">
+                    <label>Заголовок статьи:</label>
+                    <input type="text" id="articleTitle" placeholder="Название статьи" required>
+                </div>
+                <div class="form-group">
+                    <label>Содержание:</label>
+                    <textarea id="articleContent" rows="5" placeholder="Текст статьи..."></textarea>
+                </div>
+                <button type="submit" class="btn btn-success"><i class="fas fa-check"></i> Опубликовать</button>
+            </form>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <p>© 2026 <span class="code">Code</span><span class="pedia">Pedia</span> — IT энциклопедия</p>
+        </div>
+    </footer>
+
+    <script src="/script.js"></script>
+</body>
+</html>
