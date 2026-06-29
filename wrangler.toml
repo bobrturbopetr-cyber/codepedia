@@ -7,7 +7,7 @@ compatibility_flags = ["nodejs_compat"]
 [[d1_databases]]
 binding = "DB"
 database_name = "codepedia_db"
-database_id = "32105466-1de8-49be-8709-6da695448235"  # Замените на реальный ID после создания
+database_id = "32105466-1de8-49be-8709-6da695448235"
 
 # Переменные окружения
 [vars]
@@ -22,19 +22,17 @@ vars = { NODE_ENV = "production" }
 [env.preview]
 vars = { NODE_ENV = "development" }
 
-
+# Маршруты для домена
 routes = [
    { pattern = "codepedia.space/*", zone_id = "b92fe6de8e9f5492b9d581b597bb2854" }
- ]
+]
 
-# Настройки для статики
-[site]
-bucket = "./public"
-entry-point = "src/index.js"
-
+# ======== ГЛАВНОЕ: Настройка статики ========
+# Обслуживание статических файлов из папки public
 [assets]
 directory = "./public"
 binding = "ASSETS"
+# index.html будет автоматически обслуживаться для корня /
 
 # Логирование
 [observability]
