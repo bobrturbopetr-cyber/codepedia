@@ -14,26 +14,21 @@ database_id = "32105466-1de8-49be-8709-6da695448235"
 NODE_ENV = "production"
 APP_NAME = "CodePedia"
 
-# Настройки для production
 [env.production]
 vars = { NODE_ENV = "production" }
 
-# Настройки для preview
 [env.preview]
 vars = { NODE_ENV = "development" }
 
-# Маршруты для домена
+# Маршруты
 routes = [
    { pattern = "codepedia.space/*", zone_id = "b92fe6de8e9f5492b9d581b597bb2854" }
 ]
 
-# ======== ГЛАВНОЕ: Настройка статики ========
-# Обслуживание статических файлов из папки public
+# Статика из корня
 [assets]
-directory = "./public"
+directory = "./"
 binding = "ASSETS"
-# index.html будет автоматически обслуживаться для корня /
 
-# Логирование
 [observability]
 logs = { enable = true }
