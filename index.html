@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodePedia — Добро пожаловать!</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #f5f6fa 0%, #dfe6e9 100%);
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Анимированный фон */
+        .bg-shapes {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+        .bg-shapes .shape {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.1;
+            animation: float 20s infinite ease-in-out;
+        }
+        .bg-shapes .shape:nth-child(1) {
+            width: 400px;
+            height: 400px;
+            background: #e07c2c;
+            top: -100px;
+            right: -100px;
+            animation-delay: 0s;
+        }
+        .bg-shapes .shape:nth-child(2) {
+            width: 300px;
+            height: 300px;
+            background: #2b6fbf;
+            bottom: -50px;
+            left: -50px;
+            animation-delay: -5s;
+        }
+        .bg-shapes .shape:nth-child(3) {
+            width: 200px;
+            height: 200px;
+            background: #6c5ce7;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation-delay: -10s;
+        }
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(30px, -30px) scale(1.1); }
+            50% { transform: translate(-20px, 20px) scale(0.9); }
+            75% { transform: translate(20px, 30px) scale(1.05); }
+        }
+
+        .start-container {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            max-width: 750px;
+            padding: 60px 50px;
+            background: rgba(255, 255, 255, 0.92);
+            border-radius: 40px;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.15), 0 10px 30px rgba(0, 0, 0, 0.05);
+            backdrop-filter: blur(20px);
+            animation: fadeInUp 1s ease;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* Логотип с анимацией */
+        .start-logo {
+            font-size: 80px;
+            font-weight: 800;
+            letter-spacing: -3px;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+        }
+        .start-logo .code {
+            color: #e07c2c;
+            animation: pulseLogo 3s infinite ease-in-out;
+        }
+        .start-logo .pedia {
+            color: #2b6fbf;
+            animation: pulseLogo 3s infinite ease-in-out 0.5s;
+        }
+        @keyframes pulseLogo {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+        .start-logo-dot {
+            color: #6c5ce7;
+            font-size: 60px;
+            margin-left: 2px;
+        }
+
+        .start-subtitle {
+            font-size: 22px;
+            color: #2d3436;
+            font-weight: 600;
+            margin-bottom: 5px;
+            letter-spacing: 0.5px;
+        }
+
+        .start-tagline {
+            font-size: 16px;
+            color: #636e72;
+            margin-bottom: 10px;
+            font-weight: 400;
+        }
+
+        .start-divider {
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(90deg, #e07c2c, #2b6fbf, #6c5ce7);
+            margin: 20px auto;
+            border-radius: 2px;
+            animation: expandWidth 1.5s ease;
+        }
+        @keyframes expandWidth {
+            from { width: 0; opacity: 0; }
+            to { width: 100px; opacity: 1; }
+        }
+
+        .start-description {
+            font-size: 15px;
+            line-height: 1.8;
+            color: #636e72;
+            margin-bottom: 30px;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .start-description strong {
+            color: #2d3436;
+        }
+
+        .start-features-mini {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin: 25px 0 35px;
+        }
+        .start-feature-mini {
+            padding: 15px 10px;
+            border-radius: 14px;
+            background: #f8f9fa;
+            transition: all 0.3s;
+            cursor: default;
+            border: 1px solid transparent;
+        }
+        .start-feature-mini:hover {
+            background: #f0f2f5;
+            border-color: #dfe6e9;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+        }
+        .start-feature-mini i {
+            font-size: 32px;
+            display: block;
+            margin-bottom: 6px;
+        }
+        .start-feature-mini span {
+            font-size: 12px;
+            color: #636e72;
+            font-weight: 600;
+            display: block;
+        }
+
+        .start-enter-btn {
+            display: inline-block;
+            padding: 16px 50px;
+            background: linear-gradient(135deg, #e07c2c, #2b6fbf);
+            color: white;
+            font-size: 18px;
+            font-weight: 700;
+            text-decoration: none;
+            border-radius: 50px;
+            transition: all 0.3s;
+            box-shadow: 0 8px 25px rgba(43, 111, 191, 0.3);
+            letter-spacing: 0.5px;
+            border: none;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        .start-enter-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(43, 111, 191, 0.4);
+        }
+        .start-enter-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 5px 15px rgba(43, 111, 191, 0.3);
+        }
+        .start-enter-btn i {
+            margin-left: 10px;
+            transition: transform 0.3s;
+        }
+        .start-enter-btn:hover i {
+            transform: translateX(5px);
+        }
+
+        /* Эффект ripple на кнопке */
+        .start-enter-btn::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        .start-enter-btn:active::after {
+            width: 300px;
+            height: 300px;
+        }
+
+        .start-footer {
+            margin-top: 30px;
+            font-size: 13px;
+            color: #b2bec3;
+        }
+        .start-footer .code {
+            color: #e07c2c;
+            font-weight: 600;
+        }
+        .start-footer .pedia {
+            color: #2b6fbf;
+            font-weight: 600;
+        }
+
+        .start-stats-mini {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin: 20px 0 25px;
+        }
+        .start-stat-mini {
+            text-align: center;
+        }
+        .start-stat-mini .number {
+            font-size: 28px;
+            font-weight: 700;
+            color: #2b6fbf;
+            display: block;
+        }
+        .start-stat-mini .label {
+            font-size: 12px;
+            color: #b2bec3;
+            font-weight: 500;
+        }
+
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .start-container {
+                padding: 40px 25px;
+                border-radius: 30px;
+            }
+            .start-logo {
+                font-size: 50px;
+                flex-wrap: wrap;
+            }
+            .start-logo-dot {
+                font-size: 40px;
+            }
+            .start-subtitle {
+                font-size: 18px;
+            }
+            .start-features-mini {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+            .start-enter-btn {
+                padding: 14px 35px;
+                font-size: 16px;
+                width: 100%;
+            }
+            .start-stats-mini {
+                gap: 20px;
+            }
+            .start-stat-mini .number {
+                font-size: 22px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .start-container {
+                padding: 30px 20px;
+            }
+            .start-logo {
+                font-size: 38px;
+            }
+            .start-features-mini {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .start-feature-mini i {
+                font-size: 24px;
+            }
+            .start-feature-mini span {
+                font-size: 11px;
+            }
+            .start-description {
+                font-size: 14px;
+            }
+        }
+
+        /* Particle эффект на фоне */
+        .particle {
+            position: fixed;
+            border-radius: 50%;
+            pointer-events: none;
+            opacity: 0.3;
+            animation: particleFloat 15s infinite linear;
+        }
+        @keyframes particleFloat {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% { opacity: 0.3; }
+            90% { opacity: 0.3; }
+            100% {
+                transform: translateY(-10vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Анимированные фоновые фигуры -->
+    <div class="bg-shapes">
+        <div class="shape"></div>
+        <div class="shape"></div>
+        <div class="shape"></div>
+    </div>
+
+    <!-- Партиклы -->
+    <div id="particles"></div>
+
+    <!-- Основной контейнер -->
+    <div class="start-container">
+        <!-- Логотип -->
+        <div class="start-logo">
+            <span class="code">Code</span>
+            <span class="pedia">Pedia</span>
+            <span class="start-logo-dot">.</span>
+        </div>
+
+        <div class="start-subtitle">IT энциклопедия нового поколения</div>
+        <div class="start-tagline">Создавай • Делиcь • Общайся • Играй</div>
+
+        <div class="start-divider"></div>
+
+        <div class="start-description">
+            <strong>CodePedia</strong> — это платформа для IT-специалистов, где можно создавать вики, 
+            хостить проекты, общаться в чатах и играть в игры. 
+            <br>Всё в одном месте!
+        </div>
+
+        <!-- Мини-статистика -->
+        <div class="start-stats-mini" id="miniStats">
+            <div class="start-stat-mini">
+                <span class="number" id="miniWikiCount">0</span>
+                <span class="label">Вики</span>
+            </div>
+            <div class="start-stat-mini">
+                <span class="number" id="miniProjectCount">0</span>
+                <span class="label">Проектов</span>
+            </div>
+            <div class="start-stat-mini">
+                <span class="number" id="miniGameCount">0</span>
+                <span class="label">Игр</span>
+            </div>
+        </div>
+
+        <!-- Фичи -->
+        <div class="start-features-mini">
+            <div class="start-feature-mini">
+                <i class="fas fa-book-open" style="color: #e07c2c;"></i>
+                <span>IT Wiki</span>
+            </div>
+            <div class="start-feature-mini">
+                <i class="fas fa-server" style="color: #2b6fbf;"></i>
+                <span>Хостинг</span>
+            </div>
+            <div class="start-feature-mini">
+                <i class="fas fa-comments" style="color: #6c5ce7;"></i>
+                <span>Обсуждения</span>
+            </div>
+            <div class="start-feature-mini">
+                <i class="fas fa-gamepad" style="color: #00b894;"></i>
+                <span>Игры</span>
+            </div>
+        </div>
+
+        <!-- Кнопка входа -->
+        <a href="/app.html" class="start-enter-btn">
+            Перейти в CodePedia
+            <i class="fas fa-arrow-right"></i>
+        </a>
+
+        <div class="start-footer">
+            © 2026 <span class="code">Code</span><span class="pedia">Pedia</span> — Все права защищены
+            <br>
+            <small style="color: #dfe6e9;">Работает на Cloudflare Workers • D1 SQL</small>
+        </div>
+    </div>
+
+    <script>
+        // ======== СТАТИСТИКА ========
+        async function loadMiniStats() {
+            try {
+                const [wikisRes, projectsRes, gamesRes] = await Promise.all([
+                    fetch('/api/wikis'),
+                    fetch('/api/projects'),
+                    fetch('/api/games')
+                ]);
+                
+                const wikis = await wikisRes.json();
+                const projects = await projectsRes.json();
+                const games = await gamesRes.json();
+                
+                document.getElementById('miniWikiCount').textContent = wikis.length || 0;
+                document.getElementById('miniProjectCount').textContent = projects.length || 0;
+                document.getElementById('miniGameCount').textContent = games.length || 0;
+            } catch (error) {
+                console.error('Ошибка загрузки статистики:', error);
+            }
+        }
+
+        // ======== ПАРТИКЛЫ ========
+        function createParticles() {
+            const container = document.getElementById('particles');
+            const colors = ['#e07c2c', '#2b6fbf', '#6c5ce7', '#00b894', '#fdcb6e'];
+            
+            for (let i = 0; i < 20; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                const size = Math.random() * 6 + 3;
+                particle.style.width = size + 'px';
+                particle.style.height = size + 'px';
+                particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDuration = (Math.random() * 20 + 10) + 's';
+                particle.style.animationDelay = (Math.random() * 15) + 's';
+                container.appendChild(particle);
+            }
+        }
+
+        // ======== ЗАГРУЗКА ========
+        document.addEventListener('DOMContentLoaded', () => {
+            loadMiniStats();
+            createParticles();
+        });
+    </script>
+</body>
+</html>
