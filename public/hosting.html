@@ -48,7 +48,6 @@
         </div>
     </section>
 
-    <!-- Вкладка: Проекты -->
     <section class="hosting-content" id="projectsTab">
         <div class="container">
             <div class="projects-grid" id="projectsGrid">
@@ -57,22 +56,17 @@
         </div>
     </section>
 
-    <!-- Вкладка: Файлы -->
     <section class="hosting-content" id="filesTab" style="display:none;">
         <div class="container">
             <div class="file-manager">
-                <div class="file-path">
-                    <i class="fas fa-folder-open"></i>
-                    <span id="currentPath">/</span>
-                </div>
+                <div class="file-path"><i class="fas fa-folder-open"></i> <span id="currentPath">/</span></div>
                 <div class="file-list" id="fileList">
-                    <!-- Загружается из API -->
+                    <div class="file-item"><div class="file-name"><i class="fas fa-file"></i><span>Нет файлов</span></div></div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Вкладка: Домены -->
     <section class="hosting-content" id="domainsTab" style="display:none;">
         <div class="container">
             <div class="domains-list" id="domainsList">
@@ -80,11 +74,6 @@
                     <i class="fas fa-check-circle" style="color: #00b894;"></i>
                     <span><strong>мойпроект.codepedia.space</strong> — Активен</span>
                     <button class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
-                </div>
-                <div class="domain-item">
-                    <i class="fas fa-clock" style="color: #fdcb6e;"></i>
-                    <span><strong>тест.codepedia.space</strong> — Ожидает настройки</span>
-                    <button class="btn btn-primary btn-sm"><i class="fas fa-sync"></i> Настроить</button>
                 </div>
             </div>
             <div class="domain-add">
@@ -95,7 +84,6 @@
         </div>
     </section>
 
-    <!-- Модальное окно создания проекта -->
     <div class="modal" id="createProjectModal">
         <div class="modal-content">
             <span class="close" onclick="closeModal('createProjectModal')">&times;</span>
@@ -125,7 +113,6 @@
     <footer class="footer">
         <div class="container">
             <p>© 2026 <span class="code">Code</span><span class="pedia">Pedia</span> — Хостинг</p>
-            <p><small>Все проекты доступны по поддоменам .codepedia.space</small></p>
         </div>
     </footer>
 
