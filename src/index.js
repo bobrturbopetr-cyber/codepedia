@@ -6,7 +6,6 @@ const router = Router();
 // ======== ВСЕ API МАРШРУТЫ ========
 
 // ---- ВИКИ ----
-// Получить все вики
 router.get('/api/wikis', async (request, env) => {
     const db = new Database(env);
     try {
@@ -22,7 +21,6 @@ router.get('/api/wikis', async (request, env) => {
     }
 });
 
-// Создать вики
 router.post('/api/wikis', async (request, env) => {
     try {
         const { name, subdomain, description } = await request.json();
@@ -52,7 +50,6 @@ router.post('/api/wikis', async (request, env) => {
     }
 });
 
-// Удалить вики
 router.delete('/api/wikis/:id', async (request, env) => {
     try {
         const { id } = request.params;
@@ -69,7 +66,6 @@ router.delete('/api/wikis/:id', async (request, env) => {
     }
 });
 
-// Получить статьи вики
 router.get('/api/wikis/:id/articles', async (request, env) => {
     try {
         const { id } = request.params;
@@ -86,7 +82,6 @@ router.get('/api/wikis/:id/articles', async (request, env) => {
     }
 });
 
-// Создать статью
 router.post('/api/articles', async (request, env) => {
     try {
         const { title, content, wikiId, author } = await request.json();
@@ -106,7 +101,6 @@ router.post('/api/articles', async (request, env) => {
     }
 });
 
-// Удалить статью
 router.delete('/api/articles/:id', async (request, env) => {
     try {
         const { id } = request.params;
@@ -124,7 +118,6 @@ router.delete('/api/articles/:id', async (request, env) => {
 });
 
 // ---- ПРОЕКТЫ ----
-// Получить все проекты
 router.get('/api/projects', async (request, env) => {
     const db = new Database(env);
     try {
@@ -140,7 +133,6 @@ router.get('/api/projects', async (request, env) => {
     }
 });
 
-// Создать проект
 router.post('/api/projects', async (request, env) => {
     try {
         const { name, subdomain, description } = await request.json();
@@ -161,7 +153,6 @@ router.post('/api/projects', async (request, env) => {
     }
 });
 
-// Удалить проект
 router.delete('/api/projects/:id', async (request, env) => {
     try {
         const { id } = request.params;
@@ -178,7 +169,6 @@ router.delete('/api/projects/:id', async (request, env) => {
     }
 });
 
-// Получить файлы проекта
 router.get('/api/projects/:id/files', async (request, env) => {
     try {
         const { id } = request.params;
@@ -195,7 +185,6 @@ router.get('/api/projects/:id/files', async (request, env) => {
     }
 });
 
-// Загрузить файл в проект
 router.post('/api/projects/:id/files', async (request, env) => {
     try {
         const { id } = request.params;
@@ -213,7 +202,6 @@ router.post('/api/projects/:id/files', async (request, env) => {
     }
 });
 
-// Удалить файл
 router.delete('/api/files/:id', async (request, env) => {
     try {
         const { id } = request.params;
@@ -231,7 +219,6 @@ router.delete('/api/files/:id', async (request, env) => {
 });
 
 // ---- ИГРЫ ----
-// Получить все игры
 router.get('/api/games', async (request, env) => {
     const db = new Database(env);
     try {
@@ -247,7 +234,6 @@ router.get('/api/games', async (request, env) => {
     }
 });
 
-// Загрузить игру
 router.post('/api/games', async (request, env) => {
     try {
         const { name, genre, description, url, image, uploadedBy } = await request.json();
@@ -264,7 +250,6 @@ router.post('/api/games', async (request, env) => {
     }
 });
 
-// Удалить игру
 router.delete('/api/games/:id', async (request, env) => {
     try {
         const { id } = request.params;
@@ -281,7 +266,6 @@ router.delete('/api/games/:id', async (request, env) => {
     }
 });
 
-// Увеличить счетчик скачиваний
 router.post('/api/games/:id/download', async (request, env) => {
     try {
         const { id } = request.params;
@@ -299,7 +283,6 @@ router.post('/api/games/:id/download', async (request, env) => {
 });
 
 // ---- ЧАТ ----
-// Получить сообщения комнаты
 router.get('/api/chat/:room', async (request, env) => {
     try {
         const { room } = request.params;
@@ -316,7 +299,6 @@ router.get('/api/chat/:room', async (request, env) => {
     }
 });
 
-// Отправить сообщение
 router.post('/api/chat', async (request, env) => {
     try {
         const { room, author, text } = await request.json();
@@ -342,29 +324,27 @@ async function handleStatic(request, env) {
         return null;
     }
 
+    // Пробуем получить файл из корня через assets
     try {
-        // Пробуем получить файл из assets
         const response = await env.ASSETS.fetch(request);
-        
-        // Если файл найден - возвращаем
         if (response.status !== 404) {
             return response;
         }
+    } catch (e) {}
 
-        // Если файл не найден и это не index.html - пробуем index.html
-        if (!url.pathname.includes('.')) {
+    // Если файл не найден и это не index.html - пробуем index.html
+    if (!url.pathname.includes('.')) {
+        try {
             const indexResponse = await env.ASSETS.fetch(
                 new Request('https://' + url.host + '/index.html', request)
             );
             if (indexResponse.status !== 404) {
                 return indexResponse;
             }
-        }
-
-        return null;
-    } catch (e) {
-        return null;
+        } catch (e) {}
     }
+
+    return null;
 }
 
 // ======== ОСНОВНОЙ ОБРАБОТЧИК ========
@@ -393,10 +373,9 @@ export default {
             }
         }
 
-        // 2. Статика из папки public
+        // 2. Статика из корня
         const staticResponse = await handleStatic(request, env);
         if (staticResponse) {
-            // Добавляем кэширование для статики
             if (url.pathname.match(/\.(css|js|png|jpg|jpeg|gif|svg|ico)$/)) {
                 staticResponse.headers.set('Cache-Control', 'public, max-age=86400');
             }
